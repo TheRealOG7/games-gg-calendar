@@ -81,6 +81,8 @@ export async function fetchUpcomingReleases(
     }
   }
   for (const r of rawgResults) {
+    // Skip Dec 31 placeholder dates — RAWG uses these for "TBD this year" games
+    if (r.released.endsWith("-12-31")) continue;
     bySlug.set(r.slug, r);
   }
 
