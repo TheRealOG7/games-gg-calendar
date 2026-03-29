@@ -1,13 +1,64 @@
 import type { GameRelease } from "./releases";
 
-// Well-known game releases to supplement RAWG API data
+// Curated game releases. 2025 entries are kept for historical navigation.
+// 2026 entries reflect announced titles as of the August 2025 knowledge cutoff.
+// RAWG API data (when RAWG_API_KEY is set) will override and supplement these.
 export const HARDCODED_RELEASES: GameRelease[] = [
+
+  // ── 2026 (upcoming from March 2026) ────────────────────────────────────────
+  {
+    id: 900020,
+    name: "GTA VI",
+    slug: "grand-theft-auto-vi",
+    released: "2026-05-26",
+    background_image: null,
+    platforms: ["PS5", "Xbox Series"],
+    genres: ["Action", "Open World"],
+  },
+  {
+    id: 900021,
+    name: "The Witcher 4",
+    slug: "the-witcher-4",
+    released: "2026-07-01",
+    background_image: null,
+    platforms: ["PC", "PS5", "Xbox Series"],
+    genres: ["RPG", "Action", "Open World"],
+  },
+  {
+    id: 900022,
+    name: "Intergalactic: The Heretic Prophet",
+    slug: "intergalactic-the-heretic-prophet",
+    released: "2026-09-01",
+    background_image: null,
+    platforms: ["PS5"],
+    genres: ["Action", "Adventure"],
+  },
+  {
+    id: 900023,
+    name: "Fable",
+    slug: "fable-2024",
+    released: "2026-08-01",
+    background_image: null,
+    platforms: ["PC", "Xbox Series"],
+    genres: ["RPG", "Action", "Open World"],
+  },
+  {
+    id: 900024,
+    name: "Hollow Knight: Silksong",
+    slug: "hollow-knight-silksong",
+    released: "2026-06-01",
+    background_image: null,
+    platforms: ["PC", "PS5", "Xbox Series", "Switch"],
+    genres: ["Action", "Platformer", "Metroidvania"],
+  },
+
+  // ── 2025 (historical — navigate back to browse) ────────────────────────────
   {
     id: 900001,
     name: "Avowed",
     slug: "avowed",
     released: "2025-02-18",
-    background_image: "https://media.rawg.io/media/games/157/15742b55827b7e4ed1780f8e56c07002.jpg",
+    background_image: null,
     platforms: ["PC", "Xbox Series"],
     genres: ["RPG", "Action"],
   },
