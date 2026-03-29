@@ -61,7 +61,33 @@ export default async function CalendarPage() {
     }
   }
 
-  const releases = [...bySlug.values()].sort((a, b) =>
+  // Final dedup by normalized name — catches same game with different slugs across sources
+  // e.g. IGDB "mixtape", RAWG "mixtape--1", RAWG "mixtape-2025" → keep best entry
+  function normalizeName(name: string): string {
+    return name
+      .toLowerCase()
+      .replace(/\s*\([^)]*\)/g, "")   // strip "(2025)", "(Deluxe)", etc.
+      .replace(/[^a-z0-9]/g, "")       // strip punctuation
+      .trim();
+  }
+
+  const byName = new Map<string, GameRelease>();
+  for (const r of bySlug.values()) {
+    const key = `${r.released}::${normalizeName(r.name)}`;
+    const existing = byName.get(key);
+    if (!existing) {
+      byName.set(key, r);
+    } else {
+      // Keep the entry with more data: prefer one with image, then more platforms
+      const betterImage = !existing.background_image && r.background_image;
+      const betterPlatforms = r.platforms.length > existing.platforms.length;
+      if (betterImage || (!existing.background_image && betterPlatforms)) {
+        byName.set(key, { ...r, background_image: r.background_image ?? existing.background_image });
+      }
+    }
+  }
+
+  const releases = [...byName.values()].sort((a, b) =>
     a.released.localeCompare(b.released)
   );
 
