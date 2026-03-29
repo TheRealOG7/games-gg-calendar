@@ -334,8 +334,8 @@ function EventPopover({ event, onClose }: { event: GamingEvent; onClose: () => v
       <div style={{ position: "relative", height: "90px", overflow: "hidden", flexShrink: 0 }}>
         {event.logoUrl ? (
           <>
-            <Image src={event.logoUrl} alt={event.name} fill style={{ objectFit: "cover" }} sizes="310px" />
-            <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, ${event.color}10, var(--card))` }} />
+            <Image src={event.logoUrl} alt={event.name} fill unoptimized style={{ objectFit: "cover" }} sizes="310px" />
+            <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, rgba(6,13,23,0) 0%, var(--card) 100%)` }} />
           </>
         ) : (
           <div

@@ -10,7 +10,7 @@ export interface GamingEvent {
   description: string;
   url?: string;
   color: string;
-  logoUrl?: string;  // Official logo/banner image
+  logoUrl?: string;  // Official banner/og:image for popover header
 }
 
 export const GAMING_EVENTS: GamingEvent[] = [
@@ -25,6 +25,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Game Developers Conference, the world's largest professional game industry event, featuring sessions, summits, and the Independent Games Festival.",
     url: "https://gdconf.com",
     color: "#4f9cf9",
+    logoUrl: "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800",
   },
   {
     id: "pax-east-2025",
@@ -66,7 +67,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "San Diego, CA",
     description: "The iconic pop culture convention featuring major gaming announcements, panels, and exclusive reveals alongside comics, film, and TV.",
     url: "https://www.comic-con.org",
-    color: "#f5a623",
+    color: "#4f9cf9",
   },
   {
     id: "gamescom-2025",
@@ -99,7 +100,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "Chiba, Japan",
     description: "Japan's premier gaming expo where major publishers reveal upcoming titles, with both online and in-person components.",
     url: "https://tgs.cesa.or.jp/english",
-    color: "#f5a623",
+    color: "#4f9cf9",
   },
   {
     id: "pax-aus-2025",
@@ -122,6 +123,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The gaming industry's biggest night, celebrating the best games of the year with world premiere announcements and live performances.",
     url: "https://thegameawards.com",
     color: "#f5c842",
+    logoUrl: "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg",
   },
 
   // 2026
@@ -135,6 +137,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Game Developers Conference 2026, the professional game industry event featuring sessions, summits, and the Independent Games Festival.",
     url: "https://gdconf.com",
     color: "#4f9cf9",
+    logoUrl: "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800",
   },
   {
     id: "pax-east-2026",
@@ -167,7 +170,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "San Diego, CA",
     description: "Pop culture's biggest annual gathering with major gaming panels and exclusive reveals alongside comics, film, and TV.",
     url: "https://www.comic-con.org",
-    color: "#f5a623",
+    color: "#4f9cf9",
   },
   {
     id: "gamescom-2026",
@@ -190,6 +193,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The gaming industry's biggest night, celebrating the best games of the year.",
     url: "https://thegameawards.com",
     color: "#f5c842",
+    logoUrl: "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg",
   },
 ];
 

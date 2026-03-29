@@ -125,5 +125,5 @@ export function getReleasesForDate(releases: GameRelease[], dateStr: string): Ga
 }
 
 export function gamesGgUrl(slug: string): string {
-  return `https://games.gg/games/${slug}`;
+  return `https://games.gg/${slug}`;
 }
