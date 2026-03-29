@@ -1,3 +1,5 @@
+import { HARDCODED_RELEASES } from "./hardcoded-releases";
+
 export interface GameRelease {
   id: number;
   name: string;
@@ -6,12 +8,9 @@ export interface GameRelease {
   background_image: string | null;
   platforms: string[];
   genres: string[];
-  description_raw?: string;
   metacritic?: number | null;
   rating?: number;
-  rating_top?: number;
   ratings_count?: number;
-  esrb_rating?: string | null;
 }
 
 interface RawgGame {
@@ -24,9 +23,21 @@ interface RawgGame {
   genres?: Array<{ name: string }>;
   metacritic?: number | null;
   rating?: number;
-  rating_top?: number;
   ratings_count?: number;
-  esrb_rating?: { name: string } | null;
+}
+
+async function fetchRawgPage(url: string): Promise<RawgGame[]> {
+  try {
+    const res = await fetch(url, {
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.results ?? [];
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchUpcomingReleases(
@@ -34,34 +45,53 @@ export async function fetchUpcomingReleases(
   endDate: string,
   apiKey: string
 ): Promise<GameRelease[]> {
-  const url = `https://api.rawg.io/api/games?key=${apiKey}&dates=${startDate},${endDate}&ordering=released&page_size=80&exclude_additions=true`;
+  const base = `https://api.rawg.io/api/games?key=${apiKey}&dates=${startDate},${endDate}&ordering=released&page_size=100&exclude_additions=true`;
 
-  try {
-    const res = await fetch(url, {
-      next: { revalidate: 3600 }, // cache 1 hour
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    const results: RawgGame[] = data.results ?? [];
+  // Fetch up to 2 pages so we get more coverage
+  const [page1, page2] = await Promise.all([
+    fetchRawgPage(base + "&page=1"),
+    fetchRawgPage(base + "&page=2"),
+  ]);
 
-    return results.map((g) => ({
-      id: g.id,
-      name: g.name,
-      slug: g.slug,
-      released: g.released,
-      background_image: g.background_image,
-      platforms: (g.platforms ?? []).map((p) => normalizePlatform(p.platform.name)),
-      genres: (g.genres ?? []).map((g) => g.name),
-      metacritic: g.metacritic,
-      rating: g.rating,
-      rating_top: g.rating_top,
-      ratings_count: g.ratings_count,
-      esrb_rating: g.esrb_rating?.name ?? null,
-    }));
-  } catch {
-    return [];
+  const rawgResults: GameRelease[] = [...page1, ...page2].map((g) => ({
+    id: g.id,
+    name: g.name,
+    slug: g.slug,
+    released: g.released,
+    background_image: g.background_image,
+    platforms: [...new Set((g.platforms ?? []).map((p) => normalizePlatform(p.platform.name)))],
+    genres: (g.genres ?? []).map((g) => g.name),
+    metacritic: g.metacritic,
+    rating: g.rating,
+    ratings_count: g.ratings_count,
+  }));
+
+  // Merge hardcoded releases, RAWG takes precedence if slug matches
+  const bySlug = new Map<string, GameRelease>();
+  for (const r of HARDCODED_RELEASES) {
+    if (r.released >= startDate && r.released <= endDate) {
+      bySlug.set(r.slug, r);
+    }
   }
+  for (const r of rawgResults) {
+    bySlug.set(r.slug, r);
+  }
+
+  return [...bySlug.values()].sort((a, b) => a.released.localeCompare(b.released));
+}
+
+export async function fetchAllReleases(
+  startDate: string,
+  endDate: string,
+  apiKey: string
+): Promise<GameRelease[]> {
+  if (apiKey) {
+    return fetchUpcomingReleases(startDate, endDate, apiKey);
+  }
+  // No API key: return only hardcoded releases in range
+  return HARDCODED_RELEASES.filter(
+    (r) => r.released >= startDate && r.released <= endDate
+  ).sort((a, b) => a.released.localeCompare(b.released));
 }
 
 function normalizePlatform(name: string): string {
@@ -77,11 +107,8 @@ function normalizePlatform(name: string): string {
   return name;
 }
 
-// Deduplicate platform list (e.g. PS5+PS4 → just show PS5 if both exist, etc.)
 export function deduplicatePlatforms(platforms: string[]): string[] {
-  const unique = [...new Set(platforms)];
-  // If both PS5 and PS4, keep both but deduplicate
-  return unique.slice(0, 4); // cap at 4 to keep UI clean
+  return [...new Set(platforms)].slice(0, 4);
 }
 
 export function getReleasesForDate(releases: GameRelease[], dateStr: string): GameRelease[] {

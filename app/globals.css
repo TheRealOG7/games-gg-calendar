@@ -11,173 +11,27 @@
   --text-dim: oklch(50% 0.01 240);
   --green: oklch(83% 0.22 158);
   --orange: oklch(72% 0.19 55);
-  --blue: oklch(65% 0.18 240);
-  --purple: oklch(70% 0.18 300);
   --radius: 10px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
+html, body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
 }
 
 a { text-decoration: none; color: inherit; }
 
-/* Scrollbar styling */
-::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 
-/* Calendar grid */
-.cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.cal-day {
-  background: var(--bg);
-  min-height: 90px;
-  padding: 6px;
-  cursor: pointer;
-  transition: background 0.15s;
-  position: relative;
-}
-
-.cal-day:hover {
-  background: var(--card-hover);
-}
-
-.cal-day.other-month {
-  opacity: 0.35;
-}
-
-.cal-day.today .day-num {
-  background: var(--green);
-  color: #060D17;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-}
-
-.cal-day.selected {
-  background: var(--card);
-}
-
-/* Event dots */
-.event-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-/* Panel slide-in */
-.detail-panel {
-  animation: slideIn 0.2s ease;
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Game chip */
-.game-chip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
-  width: 100%;
-  text-align: left;
-}
-
-.game-chip:hover {
-  border-color: var(--border-hover);
-  background: var(--card-hover);
-}
-
-/* Event chip */
-.event-chip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: opacity 0.15s;
-  width: 100%;
-  text-align: left;
-  border: 1px solid transparent;
-}
-
-.event-chip:hover {
-  opacity: 0.85;
-}
-
-/* Tag badges */
-.tag {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  padding: 2px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-}
-
-/* Game modal */
-.game-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(6, 13, 23, 0.8);
-  backdrop-filter: blur(4px);
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  animation: fadeIn 0.15s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.game-modal {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  width: 100%;
-  max-width: 480px;
-  overflow: hidden;
-  animation: scaleIn 0.2s ease;
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-@media (max-width: 640px) {
-  .cal-day { min-height: 60px; padding: 4px; }
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }

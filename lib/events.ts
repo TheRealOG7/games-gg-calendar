@@ -9,11 +9,11 @@ export interface GamingEvent {
   location?: string;
   description: string;
   url?: string;
-  color: string; // CSS color
+  color: string;
 }
 
 export const GAMING_EVENTS: GamingEvent[] = [
-  // ── 2025 ──────────────────────────────────────────────────────────────────
+  // 2025
   {
     id: "gdc-2025",
     name: "GDC 2025",
@@ -21,7 +21,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2025-03-17",
     endDate: "2025-03-21",
     location: "San Francisco, CA",
-    description: "Game Developers Conference — the world's largest professional game industry event, featuring sessions, summits, and the Independent Games Festival.",
+    description: "Game Developers Conference, the world's largest professional game industry event, featuring sessions, summits, and the Independent Games Festival.",
     url: "https://gdconf.com",
     color: "#4f9cf9",
   },
@@ -32,7 +32,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2025-05-22",
     endDate: "2025-05-25",
     location: "Boston, MA",
-    description: "PAX East is one of the largest gaming conventions in the Eastern United States, bringing together gamers, developers, and publishers.",
+    description: "One of the largest gaming conventions in the Eastern United States, bringing together gamers, developers, and publishers.",
     url: "https://east.paxsite.com",
     color: "#4f9cf9",
   },
@@ -85,7 +85,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2025-08-29",
     endDate: "2025-09-01",
     location: "Seattle, WA",
-    description: "PAX West on the Pacific Coast — four days of games, panels, tournaments, and community events.",
+    description: "Four days of games, panels, tournaments, and community events on the Pacific Coast.",
     url: "https://west.paxsite.com",
     color: "#4f9cf9",
   },
@@ -96,7 +96,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2025-09-25",
     endDate: "2025-09-28",
     location: "Chiba, Japan",
-    description: "Japan's premier gaming expo — major Japanese publishers reveal upcoming titles, with online and in-person components.",
+    description: "Japan's premier gaming expo where major publishers reveal upcoming titles, with both online and in-person components.",
     url: "https://tgs.cesa.or.jp/english",
     color: "#f5a623",
   },
@@ -107,7 +107,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2025-10-31",
     endDate: "2025-11-02",
     location: "Melbourne, Australia",
-    description: "Australia's biggest gaming convention — three days of gaming, esports, tabletop, and developer panels.",
+    description: "Australia's biggest gaming convention with three days of gaming, esports, tabletop, and developer panels.",
     url: "https://aus.paxsite.com",
     color: "#4f9cf9",
   },
@@ -118,12 +118,12 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2025-12-11",
     endDate: "2025-12-11",
     location: "Los Angeles, CA",
-    description: "The gaming industry's biggest night — celebrating the best games of the year with world premiere announcements and live performances.",
+    description: "The gaming industry's biggest night, celebrating the best games of the year with world premiere announcements and live performances.",
     url: "https://thegameawards.com",
     color: "#f5c842",
   },
 
-  // ── 2026 ──────────────────────────────────────────────────────────────────
+  // 2026
   {
     id: "gdc-2026",
     name: "GDC 2026",
@@ -131,7 +131,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2026-03-16",
     endDate: "2026-03-20",
     location: "San Francisco, CA",
-    description: "Game Developers Conference 2026 — professional game industry event featuring sessions, summits, and the Independent Games Festival.",
+    description: "Game Developers Conference 2026, the professional game industry event featuring sessions, summits, and the Independent Games Festival.",
     url: "https://gdconf.com",
     color: "#4f9cf9",
   },
@@ -142,7 +142,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2026-03-26",
     endDate: "2026-03-29",
     location: "Boston, MA",
-    description: "PAX East 2026 — one of the largest gaming conventions in the Eastern US.",
+    description: "One of the largest gaming conventions in the Eastern US, four days of games, panels, tournaments, and developer showcases.",
     url: "https://east.paxsite.com",
     color: "#4f9cf9",
   },
@@ -153,7 +153,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2026-06-05",
     endDate: "2026-06-08",
     location: "Los Angeles, CA",
-    description: "Summer Game Fest 2026 — multi-day showcase with world premieres and announcements.",
+    description: "Multi-day showcase event featuring world premiere announcements and demos from across the industry.",
     url: "https://www.summergamefest.com",
     color: "#b06ff5",
   },
@@ -164,7 +164,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2026-07-23",
     endDate: "2026-07-26",
     location: "San Diego, CA",
-    description: "San Diego Comic-Con 2026 — pop culture's biggest annual gathering with major gaming panels and reveals.",
+    description: "Pop culture's biggest annual gathering with major gaming panels and exclusive reveals alongside comics, film, and TV.",
     url: "https://www.comic-con.org",
     color: "#f5a623",
   },
@@ -175,7 +175,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2026-08-26",
     endDate: "2026-08-30",
     location: "Cologne, Germany",
-    description: "Gamescom 2026 — the world's largest gaming trade fair returns to Cologne.",
+    description: "The world's largest gaming trade fair returns to Cologne with Opening Night Live and expo floors spanning major publishers.",
     url: "https://www.gamescom.global",
     color: "#4f9cf9",
   },
@@ -186,28 +186,17 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2026-12-10",
     endDate: "2026-12-10",
     location: "Los Angeles, CA",
-    description: "The Game Awards 2026 — celebrating the best games of the year.",
+    description: "The gaming industry's biggest night, celebrating the best games of the year.",
     url: "https://thegameawards.com",
     color: "#f5c842",
   },
 ];
 
-export function getEventsForMonth(year: number, month: number): GamingEvent[] {
-  return GAMING_EVENTS.filter((e) => {
-    const start = new Date(e.startDate);
-    const end = new Date(e.endDate);
-    // Include if event overlaps with this month
-    const monthStart = new Date(year, month - 1, 1);
-    const monthEnd = new Date(year, month, 0);
-    return start <= monthEnd && end >= monthStart;
-  });
-}
-
 export function getEventsForDate(dateStr: string): GamingEvent[] {
-  const date = new Date(dateStr);
+  const date = new Date(dateStr + "T12:00:00");
   return GAMING_EVENTS.filter((e) => {
-    const start = new Date(e.startDate);
-    const end = new Date(e.endDate);
+    const start = new Date(e.startDate + "T12:00:00");
+    const end = new Date(e.endDate + "T12:00:00");
     return date >= start && date <= end;
   });
 }
