@@ -826,6 +826,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
         <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
           <LegendItem color="var(--green)" label="Release" />
           <LegendItem color="#4f9cf9" label="Convention" />
+          <LegendItem color="#f5a623" label="Esports" />
           <LegendItem color="#b06ff5" label="Showcase" />
           <LegendItem color="#f5c842" label="Awards" />
           <button onClick={nextMonth} style={navBtnStyle}>›</button>

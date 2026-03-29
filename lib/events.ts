@@ -21,6 +21,8 @@ const SDCC_BANNER = "https://comic-con-prod-uploads.s3.amazonaws.com/uploads/sit
 const BGS_BANNER = "https://www.brasilgameshow.com.br/wp-content/themes/newsitebgs/images/slogan2026v4.webp";
 const GSTAR_BANNER = "https://www.gstar.or.kr/img/img_exhibition.png";
 const TGS_TW_BANNER = "https://tgs.tca.org.tw/images/banner/_1767319692.jpg";
+const EWC_BANNER = "https://d3h9qea4qy4169.cloudfront.net/abstract_background_ef90392883.png";
+const MEFCC_BANNER = "https://knect365.imgix.net/uploads/MEFCC-Abu-Dhabi-Logo-White-49b99c7858082d50bff4e3d25e41027a.png?auto=format&fit=max&w=800";
 const GAMESCOM_BANNER = "https://eu-central-1-gamescom.graphassets.com/AMwDHZTUSMaIlRlMFLL7Qz/PssD8VBzTXq72TP0ISkN";
 const GDC_BANNER = "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800";
 const TGA_BANNER = "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg";
@@ -142,6 +144,54 @@ export const GAMING_EVENTS: GamingEvent[] = [
     url: "https://thegameawards.com",
     color: "#f5c842",
     logoUrl: TGA_BANNER,
+  },
+
+  // 2025 — Middle East
+  {
+    id: "mefcc-2025",
+    name: "Middle East Film & Comic Con 2025",
+    type: "convention",
+    startDate: "2025-04-18",
+    endDate: "2025-04-20",
+    location: "Abu Dhabi, UAE",
+    description: "The Middle East's biggest pop culture convention featuring gaming, cosplay, comics, collectibles, and exclusive reveals.",
+    url: "https://www.mefcc.com",
+    color: "#4f9cf9",
+    logoUrl: MEFCC_BANNER,
+  },
+  {
+    id: "dubai-esports-festival-2025",
+    name: "Dubai Esports & Games Festival 2025",
+    type: "convention",
+    startDate: "2025-04-25",
+    endDate: "2025-05-11",
+    location: "Dubai, UAE",
+    description: "The region's largest gaming festival — a 17-day citywide celebration with the GameExpo (May 9–11), tournaments, and activations at Dubai World Trade Centre.",
+    url: "https://www.dubaiesportsfestival.com",
+    color: "#4f9cf9",
+  },
+  {
+    id: "ewc-2025",
+    name: "Esports World Cup 2025",
+    type: "convention",
+    startDate: "2025-07-08",
+    endDate: "2025-08-24",
+    location: "Riyadh, Saudi Arabia",
+    description: "The world's biggest esports event — 25 tournaments across 24 games, $75M+ prize pool, 2,000 elite players and 200 clubs from 100+ countries at Boulevard Riyadh.",
+    url: "https://esportsworldcup.com",
+    color: "#f5a623",
+    logoUrl: EWC_BANNER,
+  },
+  {
+    id: "games-of-future-2025",
+    name: "Games of the Future 2025",
+    type: "convention",
+    startDate: "2025-12-18",
+    endDate: "2025-12-23",
+    location: "Abu Dhabi, UAE",
+    description: "Phygital sports tournament blending esports and physical disciplines — 850+ participants from 60+ countries competing across 11 hybrid game formats.",
+    url: "https://abudhabi2025.gofuture.games/en",
+    color: "#4f9cf9",
   },
 
   // 2025 — Asia / LATAM
@@ -288,6 +338,54 @@ export const GAMING_EVENTS: GamingEvent[] = [
     url: "https://thegameawards.com",
     color: "#f5c842",
     logoUrl: TGA_BANNER,
+  },
+
+  // 2026 — Middle East
+  {
+    id: "dubai-esports-festival-2026",
+    name: "Dubai Esports & Games Festival 2026",
+    type: "convention",
+    startDate: "2026-05-08",
+    endDate: "2026-05-24",
+    location: "Dubai, UAE",
+    description: "The region's largest gaming festival — 17 days of gaming events, GameExpo (May 22–24), tournaments, and activations across Dubai World Trade Centre.",
+    url: "https://www.dubaiesportsfestival.com",
+    color: "#4f9cf9",
+  },
+  {
+    id: "ewc-2026",
+    name: "Esports World Cup 2026",
+    type: "convention",
+    startDate: "2026-07-06",
+    endDate: "2026-08-23",
+    location: "Riyadh, Saudi Arabia",
+    description: "The world's biggest esports event returns to Riyadh — multi-week tournament spanning dozens of titles with hundreds of millions in prize money.",
+    url: "https://esportsworldcup.com",
+    color: "#f5a623",
+    logoUrl: EWC_BANNER,
+  },
+  {
+    id: "mefcc-2026",
+    name: "Middle East Film & Comic Con 2026",
+    type: "convention",
+    startDate: "2026-09-11",
+    endDate: "2026-09-13",
+    location: "Abu Dhabi, UAE",
+    description: "The Middle East's biggest pop culture convention featuring gaming, cosplay, comics, collectibles, and exclusive reveals.",
+    url: "https://www.mefcc.com",
+    color: "#4f9cf9",
+    logoUrl: MEFCC_BANNER,
+  },
+  {
+    id: "kingdom-of-gaming-2026",
+    name: "Kingdom of Gaming 2026",
+    type: "convention",
+    startDate: "2026-12-01",
+    endDate: "2026-12-03",
+    location: "Riyadh, Saudi Arabia",
+    description: "Saudi Arabia's flagship gaming event debut — 20,000+ visitors, 300 exhibitors, 500 studios and developers, state-backed and co-located with Black Hat MEA.",
+    url: "https://esportsworldcup.com",
+    color: "#4f9cf9",
   },
 
   // 2026 — Asia / LATAM
