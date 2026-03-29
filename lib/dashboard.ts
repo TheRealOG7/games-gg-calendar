@@ -7,6 +7,7 @@ interface DashboardReleasingGame {
   hypes: number;
   follows?: number;
   igdb_url: string;
+  cover_url?: string | null;
 }
 
 interface DashboardWishlistedGame {
@@ -111,7 +112,7 @@ function parseReleasingList(
       name: g.name,
       slug,
       released,
-      background_image: null,
+      background_image: g.cover_url ?? null,
       platforms: parsePlatforms(g.platforms),
       genres: [],
     });
