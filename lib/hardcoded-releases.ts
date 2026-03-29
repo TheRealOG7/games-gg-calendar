@@ -106,15 +106,6 @@ export const HARDCODED_RELEASES: GameRelease[] = [
     genres: ["Racing", "Open World"],
   },
   {
-    id: 900014,
-    name: "Doom: The Dark Ages",
-    slug: "doom-the-dark-ages",
-    released: "2026-05-15",
-    background_image: null,
-    platforms: ["PC", "PS5", "Xbox Series"],
-    genres: ["Action", "Shooter"],
-  },
-{
     id: 900012,
     name: "Deadlock",
     slug: "deadlock",
