@@ -1,4 +1,4 @@
-export type EventType = "convention" | "showcase" | "awards" | "sale";
+export type EventType = "convention" | "showcase" | "awards" | "esports" | "sale";
 
 export interface GamingEvent {
   id: string;
@@ -15,20 +15,54 @@ export interface GamingEvent {
 
 const PAX_EAST_BANNER = "https://east.paxsite.com/content/dam/sitebuilder/rna/pax/east/2024/images/framework/pax-east-gradient-left-right-73171a-to-D9272D.jpg/_jcr_content/renditions/original.image_file.375.375.file/984193481/pax-east-gradient-left-right-73171a-to-D9272D.jpg";
 const PAX_WEST_BANNER = "https://west.paxsite.com/content/dam/sitebuilder/rna/pax/west/metadata/seo/heros/hero-miscellaneous-pax-west.png/_jcr_content/renditions/original./031809964/hero-miscellaneous-pax-west.png";
-const PAX_AUS_BANNER = "https://aus.paxsite.com/content/dam/sitebuilder/rxau/pax/aus/branding/us-placeholders/aus-placeholder.png/_jcr_content/renditions/original.image_file.1919.960.file/290877126/aus-placeholder.png";
-const SGF_BANNER = "https://cdn.prod.website-files.com/65f20ae26ba45240543579bc/67fd991dca5be10f868c4971_load_image_desktop_v5.webp";
-const SDCC_BANNER = "https://comic-con-prod-uploads.s3.amazonaws.com/uploads/sites/4/2023/09/cc-hero-1024x679.jpg";
-const BGS_BANNER = "https://www.brasilgameshow.com.br/wp-content/themes/newsitebgs/images/slogan2026v4.webp";
-const GSTAR_BANNER = "https://www.gstar.or.kr/img/img_exhibition.png";
-const TGS_TW_BANNER = "https://tgs.tca.org.tw/images/banner/_1767319692.jpg";
-const EWC_BANNER = "https://d3h9qea4qy4169.cloudfront.net/abstract_background_ef90392883.png";
-const MEFCC_BANNER = "https://knect365.imgix.net/uploads/MEFCC-Abu-Dhabi-Logo-White-49b99c7858082d50bff4e3d25e41027a.png?auto=format&fit=max&w=800";
+const PAX_AUS_BANNER  = "https://aus.paxsite.com/content/dam/sitebuilder/rxau/pax/aus/branding/us-placeholders/aus-placeholder.png/_jcr_content/renditions/original.image_file.1919.960.file/290877126/aus-placeholder.png";
+const SGF_BANNER      = "https://cdn.prod.website-files.com/65f20ae26ba45240543579bc/67fd991dca5be10f868c4971_load_image_desktop_v5.webp";
+const SDCC_BANNER     = "https://comic-con-prod-uploads.s3.amazonaws.com/uploads/sites/4/2023/09/cc-hero-1024x679.jpg";
+const BGS_BANNER      = "https://www.brasilgameshow.com.br/wp-content/themes/newsitebgs/images/slogan2026v4.webp";
+const GSTAR_BANNER    = "https://www.gstar.or.kr/img/img_exhibition.png";
+const TGS_TW_BANNER   = "https://tgs.tca.org.tw/images/banner/_1767319692.jpg";
+const EWC_BANNER      = "https://d3h9qea4qy4169.cloudfront.net/abstract_background_ef90392883.png";
+const MEFCC_BANNER    = "https://knect365.imgix.net/uploads/MEFCC-Abu-Dhabi-Logo-White-49b99c7858082d50bff4e3d25e41027a.png?auto=format&fit=max&w=800";
 const GAMESCOM_BANNER = "https://eu-central-1-gamescom.graphassets.com/AMwDHZTUSMaIlRlMFLL7Qz/PssD8VBzTXq72TP0ISkN";
-const GDC_BANNER = "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800";
-const TGA_BANNER = "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg";
+const ONL_BANNER      = "https://eu-central-1-gamescom.graphassets.com/AMwDHZTUSMaIlRlMFLL7Qz/cmehi4nva0h9g07w4fdvuvwnp";
+const GDC_BANNER      = "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800";
+const TGA_BANNER      = "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg";
+const GJA_BANNER      = "https://assets.swoogo.com/uploads/medium/5147707-67ec194eeb105.png";
+
+// Colour palette
+const C_CONVENTION = "#4f9cf9";  // blue
+const C_SHOWCASE   = "#b06ff5";  // purple
+const C_AWARDS     = "#f5c842";  // gold
+const C_ESPORTS    = "#e84855";  // red
 
 export const GAMING_EVENTS: GamingEvent[] = [
-  // 2025
+
+  // ── 2025 ──────────────────────────────────────────────────────────────────
+
+  // Awards / showcases that happen early in the year
+  {
+    id: "dice-2025",
+    name: "D.I.C.E. Awards 2025",
+    type: "awards",
+    startDate: "2025-02-13",
+    endDate: "2025-02-13",
+    location: "Las Vegas, NV",
+    description: "The Academy of Interactive Arts & Sciences' annual awards honoring the best games of the year across 24 categories.",
+    url: "https://www.interactive.org",
+    color: C_AWARDS,
+  },
+  {
+    id: "taipei-game-show-2025",
+    name: "Taipei Game Show 2025",
+    type: "convention",
+    startDate: "2025-01-23",
+    endDate: "2025-01-26",
+    location: "Taipei, Taiwan",
+    description: "Asia's leading gaming expo featuring the latest titles from major publishers and indie developers across the Asia-Pacific region.",
+    url: "https://tgs.tca.org.tw/index_e.php",
+    color: C_CONVENTION,
+    logoUrl: TGS_TW_BANNER,
+  },
   {
     id: "gdc-2025",
     name: "GDC 2025",
@@ -38,8 +72,42 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "San Francisco, CA",
     description: "Game Developers Conference, the world's largest professional game industry event, featuring sessions, summits, and the Independent Games Festival.",
     url: "https://gdconf.com",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: GDC_BANNER,
+  },
+  {
+    id: "bafta-games-2025",
+    name: "BAFTA Games Awards 2025",
+    type: "awards",
+    startDate: "2025-04-08",
+    endDate: "2025-04-08",
+    location: "London, UK",
+    description: "The British Academy's annual ceremony honouring the best in interactive entertainment — one of the most prestigious awards in the global games industry.",
+    url: "https://www.bafta.org/awards/games",
+    color: C_AWARDS,
+  },
+  {
+    id: "mefcc-2025",
+    name: "Middle East Film & Comic Con 2025",
+    type: "convention",
+    startDate: "2025-04-18",
+    endDate: "2025-04-20",
+    location: "Abu Dhabi, UAE",
+    description: "The Middle East's biggest pop culture convention featuring gaming, cosplay, comics, collectibles, and exclusive reveals.",
+    url: "https://www.mefcc.com",
+    color: C_CONVENTION,
+    logoUrl: MEFCC_BANNER,
+  },
+  {
+    id: "dubai-esports-festival-2025",
+    name: "Dubai Esports & Games Festival 2025",
+    type: "convention",
+    startDate: "2025-04-25",
+    endDate: "2025-05-11",
+    location: "Dubai, UAE",
+    description: "The region's largest gaming festival — 17 days of city-wide gaming events, the GameExpo (May 9–11), tournaments, and activations at Dubai World Trade Centre.",
+    url: "https://www.dubaiesportsfestival.com",
+    color: C_CONVENTION,
   },
   {
     id: "pax-east-2025",
@@ -50,7 +118,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "Boston, MA",
     description: "One of the largest gaming conventions in the Eastern United States, bringing together gamers, developers, and publishers.",
     url: "https://east.paxsite.com",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: PAX_EAST_BANNER,
   },
   {
@@ -60,9 +128,9 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2025-06-06",
     endDate: "2025-06-09",
     location: "Los Angeles, CA",
-    description: "Geoff Keighley's multi-day showcase event featuring world premieres, demos, and announcements from major publishers and indie studios.",
+    description: "Geoff Keighley's multi-day showcase featuring world premieres, demos, and announcements from major publishers and indie studios.",
     url: "https://www.summergamefest.com",
-    color: "#b06ff5",
+    color: C_SHOWCASE,
     logoUrl: SGF_BANNER,
   },
   {
@@ -72,7 +140,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2025-06-08",
     endDate: "2025-06-08",
     description: "Microsoft's annual showcase revealing upcoming Xbox and PC games, Game Pass additions, and hardware announcements.",
-    color: "#5dc75d",
+    color: C_SHOWCASE,
   },
   {
     id: "sdcc-2025",
@@ -83,8 +151,32 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "San Diego, CA",
     description: "The iconic pop culture convention featuring major gaming announcements, panels, and exclusive reveals alongside comics, film, and TV.",
     url: "https://www.comic-con.org",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: SDCC_BANNER,
+  },
+  {
+    id: "ewc-2025",
+    name: "Esports World Cup 2025",
+    type: "esports",
+    startDate: "2025-07-08",
+    endDate: "2025-08-24",
+    location: "Riyadh, Saudi Arabia",
+    description: "The world's biggest esports event — 25 tournaments across 24 games, $75M+ prize pool, 2,000 elite players from 200 clubs across 100+ countries.",
+    url: "https://esportsworldcup.com",
+    color: C_ESPORTS,
+    logoUrl: EWC_BANNER,
+  },
+  {
+    id: "gamescom-onl-2025",
+    name: "Gamescom Opening Night Live 2025",
+    type: "showcase",
+    startDate: "2025-08-19",
+    endDate: "2025-08-19",
+    location: "Cologne, Germany",
+    description: "Geoff Keighley's annual gaming showcase kicking off Gamescom week with world premieres and major announcements broadcast globally.",
+    url: "https://www.gamescom.global/en/program/onl",
+    color: C_SHOWCASE,
+    logoUrl: ONL_BANNER,
   },
   {
     id: "gamescom-2025",
@@ -93,10 +185,21 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2025-08-20",
     endDate: "2025-08-24",
     location: "Cologne, Germany",
-    description: "The world's largest gaming trade fair with Gamescom Opening Night Live, developer showcases, and public expo floors.",
+    description: "The world's largest gaming trade fair with developer showcases, publisher booths, and public expo floors.",
     url: "https://www.gamescom.global",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: GAMESCOM_BANNER,
+  },
+  {
+    id: "chinajoy-2025",
+    name: "ChinaJoy 2025",
+    type: "convention",
+    startDate: "2025-08-01",
+    endDate: "2025-08-04",
+    location: "Shanghai, China",
+    description: "The world's largest digital entertainment expo, showcasing gaming, animation, comics, and online entertainment across Asia.",
+    url: "https://en.chinajoy.net",
+    color: C_CONVENTION,
   },
   {
     id: "pax-west-2025",
@@ -107,7 +210,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "Seattle, WA",
     description: "Four days of games, panels, tournaments, and community events on the Pacific Coast.",
     url: "https://west.paxsite.com",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: PAX_WEST_BANNER,
   },
   {
@@ -119,104 +222,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "Chiba, Japan",
     description: "Japan's premier gaming expo where major publishers reveal upcoming titles, with both online and in-person components.",
     url: "https://tgs.cesa.or.jp/english",
-    color: "#4f9cf9",
-  },
-  {
-    id: "pax-aus-2025",
-    name: "PAX Aus 2025",
-    type: "convention",
-    startDate: "2025-10-31",
-    endDate: "2025-11-02",
-    location: "Melbourne, Australia",
-    description: "Australia's biggest gaming convention with three days of gaming, esports, tabletop, and developer panels.",
-    url: "https://aus.paxsite.com",
-    color: "#4f9cf9",
-    logoUrl: PAX_AUS_BANNER,
-  },
-  {
-    id: "the-game-awards-2025",
-    name: "The Game Awards 2025",
-    type: "awards",
-    startDate: "2025-12-11",
-    endDate: "2025-12-11",
-    location: "Los Angeles, CA",
-    description: "The gaming industry's biggest night, celebrating the best games of the year with world premiere announcements and live performances.",
-    url: "https://thegameawards.com",
-    color: "#f5c842",
-    logoUrl: TGA_BANNER,
-  },
-
-  // 2025 — Middle East
-  {
-    id: "mefcc-2025",
-    name: "Middle East Film & Comic Con 2025",
-    type: "convention",
-    startDate: "2025-04-18",
-    endDate: "2025-04-20",
-    location: "Abu Dhabi, UAE",
-    description: "The Middle East's biggest pop culture convention featuring gaming, cosplay, comics, collectibles, and exclusive reveals.",
-    url: "https://www.mefcc.com",
-    color: "#4f9cf9",
-    logoUrl: MEFCC_BANNER,
-  },
-  {
-    id: "dubai-esports-festival-2025",
-    name: "Dubai Esports & Games Festival 2025",
-    type: "convention",
-    startDate: "2025-04-25",
-    endDate: "2025-05-11",
-    location: "Dubai, UAE",
-    description: "The region's largest gaming festival — a 17-day citywide celebration with the GameExpo (May 9–11), tournaments, and activations at Dubai World Trade Centre.",
-    url: "https://www.dubaiesportsfestival.com",
-    color: "#4f9cf9",
-  },
-  {
-    id: "ewc-2025",
-    name: "Esports World Cup 2025",
-    type: "convention",
-    startDate: "2025-07-08",
-    endDate: "2025-08-24",
-    location: "Riyadh, Saudi Arabia",
-    description: "The world's biggest esports event — 25 tournaments across 24 games, $75M+ prize pool, 2,000 elite players and 200 clubs from 100+ countries at Boulevard Riyadh.",
-    url: "https://esportsworldcup.com",
-    color: "#f5a623",
-    logoUrl: EWC_BANNER,
-  },
-  {
-    id: "games-of-future-2025",
-    name: "Games of the Future 2025",
-    type: "convention",
-    startDate: "2025-12-18",
-    endDate: "2025-12-23",
-    location: "Abu Dhabi, UAE",
-    description: "Phygital sports tournament blending esports and physical disciplines — 850+ participants from 60+ countries competing across 11 hybrid game formats.",
-    url: "https://abudhabi2025.gofuture.games/en",
-    color: "#4f9cf9",
-  },
-
-  // 2025 — Asia / LATAM
-  {
-    id: "taipei-game-show-2025",
-    name: "Taipei Game Show 2025",
-    type: "convention",
-    startDate: "2025-01-23",
-    endDate: "2025-01-26",
-    location: "Taipei, Taiwan",
-    description: "Asia's leading gaming expo featuring the latest titles from major publishers and indie developers across the Asia-Pacific region.",
-    url: "https://tgs.tca.org.tw/index_e.php",
-    color: "#4f9cf9",
-    logoUrl: TGS_TW_BANNER,
-  },
-  {
-    id: "chinajoy-2025",
-    name: "ChinaJoy 2025",
-    type: "convention",
-    startDate: "2025-08-01",
-    endDate: "2025-08-04",
-    location: "Shanghai, China",
-    description: "The world's largest digital entertainment expo, showcasing gaming, animation, comics, and online entertainment across Asia.",
-    url: "https://en.chinajoy.net",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
   },
   {
     id: "bgs-2025",
@@ -227,8 +233,20 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "São Paulo, Brazil",
     description: "The largest gaming expo in the Americas, bringing together over 300,000 attendees for game announcements, tournaments, and cosplay.",
     url: "https://www.brasilgameshow.com.br",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: BGS_BANNER,
+  },
+  {
+    id: "pax-aus-2025",
+    name: "PAX Aus 2025",
+    type: "convention",
+    startDate: "2025-10-31",
+    endDate: "2025-11-02",
+    location: "Melbourne, Australia",
+    description: "Australia's biggest gaming convention with three days of gaming, esports, tabletop, and developer panels.",
+    url: "https://aus.paxsite.com",
+    color: C_CONVENTION,
+    logoUrl: PAX_AUS_BANNER,
   },
   {
     id: "igdc-2025",
@@ -239,7 +257,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "Chennai, India",
     description: "India's premier game development conference, connecting developers, publishers, and investors across South Asia.",
     url: "https://indiagdc.com",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
   },
   {
     id: "gstar-2025",
@@ -250,11 +268,47 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "Busan, South Korea",
     description: "Korea's largest international game expo, featuring global publishers, indie showcases, and major esports competitions at BEXCO.",
     url: "https://www.gstar.or.kr/eng",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: GSTAR_BANNER,
   },
+  {
+    id: "golden-joystick-2025",
+    name: "Golden Joystick Awards 2025",
+    type: "awards",
+    startDate: "2025-11-20",
+    endDate: "2025-11-20",
+    location: "London, UK",
+    description: "The world's longest-running public-voted gaming awards, celebrating the best games and creators of the year across 20+ categories.",
+    url: "https://www.goldenjoystickawards.com",
+    color: C_AWARDS,
+    logoUrl: GJA_BANNER,
+  },
+  {
+    id: "the-game-awards-2025",
+    name: "The Game Awards 2025",
+    type: "awards",
+    startDate: "2025-12-11",
+    endDate: "2025-12-11",
+    location: "Los Angeles, CA",
+    description: "The gaming industry's biggest night, celebrating the best games of the year with world premiere announcements and live performances.",
+    url: "https://thegameawards.com",
+    color: C_AWARDS,
+    logoUrl: TGA_BANNER,
+  },
+  {
+    id: "games-of-future-2025",
+    name: "Games of the Future 2025",
+    type: "esports",
+    startDate: "2025-12-18",
+    endDate: "2025-12-23",
+    location: "Abu Dhabi, UAE",
+    description: "Phygital sports tournament blending esports and physical disciplines — 850+ participants from 60+ countries across 11 hybrid game formats.",
+    url: "https://abudhabi2025.gofuture.games/en",
+    color: C_ESPORTS,
+  },
 
-  // 2026
+  // ── 2026 ──────────────────────────────────────────────────────────────────
+
   {
     id: "taipei-game-show-2026",
     name: "Taipei Game Show 2026",
@@ -264,8 +318,19 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "Taipei, Taiwan",
     description: "Asia's leading gaming expo featuring the latest titles from major publishers and indie developers across the Asia-Pacific region.",
     url: "https://tgs.tca.org.tw/index_e.php",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: TGS_TW_BANNER,
+  },
+  {
+    id: "dice-2026",
+    name: "D.I.C.E. Awards 2026",
+    type: "awards",
+    startDate: "2026-02-12",
+    endDate: "2026-02-12",
+    location: "Las Vegas, NV",
+    description: "The Academy of Interactive Arts & Sciences' annual awards honoring the best games of the year across 24 categories.",
+    url: "https://www.interactive.org",
+    color: C_AWARDS,
   },
   {
     id: "gdc-2026",
@@ -276,7 +341,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "San Francisco, CA",
     description: "Game Developers Conference 2026, the professional game industry event featuring sessions, summits, and the Independent Games Festival.",
     url: "https://gdconf.com",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: GDC_BANNER,
   },
   {
@@ -288,8 +353,30 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "Boston, MA",
     description: "One of the largest gaming conventions in the Eastern US, four days of games, panels, tournaments, and developer showcases.",
     url: "https://east.paxsite.com",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: PAX_EAST_BANNER,
+  },
+  {
+    id: "bafta-games-2026",
+    name: "BAFTA Games Awards 2026",
+    type: "awards",
+    startDate: "2026-04-17",
+    endDate: "2026-04-17",
+    location: "London, UK",
+    description: "The British Academy's annual ceremony honouring the best in interactive entertainment — one of the most prestigious awards in the global games industry.",
+    url: "https://www.bafta.org/awards/games",
+    color: C_AWARDS,
+  },
+  {
+    id: "dubai-esports-festival-2026",
+    name: "Dubai Esports & Games Festival 2026",
+    type: "convention",
+    startDate: "2026-05-08",
+    endDate: "2026-05-24",
+    location: "Dubai, UAE",
+    description: "The region's largest gaming festival — 17 days of gaming events, GameExpo (May 22–24), tournaments, and activations across Dubai World Trade Centre.",
+    url: "https://www.dubaiesportsfestival.com",
+    color: C_CONVENTION,
   },
   {
     id: "summer-game-fest-2026",
@@ -298,9 +385,9 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2026-06-05",
     endDate: "2026-06-08",
     location: "Los Angeles, CA",
-    description: "Multi-day showcase event featuring world premiere announcements and demos from across the industry.",
+    description: "Multi-day showcase featuring world premiere announcements and demos from across the industry.",
     url: "https://www.summergamefest.com",
-    color: "#b06ff5",
+    color: C_SHOWCASE,
     logoUrl: SGF_BANNER,
   },
   {
@@ -312,8 +399,43 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "San Diego, CA",
     description: "Pop culture's biggest annual gathering with major gaming panels and exclusive reveals alongside comics, film, and TV.",
     url: "https://www.comic-con.org",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: SDCC_BANNER,
+  },
+  {
+    id: "ewc-2026",
+    name: "Esports World Cup 2026",
+    type: "esports",
+    startDate: "2026-07-06",
+    endDate: "2026-08-23",
+    location: "Riyadh, Saudi Arabia",
+    description: "The world's biggest esports event returns to Riyadh — multi-week tournament spanning dozens of titles with hundreds of millions in prize money.",
+    url: "https://esportsworldcup.com",
+    color: C_ESPORTS,
+    logoUrl: EWC_BANNER,
+  },
+  {
+    id: "chinajoy-2026",
+    name: "ChinaJoy 2026",
+    type: "convention",
+    startDate: "2026-07-31",
+    endDate: "2026-08-03",
+    location: "Shanghai, China",
+    description: "The world's largest digital entertainment expo, showcasing gaming, animation, comics, and online entertainment across Asia.",
+    url: "https://en.chinajoy.net",
+    color: C_CONVENTION,
+  },
+  {
+    id: "gamescom-onl-2026",
+    name: "Gamescom Opening Night Live 2026",
+    type: "showcase",
+    startDate: "2026-08-25",
+    endDate: "2026-08-25",
+    location: "Cologne, Germany",
+    description: "Geoff Keighley's annual gaming showcase kicking off Gamescom week with world premieres and major announcements broadcast globally.",
+    url: "https://www.gamescom.global/en/program/onl",
+    color: C_SHOWCASE,
+    logoUrl: ONL_BANNER,
   },
   {
     id: "gamescom-2026",
@@ -322,47 +444,10 @@ export const GAMING_EVENTS: GamingEvent[] = [
     startDate: "2026-08-26",
     endDate: "2026-08-30",
     location: "Cologne, Germany",
-    description: "The world's largest gaming trade fair returns to Cologne with Opening Night Live and expo floors spanning major publishers.",
+    description: "The world's largest gaming trade fair returns to Cologne with developer showcases and public expo floors.",
     url: "https://www.gamescom.global",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: GAMESCOM_BANNER,
-  },
-  {
-    id: "the-game-awards-2026",
-    name: "The Game Awards 2026",
-    type: "awards",
-    startDate: "2026-12-10",
-    endDate: "2026-12-10",
-    location: "Los Angeles, CA",
-    description: "The gaming industry's biggest night, celebrating the best games of the year.",
-    url: "https://thegameawards.com",
-    color: "#f5c842",
-    logoUrl: TGA_BANNER,
-  },
-
-  // 2026 — Middle East
-  {
-    id: "dubai-esports-festival-2026",
-    name: "Dubai Esports & Games Festival 2026",
-    type: "convention",
-    startDate: "2026-05-08",
-    endDate: "2026-05-24",
-    location: "Dubai, UAE",
-    description: "The region's largest gaming festival — 17 days of gaming events, GameExpo (May 22–24), tournaments, and activations across Dubai World Trade Centre.",
-    url: "https://www.dubaiesportsfestival.com",
-    color: "#4f9cf9",
-  },
-  {
-    id: "ewc-2026",
-    name: "Esports World Cup 2026",
-    type: "convention",
-    startDate: "2026-07-06",
-    endDate: "2026-08-23",
-    location: "Riyadh, Saudi Arabia",
-    description: "The world's biggest esports event returns to Riyadh — multi-week tournament spanning dozens of titles with hundreds of millions in prize money.",
-    url: "https://esportsworldcup.com",
-    color: "#f5a623",
-    logoUrl: EWC_BANNER,
   },
   {
     id: "mefcc-2026",
@@ -373,32 +458,8 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "Abu Dhabi, UAE",
     description: "The Middle East's biggest pop culture convention featuring gaming, cosplay, comics, collectibles, and exclusive reveals.",
     url: "https://www.mefcc.com",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: MEFCC_BANNER,
-  },
-  {
-    id: "kingdom-of-gaming-2026",
-    name: "Kingdom of Gaming 2026",
-    type: "convention",
-    startDate: "2026-12-01",
-    endDate: "2026-12-03",
-    location: "Riyadh, Saudi Arabia",
-    description: "Saudi Arabia's flagship gaming event debut — 20,000+ visitors, 300 exhibitors, 500 studios and developers, state-backed and co-located with Black Hat MEA.",
-    url: "https://esportsworldcup.com",
-    color: "#4f9cf9",
-  },
-
-  // 2026 — Asia / LATAM
-  {
-    id: "chinajoy-2026",
-    name: "ChinaJoy 2026",
-    type: "convention",
-    startDate: "2026-07-31",
-    endDate: "2026-08-03",
-    location: "Shanghai, China",
-    description: "The world's largest digital entertainment expo, showcasing gaming, animation, comics, and online entertainment across Asia.",
-    url: "https://en.chinajoy.net",
-    color: "#4f9cf9",
   },
   {
     id: "bgs-2026",
@@ -409,7 +470,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "São Paulo, Brazil",
     description: "The largest gaming expo in the Americas, bringing together over 300,000 attendees for game announcements, tournaments, and cosplay.",
     url: "https://www.brasilgameshow.com.br",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: BGS_BANNER,
   },
   {
@@ -421,8 +482,31 @@ export const GAMING_EVENTS: GamingEvent[] = [
     location: "Busan, South Korea",
     description: "Korea's largest international game expo, featuring global publishers, indie showcases, and major esports competitions at BEXCO.",
     url: "https://www.gstar.or.kr/eng",
-    color: "#4f9cf9",
+    color: C_CONVENTION,
     logoUrl: GSTAR_BANNER,
+  },
+  {
+    id: "kingdom-of-gaming-2026",
+    name: "Kingdom of Gaming 2026",
+    type: "convention",
+    startDate: "2026-12-01",
+    endDate: "2026-12-03",
+    location: "Riyadh, Saudi Arabia",
+    description: "Saudi Arabia's flagship gaming event debut — 20,000+ visitors, 300 exhibitors, 500 studios and developers, state-backed.",
+    url: "https://esportsworldcup.com",
+    color: C_CONVENTION,
+  },
+  {
+    id: "the-game-awards-2026",
+    name: "The Game Awards 2026",
+    type: "awards",
+    startDate: "2026-12-10",
+    endDate: "2026-12-10",
+    location: "Los Angeles, CA",
+    description: "The gaming industry's biggest night, celebrating the best games of the year.",
+    url: "https://thegameawards.com",
+    color: C_AWARDS,
+    logoUrl: TGA_BANNER,
   },
 ];
 
@@ -430,7 +514,7 @@ export function getEventsForDate(dateStr: string): GamingEvent[] {
   const date = new Date(dateStr + "T12:00:00");
   return GAMING_EVENTS.filter((e) => {
     const start = new Date(e.startDate + "T12:00:00");
-    const end = new Date(e.endDate + "T12:00:00");
+    const end   = new Date(e.endDate   + "T12:00:00");
     return date >= start && date <= end;
   });
 }
