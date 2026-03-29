@@ -395,6 +395,9 @@ const closeButtonStyle: React.CSSProperties = {
 
 // ── Cell pills ────────────────────────────────────────────────────────────────
 
+// Game pills use a fixed green constant so alpha appending always works
+const GAME_COLOR_HEX = "#52d68a";
+
 function EventPill({
   label,
   color,
@@ -406,28 +409,31 @@ function EventPill({
   isGame: boolean;
   onClick: (e: React.MouseEvent) => void;
 }) {
+  // Events pass hex colors — appending a 2-digit alpha is valid.
+  // Games previously passed "var(--green)" which broke concat — use hex constant instead.
+  const resolvedColor = isGame ? GAME_COLOR_HEX : color;
   return (
     <button
       onClick={(e) => { e.stopPropagation(); onClick(e); }}
       style={{
         width: "100%",
         textAlign: "left",
-        padding: "1px 5px",
+        padding: "2px 5px",
         borderRadius: "3px",
         fontSize: "10px",
         lineHeight: "16px",
-        background: color + (isGame ? "28" : "20"),
-        color,
+        background: resolvedColor + (isGame ? "28" : "22"),
+        color: resolvedColor,
         overflow: "hidden",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
         cursor: "pointer",
-        border: "none",
+        border: `1px solid ${resolvedColor}40`,
         display: "block",
         marginBottom: "2px",
         transition: "opacity 0.1s",
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.75")}
+      onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
       onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
     >
       {label}

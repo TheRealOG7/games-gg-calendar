@@ -7,6 +7,24 @@ export const HARDCODED_RELEASES: GameRelease[] = [
 
   // ── 2026 (upcoming from March 2026) ────────────────────────────────────────
   {
+    id: 900019,
+    name: "Ghost of Yotei",
+    slug: "ghost-of-yotei",
+    released: "2026-04-02",
+    background_image: null,
+    platforms: ["PS5"],
+    genres: ["Action", "Adventure", "Open World"],
+  },
+  {
+    id: 900018,
+    name: "Metroid Prime 4: Beyond",
+    slug: "metroid-prime-4-beyond",
+    released: "2026-04-14",
+    background_image: null,
+    platforms: ["Switch"],
+    genres: ["Action", "Adventure", "FPS"],
+  },
+  {
     id: 900020,
     name: "GTA VI",
     slug: "grand-theft-auto-vi",
