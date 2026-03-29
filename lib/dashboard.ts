@@ -5,6 +5,7 @@ interface DashboardReleasingGame {
   date: string; // e.g. "Mar 13, 2026" or "Apr 02, 2026"
   platforms: string; // e.g. "PS5 · PC · Switch 2 · XSX"
   hypes: number;
+  follows?: number;
   igdb_url: string;
 }
 
@@ -18,6 +19,14 @@ interface DashboardWishlistedGame {
 interface GamingTrendsData {
   releasing?: DashboardReleasingGame[];
   wishlisted?: DashboardWishlistedGame[];
+}
+
+// gaming_releases.json — wider 270-day window, same releasing shape
+interface GamingReleasesData {
+  updated: string;
+  window_days: number;
+  count: number;
+  releasing: DashboardReleasingGame[];
 }
 
 function parseIgdbSlug(igdbUrl: string): string {
@@ -78,60 +87,94 @@ function parseDateStr(dateStr: string): string | null {
 }
 
 // Minimum hype threshold — only show games the community cares about
-const MIN_HYPES = 10;
+const MIN_HYPES = 5;
+
+function parseReleasingList(
+  releasing: DashboardReleasingGame[],
+  idStart: number,
+  seenSlugs: Set<string>
+): GameRelease[] {
+  const results: GameRelease[] = [];
+  let id = idStart;
+  for (const g of releasing) {
+    if ((g.hypes ?? 0) < MIN_HYPES) continue;
+    const released = parseDateStr(g.date);
+    if (!released) continue;
+    const slug = parseIgdbSlug(g.igdb_url);
+    if (seenSlugs.has(slug)) continue;
+    seenSlugs.add(slug);
+    results.push({
+      id: id++,
+      name: g.name,
+      slug,
+      released,
+      background_image: null,
+      platforms: parsePlatforms(g.platforms),
+      genres: [],
+    });
+  }
+  return results;
+}
 
 export async function fetchDashboardReleases(dashboardUrl: string): Promise<GameRelease[]> {
   if (!dashboardUrl) return [];
+
+  const results: GameRelease[] = [];
+  const seenSlugs = new Set<string>();
+  let idCounter = 800000;
+
+  // 1. Try gaming_releases.json first (270-day window, updated on-demand)
+  try {
+    const res = await fetch(`${dashboardUrl}/public/gaming_releases.json`, {
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (res.ok) {
+      const data: GamingReleasesData = await res.json();
+      const parsed = parseReleasingList(data.releasing ?? [], idCounter, seenSlugs);
+      results.push(...parsed);
+      idCounter += parsed.length;
+    }
+  } catch {
+    // fall through to gaming_trends.json
+  }
+
+  // 2. Supplement with gaming_trends.json (60-day window, refreshed daily)
+  //    Adds any games not already covered by the wider fetch
   try {
     const res = await fetch(`${dashboardUrl}/public/gaming_trends.json`, {
       next: { revalidate: 3600 },
       signal: AbortSignal.timeout(8000),
     });
-    if (!res.ok) return [];
-    const data: GamingTrendsData = await res.json();
+    if (res.ok) {
+      const data: GamingTrendsData = await res.json();
 
-    const results: GameRelease[] = [];
-    let idCounter = 800000;
+      const parsed = parseReleasingList(data.releasing ?? [], idCounter, seenSlugs);
+      results.push(...parsed);
+      idCounter += parsed.length;
 
-    // Releasing list (has full dates + year)
-    for (const g of data.releasing ?? []) {
-      if (g.hypes < MIN_HYPES) continue;
-      const released = parseDateStr(g.date);
-      if (!released) continue;
-      const slug = parseIgdbSlug(g.igdb_url);
-      results.push({
-        id: idCounter++,
-        name: g.name,
-        slug,
-        released,
-        background_image: null,
-        platforms: parsePlatforms(g.platforms),
-        genres: [],
-      });
+      // Wishlisted list (short dates, no year — high-interest titles)
+      for (const g of data.wishlisted ?? []) {
+        if (!g.igdb_url || g.release_date === "TBA") continue;
+        const released = parseDateStr(g.release_date);
+        if (!released) continue;
+        const slug = parseIgdbSlug(g.igdb_url);
+        if (seenSlugs.has(slug)) continue;
+        seenSlugs.add(slug);
+        results.push({
+          id: idCounter++,
+          name: g.name,
+          slug,
+          released,
+          background_image: null,
+          platforms: [],
+          genres: [],
+        });
+      }
     }
-
-    // Wishlisted list (short dates, no year — high-interest titles)
-    const seenSlugs = new Set(results.map((r) => r.slug));
-    for (const g of data.wishlisted ?? []) {
-      if (!g.igdb_url || g.release_date === "TBA") continue;
-      const released = parseDateStr(g.release_date);
-      if (!released) continue;
-      const slug = parseIgdbSlug(g.igdb_url);
-      if (seenSlugs.has(slug)) continue;
-      seenSlugs.add(slug);
-      results.push({
-        id: idCounter++,
-        name: g.name,
-        slug,
-        released,
-        background_image: null,
-        platforms: [],
-        genres: [],
-      });
-    }
-
-    return results;
   } catch {
-    return [];
+    // best effort
   }
+
+  return results;
 }

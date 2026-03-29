@@ -517,7 +517,7 @@ function CalendarCell({
         return (
           <EventPill
             key={`g-${item.data.id}-${i}`}
-            label={item.data.name}
+            label={`${item.data.name} Release`}
             color="var(--green)"
             isGame={true}
             onClick={(e) =>
