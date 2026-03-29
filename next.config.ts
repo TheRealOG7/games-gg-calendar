@@ -1,7 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "standalone",
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "media.rawg.io",
+      },
+      {
+        protocol: "https",
+        hostname: "*.rawg.io",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
