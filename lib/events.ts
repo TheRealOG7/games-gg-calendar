@@ -18,6 +18,9 @@ const PAX_WEST_BANNER = "https://west.paxsite.com/content/dam/sitebuilder/rna/pa
 const PAX_AUS_BANNER = "https://aus.paxsite.com/content/dam/sitebuilder/rxau/pax/aus/branding/us-placeholders/aus-placeholder.png/_jcr_content/renditions/original.image_file.1919.960.file/290877126/aus-placeholder.png";
 const SGF_BANNER = "https://cdn.prod.website-files.com/65f20ae26ba45240543579bc/67fd991dca5be10f868c4971_load_image_desktop_v5.webp";
 const SDCC_BANNER = "https://comic-con-prod-uploads.s3.amazonaws.com/uploads/sites/4/2023/09/cc-hero-1024x679.jpg";
+const BGS_BANNER = "https://www.brasilgameshow.com.br/wp-content/themes/newsitebgs/images/slogan2026v4.webp";
+const GSTAR_BANNER = "https://www.gstar.or.kr/img/img_exhibition.png";
+const TGS_TW_BANNER = "https://tgs.tca.org.tw/images/banner/_1767319692.jpg";
 const GAMESCOM_BANNER = "https://eu-central-1-gamescom.graphassets.com/AMwDHZTUSMaIlRlMFLL7Qz/PssD8VBzTXq72TP0ISkN";
 const GDC_BANNER = "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800";
 const TGA_BANNER = "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg";
@@ -141,7 +144,79 @@ export const GAMING_EVENTS: GamingEvent[] = [
     logoUrl: TGA_BANNER,
   },
 
+  // 2025 — Asia / LATAM
+  {
+    id: "taipei-game-show-2025",
+    name: "Taipei Game Show 2025",
+    type: "convention",
+    startDate: "2025-01-23",
+    endDate: "2025-01-26",
+    location: "Taipei, Taiwan",
+    description: "Asia's leading gaming expo featuring the latest titles from major publishers and indie developers across the Asia-Pacific region.",
+    url: "https://tgs.tca.org.tw/index_e.php",
+    color: "#4f9cf9",
+    logoUrl: TGS_TW_BANNER,
+  },
+  {
+    id: "chinajoy-2025",
+    name: "ChinaJoy 2025",
+    type: "convention",
+    startDate: "2025-08-01",
+    endDate: "2025-08-04",
+    location: "Shanghai, China",
+    description: "The world's largest digital entertainment expo, showcasing gaming, animation, comics, and online entertainment across Asia.",
+    url: "https://en.chinajoy.net",
+    color: "#4f9cf9",
+  },
+  {
+    id: "bgs-2025",
+    name: "Brasil Game Show 2025",
+    type: "convention",
+    startDate: "2025-10-09",
+    endDate: "2025-10-12",
+    location: "São Paulo, Brazil",
+    description: "The largest gaming expo in the Americas, bringing together over 300,000 attendees for game announcements, tournaments, and cosplay.",
+    url: "https://www.brasilgameshow.com.br",
+    color: "#4f9cf9",
+    logoUrl: BGS_BANNER,
+  },
+  {
+    id: "igdc-2025",
+    name: "India Game Developer Conference 2025",
+    type: "convention",
+    startDate: "2025-11-05",
+    endDate: "2025-11-07",
+    location: "Chennai, India",
+    description: "India's premier game development conference, connecting developers, publishers, and investors across South Asia.",
+    url: "https://indiagdc.com",
+    color: "#4f9cf9",
+  },
+  {
+    id: "gstar-2025",
+    name: "G-Star 2025",
+    type: "convention",
+    startDate: "2025-11-13",
+    endDate: "2025-11-16",
+    location: "Busan, South Korea",
+    description: "Korea's largest international game expo, featuring global publishers, indie showcases, and major esports competitions at BEXCO.",
+    url: "https://www.gstar.or.kr/eng",
+    color: "#4f9cf9",
+    logoUrl: GSTAR_BANNER,
+  },
+
   // 2026
+  {
+    id: "taipei-game-show-2026",
+    name: "Taipei Game Show 2026",
+    type: "convention",
+    startDate: "2026-01-29",
+    endDate: "2026-02-01",
+    location: "Taipei, Taiwan",
+    description: "Asia's leading gaming expo featuring the latest titles from major publishers and indie developers across the Asia-Pacific region.",
+    url: "https://tgs.tca.org.tw/index_e.php",
+    color: "#4f9cf9",
+    logoUrl: TGS_TW_BANNER,
+  },
   {
     id: "gdc-2026",
     name: "GDC 2026",
@@ -213,6 +288,43 @@ export const GAMING_EVENTS: GamingEvent[] = [
     url: "https://thegameawards.com",
     color: "#f5c842",
     logoUrl: TGA_BANNER,
+  },
+
+  // 2026 — Asia / LATAM
+  {
+    id: "chinajoy-2026",
+    name: "ChinaJoy 2026",
+    type: "convention",
+    startDate: "2026-07-31",
+    endDate: "2026-08-03",
+    location: "Shanghai, China",
+    description: "The world's largest digital entertainment expo, showcasing gaming, animation, comics, and online entertainment across Asia.",
+    url: "https://en.chinajoy.net",
+    color: "#4f9cf9",
+  },
+  {
+    id: "bgs-2026",
+    name: "Brasil Game Show 2026",
+    type: "convention",
+    startDate: "2026-10-09",
+    endDate: "2026-10-13",
+    location: "São Paulo, Brazil",
+    description: "The largest gaming expo in the Americas, bringing together over 300,000 attendees for game announcements, tournaments, and cosplay.",
+    url: "https://www.brasilgameshow.com.br",
+    color: "#4f9cf9",
+    logoUrl: BGS_BANNER,
+  },
+  {
+    id: "gstar-2026",
+    name: "G-Star 2026",
+    type: "convention",
+    startDate: "2026-11-19",
+    endDate: "2026-11-22",
+    location: "Busan, South Korea",
+    description: "Korea's largest international game expo, featuring global publishers, indie showcases, and major esports competitions at BEXCO.",
+    url: "https://www.gstar.or.kr/eng",
+    color: "#4f9cf9",
+    logoUrl: GSTAR_BANNER,
   },
 ];
 
