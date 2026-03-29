@@ -591,32 +591,27 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
           flexShrink: 0,
         }}
       >
-        <button onClick={prevMonth} style={navBtnStyle}>
-          ‹
-        </button>
+        {/* Left */}
+        <button onClick={prevMonth} style={navBtnStyle}>‹</button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-          <div style={{ textAlign: "center" }}>
-            <span style={{ fontSize: "17px", fontWeight: 700 }}>
-              {MONTH_NAMES[month - 1]}
-            </span>
-            <span style={{ fontSize: "14px", color: "var(--text-dim)", marginLeft: "6px" }}>
-              {year}
-            </span>
-          </div>
-
-          {/* Legend */}
-          <div style={{ display: "flex", gap: "12px" }}>
-            <LegendItem color="var(--green)" label="Release" />
-            <LegendItem color="#4f9cf9" label="Convention" />
-            <LegendItem color="#b06ff5" label="Showcase" />
-            <LegendItem color="#f5c842" label="Awards" />
-          </div>
+        {/* Center — month/year */}
+        <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
+          <span style={{ fontSize: "17px", fontWeight: 700 }}>
+            {MONTH_NAMES[month - 1]}
+          </span>
+          <span style={{ fontSize: "14px", color: "var(--text-dim)", marginLeft: "6px", lineHeight: "26px" }}>
+            {year}
+          </span>
         </div>
 
-        <button onClick={nextMonth} style={navBtnStyle}>
-          ›
-        </button>
+        {/* Right — legend + next button */}
+        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+          <LegendItem color="var(--green)" label="Release" />
+          <LegendItem color="#4f9cf9" label="Convention" />
+          <LegendItem color="#b06ff5" label="Showcase" />
+          <LegendItem color="#f5c842" label="Awards" />
+          <button onClick={nextMonth} style={navBtnStyle}>›</button>
+        </div>
       </div>
 
       {/* Day headers */}

@@ -68,13 +68,10 @@ export default async function CalendarPage() {
         boxSizing: "border-box",
       }}
     >
-      <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "14px", flexShrink: 0 }}>
+      <div style={{ marginBottom: "14px", flexShrink: 0 }}>
         <h1 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.02em" }}>
           Gaming Calendar
         </h1>
-        <span style={{ fontSize: "13px", color: "var(--text-dim)" }}>
-          Releases, events, and conventions
-        </span>
       </div>
 
       <CalendarClient

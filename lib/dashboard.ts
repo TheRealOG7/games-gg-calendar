@@ -86,18 +86,21 @@ function parseDateStr(dateStr: string): string | null {
   return null;
 }
 
-// Minimum hype threshold — only show games the community cares about
-const MIN_HYPES = 5;
+// Minimum hype threshold for gaming_trends.json (daily 60-day window, noisier)
+// gaming_releases.json already pre-filters with hypes >= 1 at fetch time
+const MIN_HYPES_TRENDS = 5;
+const MIN_HYPES_RELEASES = 1;
 
 function parseReleasingList(
   releasing: DashboardReleasingGame[],
   idStart: number,
-  seenSlugs: Set<string>
+  seenSlugs: Set<string>,
+  minHypes = MIN_HYPES_TRENDS,
 ): GameRelease[] {
   const results: GameRelease[] = [];
   let id = idStart;
   for (const g of releasing) {
-    if ((g.hypes ?? 0) < MIN_HYPES) continue;
+    if ((g.hypes ?? 0) < minHypes) continue;
     const released = parseDateStr(g.date);
     if (!released) continue;
     const slug = parseIgdbSlug(g.igdb_url);
@@ -131,7 +134,7 @@ export async function fetchDashboardReleases(dashboardUrl: string): Promise<Game
     });
     if (res.ok) {
       const data: GamingReleasesData = await res.json();
-      const parsed = parseReleasingList(data.releasing ?? [], idCounter, seenSlugs);
+      const parsed = parseReleasingList(data.releasing ?? [], idCounter, seenSlugs, MIN_HYPES_RELEASES);
       results.push(...parsed);
       idCounter += parsed.length;
     }
