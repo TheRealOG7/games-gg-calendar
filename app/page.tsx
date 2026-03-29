@@ -3,10 +3,13 @@ export const dynamic = "force-dynamic";
 import { CalendarClient } from "@/components/CalendarClient";
 import { fetchAllReleases } from "@/lib/releases";
 import { fetchDashboardReleases } from "@/lib/dashboard";
+import { fetchIgdbReleases } from "@/lib/igdb";
 import type { GameRelease } from "@/lib/releases";
 
 const RAWG_API_KEY = process.env.RAWG_API_KEY ?? "";
 const DASHBOARD_URL = process.env.DASHBOARD_URL ?? "";
+const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID ?? "";
+const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET ?? "";
 
 export default async function CalendarPage() {
   const today = new Date();
@@ -22,30 +25,39 @@ export default async function CalendarPage() {
   const endStr = fmt(windowEnd);
 
   // Fetch all sources in parallel
-  const [rawgAndHardcoded, dashboardReleases] = await Promise.all([
+  const [rawgAndHardcoded, dashboardReleases, igdbReleases] = await Promise.all([
     fetchAllReleases(startStr, endStr, RAWG_API_KEY),
     fetchDashboardReleases(DASHBOARD_URL),
+    fetchIgdbReleases(TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET),
   ]);
 
-  // Merge: dashboard data takes priority, then RAWG, then hardcoded
-  // Dashboard data is the most accurate (sourced from IGDB, updated by the scheduler)
+  // Merge priority: RAWG (has images + metacritic) → IGDB direct → dashboard cache
+  // IGDB direct is the authoritative source for dates and cover art
   const bySlug = new Map<string, GameRelease>();
-  for (const r of rawgAndHardcoded) {
+
+  // Layer 1: IGDB direct (authoritative dates + cover art)
+  for (const r of igdbReleases) {
     if (r.released >= startStr && r.released <= endStr) {
       bySlug.set(r.slug, r);
     }
   }
-  // Dashboard overrides — filter to window
-  for (const r of dashboardReleases) {
+
+  // Layer 2: RAWG — overrides with richer metadata (ratings, genres) but keep IGDB cover if RAWG has none
+  for (const r of rawgAndHardcoded) {
     if (r.released >= startStr && r.released <= endStr) {
-      // Prefer RAWG image if we already have it for this slug
       const existing = bySlug.get(r.slug);
       bySlug.set(r.slug, {
         ...r,
-        background_image: existing?.background_image ?? r.background_image,
+        background_image: r.background_image ?? existing?.background_image ?? null,
         platforms: r.platforms.length > 0 ? r.platforms : (existing?.platforms ?? []),
-        genres: r.genres.length > 0 ? r.genres : (existing?.genres ?? []),
       });
+    }
+  }
+
+  // Layer 3: dashboard cache — fills in anything not covered by live sources
+  for (const r of dashboardReleases) {
+    if (r.released >= startStr && r.released <= endStr && !bySlug.has(r.slug)) {
+      bySlug.set(r.slug, r);
     }
   }
 
