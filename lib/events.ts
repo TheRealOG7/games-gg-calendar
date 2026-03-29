@@ -10,6 +10,7 @@ export interface GamingEvent {
   description: string;
   url?: string;
   color: string;
+  logoUrl?: string;  // Official logo/banner image
 }
 
 export const GAMING_EVENTS: GamingEvent[] = [

@@ -106,12 +106,6 @@ export default async function CalendarPage() {
         boxSizing: "border-box",
       }}
     >
-      <div style={{ marginBottom: "14px", flexShrink: 0 }}>
-        <h1 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.02em" }}>
-          Gaming Calendar
-        </h1>
-      </div>
-
       <CalendarClient
         releases={releases}
         initialYear={year}

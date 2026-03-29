@@ -178,7 +178,7 @@ export async function fetchIgdbReleases(
       slug,
       released: rd.dateStr,
       background_image: imageId
-        ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`
+        ? `https://images.igdb.com/igdb/image/upload/t_cover_big_2x/${imageId}.jpg`
         : null,
       platforms: [...new Set(platforms.map((p) => normalizePlatform(p.name)))],
       genres: [],
