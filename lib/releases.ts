@@ -45,15 +45,22 @@ export async function fetchUpcomingReleases(
   endDate: string,
   apiKey: string
 ): Promise<GameRelease[]> {
-  const base = `https://api.rawg.io/api/games?key=${apiKey}&dates=${startDate},${endDate}&ordering=released&page_size=100&exclude_additions=true`;
+  const today = new Date().toISOString().slice(0, 10);
 
-  // Fetch up to 2 pages so we get more coverage
-  const [page1, page2] = await Promise.all([
-    fetchRawgPage(base + "&page=1"),
-    fetchRawgPage(base + "&page=2"),
+  // Two parallel fetches:
+  // 1. Full window (past → future) — catches recent/historical releases
+  // 2. Today → endDate — ensures far-future games aren't pushed off by past results
+  const fullBase = `https://api.rawg.io/api/games?key=${apiKey}&dates=${startDate},${endDate}&ordering=released&page_size=100&exclude_additions=true`;
+  const futureBase = `https://api.rawg.io/api/games?key=${apiKey}&dates=${today},${endDate}&ordering=released&page_size=100&exclude_additions=true`;
+
+  const [page1, page2, futurePage1, futurePage2] = await Promise.all([
+    fetchRawgPage(fullBase + "&page=1"),
+    fetchRawgPage(fullBase + "&page=2"),
+    fetchRawgPage(futureBase + "&page=1"),
+    fetchRawgPage(futureBase + "&page=2"),
   ]);
 
-  const rawgResults: GameRelease[] = [...page1, ...page2].map((g) => ({
+  const rawgResults: GameRelease[] = [...page1, ...page2, ...futurePage1, ...futurePage2].map((g) => ({
     id: g.id,
     name: g.name,
     slug: g.slug,

@@ -130,7 +130,7 @@ export async function fetchDashboardReleases(dashboardUrl: string): Promise<Game
   // 1. Try gaming_releases.json first (270-day window, updated on-demand)
   try {
     const res = await fetch(`${dashboardUrl}/public/gaming_releases.json`, {
-      next: { revalidate: 3600 },
+      cache: "no-store",
       signal: AbortSignal.timeout(8000),
     });
     if (res.ok) {
