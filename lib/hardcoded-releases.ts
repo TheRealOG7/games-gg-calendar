@@ -114,16 +114,7 @@ export const HARDCODED_RELEASES: GameRelease[] = [
     platforms: ["PC", "PS5", "Xbox Series"],
     genres: ["Action", "Shooter"],
   },
-  {
-    id: 900015,
-    name: "Death Stranding 2: On the Beach",
-    slug: "death-stranding-2-on-the-beach",
-    released: "2026-06-26",
-    background_image: null,
-    platforms: ["PS5"],
-    genres: ["Action", "Adventure"],
-  },
-  {
+{
     id: 900012,
     name: "Deadlock",
     slug: "deadlock",
