@@ -327,14 +327,22 @@ function EventPopover({ event, onClose }: { event: GamingEvent; onClose: () => v
     event.description,
     event.location
   );
+  const [imgFailed, setImgFailed] = useState(false);
+  const showImage = !!event.logoUrl && !imgFailed;
 
   return (
     <div>
       {/* Colored header — logo if available, else gradient */}
       <div style={{ position: "relative", height: "90px", overflow: "hidden", flexShrink: 0 }}>
-        {event.logoUrl ? (
+        {showImage ? (
           <>
-            <Image src={event.logoUrl} alt={event.name} fill unoptimized style={{ objectFit: "cover" }} sizes="310px" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={event.logoUrl}
+              alt={event.name}
+              onError={() => setImgFailed(true)}
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+            />
             <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, rgba(6,13,23,0) 0%, var(--card) 100%)` }} />
           </>
         ) : (

@@ -13,6 +13,15 @@ export interface GamingEvent {
   logoUrl?: string;  // Official banner/og:image for popover header
 }
 
+const PAX_EAST_BANNER = "https://east.paxsite.com/content/dam/sitebuilder/rna/pax/east/2024/images/framework/pax-east-gradient-left-right-73171a-to-D9272D.jpg/_jcr_content/renditions/original.image_file.375.375.file/984193481/pax-east-gradient-left-right-73171a-to-D9272D.jpg";
+const PAX_WEST_BANNER = "https://west.paxsite.com/content/dam/sitebuilder/rna/pax/west/metadata/seo/heros/hero-miscellaneous-pax-west.png/_jcr_content/renditions/original./031809964/hero-miscellaneous-pax-west.png";
+const PAX_AUS_BANNER = "https://aus.paxsite.com/content/dam/sitebuilder/rxau/pax/aus/branding/us-placeholders/aus-placeholder.png/_jcr_content/renditions/original.image_file.1919.960.file/290877126/aus-placeholder.png";
+const SGF_BANNER = "https://cdn.prod.website-files.com/65f20ae26ba45240543579bc/67fd991dca5be10f868c4971_load_image_desktop_v5.webp";
+const SDCC_BANNER = "https://comic-con-prod-uploads.s3.amazonaws.com/uploads/sites/4/2023/09/cc-hero-1024x679.jpg";
+const GAMESCOM_BANNER = "https://eu-central-1-gamescom.graphassets.com/AMwDHZTUSMaIlRlMFLL7Qz/PssD8VBzTXq72TP0ISkN";
+const GDC_BANNER = "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800";
+const TGA_BANNER = "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg";
+
 export const GAMING_EVENTS: GamingEvent[] = [
   // 2025
   {
@@ -25,7 +34,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Game Developers Conference, the world's largest professional game industry event, featuring sessions, summits, and the Independent Games Festival.",
     url: "https://gdconf.com",
     color: "#4f9cf9",
-    logoUrl: "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800",
+    logoUrl: GDC_BANNER,
   },
   {
     id: "pax-east-2025",
@@ -37,6 +46,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "One of the largest gaming conventions in the Eastern United States, bringing together gamers, developers, and publishers.",
     url: "https://east.paxsite.com",
     color: "#4f9cf9",
+    logoUrl: PAX_EAST_BANNER,
   },
   {
     id: "summer-game-fest-2025",
@@ -48,6 +58,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Geoff Keighley's multi-day showcase event featuring world premieres, demos, and announcements from major publishers and indie studios.",
     url: "https://www.summergamefest.com",
     color: "#b06ff5",
+    logoUrl: SGF_BANNER,
   },
   {
     id: "xbox-showcase-2025",
@@ -68,6 +79,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The iconic pop culture convention featuring major gaming announcements, panels, and exclusive reveals alongside comics, film, and TV.",
     url: "https://www.comic-con.org",
     color: "#4f9cf9",
+    logoUrl: SDCC_BANNER,
   },
   {
     id: "gamescom-2025",
@@ -79,6 +91,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The world's largest gaming trade fair with Gamescom Opening Night Live, developer showcases, and public expo floors.",
     url: "https://www.gamescom.global",
     color: "#4f9cf9",
+    logoUrl: GAMESCOM_BANNER,
   },
   {
     id: "pax-west-2025",
@@ -90,6 +103,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Four days of games, panels, tournaments, and community events on the Pacific Coast.",
     url: "https://west.paxsite.com",
     color: "#4f9cf9",
+    logoUrl: PAX_WEST_BANNER,
   },
   {
     id: "tokyo-game-show-2025",
@@ -112,6 +126,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Australia's biggest gaming convention with three days of gaming, esports, tabletop, and developer panels.",
     url: "https://aus.paxsite.com",
     color: "#4f9cf9",
+    logoUrl: PAX_AUS_BANNER,
   },
   {
     id: "the-game-awards-2025",
@@ -123,7 +138,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The gaming industry's biggest night, celebrating the best games of the year with world premiere announcements and live performances.",
     url: "https://thegameawards.com",
     color: "#f5c842",
-    logoUrl: "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg",
+    logoUrl: TGA_BANNER,
   },
 
   // 2026
@@ -137,7 +152,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Game Developers Conference 2026, the professional game industry event featuring sessions, summits, and the Independent Games Festival.",
     url: "https://gdconf.com",
     color: "#4f9cf9",
-    logoUrl: "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800",
+    logoUrl: GDC_BANNER,
   },
   {
     id: "pax-east-2026",
@@ -149,6 +164,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "One of the largest gaming conventions in the Eastern US, four days of games, panels, tournaments, and developer showcases.",
     url: "https://east.paxsite.com",
     color: "#4f9cf9",
+    logoUrl: PAX_EAST_BANNER,
   },
   {
     id: "summer-game-fest-2026",
@@ -160,6 +176,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Multi-day showcase event featuring world premiere announcements and demos from across the industry.",
     url: "https://www.summergamefest.com",
     color: "#b06ff5",
+    logoUrl: SGF_BANNER,
   },
   {
     id: "sdcc-2026",
@@ -171,6 +188,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Pop culture's biggest annual gathering with major gaming panels and exclusive reveals alongside comics, film, and TV.",
     url: "https://www.comic-con.org",
     color: "#4f9cf9",
+    logoUrl: SDCC_BANNER,
   },
   {
     id: "gamescom-2026",
@@ -182,6 +200,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The world's largest gaming trade fair returns to Cologne with Opening Night Live and expo floors spanning major publishers.",
     url: "https://www.gamescom.global",
     color: "#4f9cf9",
+    logoUrl: GAMESCOM_BANNER,
   },
   {
     id: "the-game-awards-2026",
@@ -193,7 +212,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The gaming industry's biggest night, celebrating the best games of the year.",
     url: "https://thegameawards.com",
     color: "#f5c842",
-    logoUrl: "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg",
+    logoUrl: TGA_BANNER,
   },
 ];
 
