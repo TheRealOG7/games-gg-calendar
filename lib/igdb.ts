@@ -81,7 +81,7 @@ export async function fetchIgdbReleases(
   // Fetch two pages of games in parallel (up to 1000 games)
   const gameQuery = (offset: number) =>
     `fields name,url,hypes,follows,first_release_date,platforms.name;` +
-    ` where first_release_date >= ${nowSec} & first_release_date <= ${futureSec} & hypes >= 1;` +
+    ` where first_release_date >= ${nowSec} & first_release_date <= ${futureSec} & hypes >= 10;` +
     ` sort first_release_date asc; limit 500; offset ${offset};`;
 
   const [gamesPage1, gamesPage2] = await Promise.all([
