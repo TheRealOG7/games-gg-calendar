@@ -587,8 +587,9 @@ function CalendarCell({
 
       {/* Desktop: text pills */}
       {!isMobile && thisMonth && (() => {
-        const visible  = items.slice(0, 3);
-        const overflow = items.length - visible.length;
+        const maxVisible = items.length > 3 ? 2 : 3;
+        const visible  = items.slice(0, maxVisible);
+        const overflow = items.length - maxVisible;
         return (
           <>
             {visible.map((item, i) => item.kind === "event" ? (
