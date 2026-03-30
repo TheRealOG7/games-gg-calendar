@@ -202,7 +202,6 @@ export const GAMING_EVENTS: GamingEvent[] = [
     logoUrl: GAMESCOM_BANNER,
   },
   {
-    {
     id: "ti-2025",
     name: "The International 2025",
     type: "esports",
