@@ -605,12 +605,23 @@ function CalendarCell({
               <button onClick={(e) => { e.stopPropagation();
                 onOpenPopover({ kind: "day", dateStr, releases, events,
                   anchorRect: e.currentTarget.getBoundingClientRect() }); }} style={{
-                fontSize: "9px", color: "var(--text-dim)", paddingLeft: "5px",
-                background: "none", border: "none", cursor: "pointer",
-                textAlign: "left", width: "100%", transition: "color 0.1s",
+                fontSize: "9px", fontWeight: 700,
+                color: "var(--text-secondary)",
+                background: "rgba(255,255,255,0.07)",
+                border: "1px solid rgba(255,255,255,0.13)",
+                borderRadius: "3px",
+                padding: "1px 5px", marginTop: "2px",
+                cursor: "pointer", width: "100%", textAlign: "left",
+                transition: "background 0.1s, color 0.1s",
               }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-dim)")}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.13)";
+                  e.currentTarget.style.color = "var(--text)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.07)";
+                  e.currentTarget.style.color = "var(--text-secondary)";
+                }}
               >+{overflow} more</button>
             )}
           </>
@@ -695,9 +706,10 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
 
   const nextMonth = useCallback(() => {
     setPopover(null); setDaySheet(null);
+    if (year === 2026 && month === 12) return;
     if (month === 12) { setYear((y) => y + 1); setMonth(1); }
     else setMonth((m) => m + 1);
-  }, [month]);
+  }, [month, year]);
 
   // Build filtered release map
   const releasesByDate: Record<string, GameRelease[]> = {};
@@ -732,7 +744,10 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
           <span style={{ fontSize: isMobile ? "13px" : "14px", color: "var(--text-dim)" }}>{year}</span>
         </div>
 
-        <button onClick={nextMonth} style={navBtnStyle}>›</button>
+        <button onClick={nextMonth} style={{
+          ...navBtnStyle,
+          visibility: (year === 2026 && month === 12) ? "hidden" : "visible",
+        }}>›</button>
       </div>
 
       {/* ── Filter row ── */}
@@ -759,11 +774,18 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
         )}
       </div>
 
+      {/* ── Grid card wrapper ── */}
+      <div style={{
+        flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
+        border: "1px solid oklch(32% 0.06 240)",
+        borderRadius: "12px", overflow: "hidden",
+        boxShadow: "0 0 0 1px rgba(255,255,255,0.04) inset, 0 12px 40px rgba(0,0,0,0.6)",
+        background: "var(--card)",
+      }}>
+
       {/* ── Day headers ── */}
       <div style={{
-        display: "grid", gridTemplateColumns: "repeat(7, 1fr)",
-        borderLeft: "1px solid var(--border)", borderTop: "1px solid var(--border)",
-        borderRadius: "10px 10px 0 0", overflow: "hidden", flexShrink: 0,
+        display: "grid", gridTemplateColumns: "repeat(7, 1fr)", flexShrink: 0,
       }}>
         {DAY_LABELS.map((d) => (
           <div key={d} style={{
@@ -780,8 +802,6 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
         flex: 1, minHeight: 0, display: "grid",
         gridTemplateColumns: "repeat(7, 1fr)",
         gridTemplateRows: `repeat(${numRows}, minmax(${isMobile ? "48px" : "0px"}, 1fr))`,
-        borderLeft: "1px solid var(--border)", borderBottom: "1px solid var(--border)",
-        borderRadius: "0 0 10px 10px", overflow: "hidden",
       }}>
         {cells.map(({ dateStr, day, thisMonth }) => {
           const cellReleases = thisMonth ? (releasesByDate[dateStr] ?? []) : [];
@@ -799,6 +819,8 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
           );
         })}
       </div>
+
+      </div>{/* end grid card wrapper */}
 
       {/* ── Mobile tap hint ── */}
       {isMobile && (

@@ -21,13 +21,21 @@ const SDCC_BANNER     = "https://comic-con-prod-uploads.s3.amazonaws.com/uploads
 const BGS_BANNER      = "https://www.brasilgameshow.com.br/wp-content/themes/newsitebgs/images/slogan2026v4.webp";
 const GSTAR_BANNER    = "https://www.gstar.or.kr/img/img_exhibition.png";
 const TGS_TW_BANNER   = "https://tgs.tca.org.tw/images/banner/_1767319692.jpg";
-const EWC_BANNER      = "https://d3h9qea4qy4169.cloudfront.net/abstract_background_ef90392883.png";
+const EWC_BANNER      = "https://d3h9qea4qy4169.cloudfront.net/887a601e_7716_4974_bccb_509d4016e2be_1f3cd47ecc.jpg";
 const MEFCC_BANNER    = "https://knect365.imgix.net/uploads/MEFCC-Abu-Dhabi-Logo-White-49b99c7858082d50bff4e3d25e41027a.png?auto=format&fit=max&w=800";
 const GAMESCOM_BANNER = "https://eu-central-1-gamescom.graphassets.com/AMwDHZTUSMaIlRlMFLL7Qz/PssD8VBzTXq72TP0ISkN";
 const ONL_BANNER      = "https://eu-central-1-gamescom.graphassets.com/AMwDHZTUSMaIlRlMFLL7Qz/cmehi4nva0h9g07w4fdvuvwnp";
 const GDC_BANNER      = "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800";
 const TGA_BANNER      = "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg";
 const GJA_BANNER      = "https://assets.swoogo.com/uploads/medium/5147707-67ec194eeb105.png";
+const XBOX_SCH_BANNER = "https://xboxwire.thesourcemediaassets.com/sites/2/2025/06/2025_FINAL_RGB_16x9_HERO-164d81ba2776e8915ffd.jpg";
+const TGS_BANNER      = "https://tgs.cesa.or.jp/images/meta/ogp.png";
+const DICE_BANNER     = "https://www.interactive.org/images/layout/academy-of-interactive-arts-and-sciences-logo-lg.png";
+const IGDC_BANNER     = "https://indiagdc.com/wp-content/uploads/2025/09/Frame-14.png";
+const TI_BANNER       = "https://cdn.steamstatic.com/apps/dota2/images/dpc/social_generic.jpg";
+const VCT_BANNER      = "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/aa69698c70f2deddba911d455de42034f522dcdc-1920x1080.png";
+const PUBG_BANNER     = "https://wstatic-prod.pubgesports.com/web/live/static/og/img-og-pubg-esports.jpg";
+const OWCS_BANNER     = "https://a.storyblok.com/f/267720/1920x1080/00c2df624f/header-owe.png";
 
 // Colour palette
 const C_CONVENTION = "#4f9cf9";  // blue
@@ -50,6 +58,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The Academy of Interactive Arts & Sciences' annual awards honoring the best games of the year across 24 categories.",
     url: "https://www.interactive.org",
     color: C_AWARDS,
+    logoUrl: DICE_BANNER,
   },
   {
     id: "taipei-game-show-2025",
@@ -85,6 +94,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The British Academy's annual ceremony honouring the best in interactive entertainment — one of the most prestigious awards in the global games industry.",
     url: "https://www.bafta.org/awards/games",
     color: C_AWARDS,
+    logoUrl: "https://media.bafta.org/m/1fbbf5c9b45c4e3/original/BAFTA_Games_Awards_logo.png",
   },
   {
     id: "mefcc-2025",
@@ -141,6 +151,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     endDate: "2025-06-08",
     description: "Microsoft's annual showcase revealing upcoming Xbox and PC games, Game Pass additions, and hardware announcements.",
     color: C_SHOWCASE,
+    logoUrl: XBOX_SCH_BANNER,
   },
   {
     id: "sdcc-2025",
@@ -191,6 +202,31 @@ export const GAMING_EVENTS: GamingEvent[] = [
     logoUrl: GAMESCOM_BANNER,
   },
   {
+    {
+    id: "ti-2025",
+    name: "The International 2025",
+    type: "esports",
+    startDate: "2025-09-04",
+    endDate: "2025-09-14",
+    location: "Hamburg, Germany",
+    description: "Dota 2's crown jewel — the world's largest esports prize pool tournament, bringing the top 18 teams together to compete for the Aegis of Champions.",
+    url: "https://www.dota2.com/esports/ti",
+    color: C_ESPORTS,
+    logoUrl: TI_BANNER,
+  },
+  {
+    id: "vct-champions-2025",
+    name: "VALORANT Champions 2025",
+    type: "esports",
+    startDate: "2025-09-12",
+    endDate: "2025-10-05",
+    location: "Paris, France",
+    description: "The VALORANT world championship — 16 elite teams from global VCT leagues compete for the title of best team in the world.",
+    url: "https://valorantesports.com",
+    color: C_ESPORTS,
+    logoUrl: VCT_BANNER,
+  },
+  {
     id: "chinajoy-2025",
     name: "ChinaJoy 2025",
     type: "convention",
@@ -223,6 +259,18 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Japan's premier gaming expo where major publishers reveal upcoming titles, with both online and in-person components.",
     url: "https://tgs.cesa.or.jp/english",
     color: C_CONVENTION,
+    logoUrl: TGS_BANNER,
+  },
+  {
+    id: "lol-worlds-2025",
+    name: "LoL World Championship 2025",
+    type: "esports",
+    startDate: "2025-10-14",
+    endDate: "2025-11-09",
+    location: "China (Chengdu & Shanghai)",
+    description: "The League of Legends World Championship returns to China — the most-watched annual esports event with hundreds of millions of viewers worldwide.",
+    url: "https://lolesports.com",
+    color: C_ESPORTS,
   },
   {
     id: "bgs-2025",
@@ -258,6 +306,18 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "India's premier game development conference, connecting developers, publishers, and investors across South Asia.",
     url: "https://indiagdc.com",
     color: C_CONVENTION,
+    logoUrl: IGDC_BANNER,
+  },
+  {
+    id: "ffws-2025",
+    name: "Free Fire World Series 2025",
+    type: "esports",
+    startDate: "2025-11-15",
+    endDate: "2025-11-16",
+    location: "Jakarta, Indonesia",
+    description: "The Free Fire global championship — one of the most-watched mobile esports events in Southeast Asia and Latin America, with peak viewership exceeding 5 million.",
+    url: "https://ff.garena.com",
+    color: C_ESPORTS,
   },
   {
     id: "gstar-2025",
@@ -272,6 +332,18 @@ export const GAMING_EVENTS: GamingEvent[] = [
     logoUrl: GSTAR_BANNER,
   },
   {
+    id: "owcs-worlds-2025",
+    name: "Overwatch Champions Series World Finals 2025",
+    type: "esports",
+    startDate: "2025-11-26",
+    endDate: "2025-11-30",
+    location: "Stockholm, Sweden",
+    description: "The OWCS World Finals — top teams from the Americas, EMEA, and Asia-Pacific regions compete for the Overwatch world title.",
+    url: "https://overwatchleague.com",
+    color: C_ESPORTS,
+    logoUrl: OWCS_BANNER,
+  },
+  {
     id: "golden-joystick-2025",
     name: "Golden Joystick Awards 2025",
     type: "awards",
@@ -282,6 +354,18 @@ export const GAMING_EVENTS: GamingEvent[] = [
     url: "https://www.goldenjoystickawards.com",
     color: C_AWARDS,
     logoUrl: GJA_BANNER,
+  },
+  {
+    id: "pubg-pgc-2025",
+    name: "PUBG Global Championship 2025",
+    type: "esports",
+    startDate: "2025-12-05",
+    endDate: "2025-12-14",
+    location: "Bangkok, Thailand",
+    description: "The PUBG Battle Royale world championship — 32 elite squads from around the globe compete for the season's biggest prize pool.",
+    url: "https://pubgesports.com",
+    color: C_ESPORTS,
+    logoUrl: PUBG_BANNER,
   },
   {
     id: "the-game-awards-2025",
@@ -310,6 +394,17 @@ export const GAMING_EVENTS: GamingEvent[] = [
   // ── 2026 ──────────────────────────────────────────────────────────────────
 
   {
+    id: "mlbb-m7-2026",
+    name: "Mobile Legends M7 World Championship",
+    type: "esports",
+    startDate: "2026-01-06",
+    endDate: "2026-01-25",
+    location: "Jakarta, Indonesia",
+    description: "The Mobile Legends: Bang Bang World Championship — Southeast Asia's most-watched mobile esports tournament with a massive global following.",
+    url: "https://www.mobilelegends.com",
+    color: C_ESPORTS,
+  },
+  {
     id: "taipei-game-show-2026",
     name: "Taipei Game Show 2026",
     type: "convention",
@@ -331,6 +426,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The Academy of Interactive Arts & Sciences' annual awards honoring the best games of the year across 24 categories.",
     url: "https://www.interactive.org",
     color: C_AWARDS,
+    logoUrl: DICE_BANNER,
   },
   {
     id: "gdc-2026",
@@ -366,6 +462,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The British Academy's annual ceremony honouring the best in interactive entertainment — one of the most prestigious awards in the global games industry.",
     url: "https://www.bafta.org/awards/games",
     color: C_AWARDS,
+    logoUrl: "https://media.bafta.org/m/1fbbf5c9b45c4e3/original/BAFTA_Games_Awards_logo.png",
   },
   {
     id: "dubai-esports-festival-2026",
