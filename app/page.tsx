@@ -66,6 +66,10 @@ export default async function CalendarPage() {
   function normalizeName(name: string): string {
     return name
       .toLowerCase()
+      .replace(/\bzero\b/g, "0").replace(/\bone\b/g, "1").replace(/\btwo\b/g, "2")
+      .replace(/\bthree\b/g, "3").replace(/\bfour\b/g, "4").replace(/\bfive\b/g, "5")
+      .replace(/\bsix\b/g, "6").replace(/\bseven\b/g, "7").replace(/\beight\b/g, "8")
+      .replace(/\bnine\b/g, "9")
       .replace(/\s*\([^)]*\)/g, "")   // strip "(2025)", "(Deluxe)", etc.
       .replace(/[^a-z0-9]/g, "")       // strip punctuation
       .trim();

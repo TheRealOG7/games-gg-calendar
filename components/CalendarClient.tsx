@@ -607,16 +607,16 @@ function CalendarCell({
                 onOpenPopover({ kind: "day", dateStr, releases, events,
                   anchorRect: e.currentTarget.getBoundingClientRect() }); }} style={{
                 fontSize: "9px", fontWeight: 700,
-                color: "#c8d6f0",
-                background: "rgba(79,156,249,0.18)",
-                border: "1px solid rgba(79,156,249,0.35)",
+                color: "rgba(255,255,255,0.65)",
+                background: "rgba(255,255,255,0.09)",
+                border: "1px solid rgba(255,255,255,0.18)",
                 borderRadius: "3px",
                 padding: "2px 5px", marginTop: "2px",
                 cursor: "pointer", width: "100%", textAlign: "left",
                 transition: "background 0.1s",
               }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(79,156,249,0.3)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(79,156,249,0.18)")}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.15)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.09)")}
               >+{overflow} more</button>
             )}
           </>
