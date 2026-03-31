@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import Image from "next/image";
 import type { GameRelease } from "@/lib/releases";
 import { getReleasesForDate, deduplicatePlatforms, gamesGgUrl } from "@/lib/releases";
 import type { GamingEvent } from "@/lib/events";
@@ -183,6 +184,246 @@ function CalendarCell({
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── CalBtn helper ─────────────────────────────────────────────────────────────
+
+function CalBtn({ url }: { url: string }) {
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" style={{
+      display: "block", textAlign: "center",
+      background: "rgba(255,255,255,0.05)", color: "var(--text-secondary)",
+      border: "1px solid var(--border)", fontWeight: 600, fontSize: "12px",
+      padding: "7px 14px", borderRadius: "7px", textDecoration: "none",
+      marginTop: "6px", transition: "background 0.15s",
+    }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.09)")}
+      onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+    >+ Add to Google Calendar</a>
+  );
+}
+
+// ── Game detail panel ─────────────────────────────────────────────────────────
+
+function GameDetailPanel({ game, inWatchlist, onWatchlistToggle, onClose }: {
+  game: GameRelease;
+  inWatchlist: boolean;
+  onWatchlistToggle: (slug: string) => void;
+  onClose: () => void;
+}) {
+  const platforms = deduplicatePlatforms(game.platforms);
+  const calUrl = googleCalUrl(
+    `${game.name} — Release`, game.released, game.released,
+    `${game.name} releases today. View on GAMES.GG: ${gamesGgUrl(game.slug)}`
+  );
+  const [imgFailed, setImgFailed] = useState(false);
+
+  return (
+    <div style={{
+      width: "260px", flexShrink: 0,
+      background: "var(--card)", border: "1px solid var(--border-hover)",
+      borderRadius: "12px", overflow: "hidden",
+      display: "flex", flexDirection: "column",
+      animation: "slideLeft 0.2s ease",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+    }}>
+      {/* Cover image */}
+      <div style={{ position: "relative", height: "130px", flexShrink: 0, overflow: "hidden" }}>
+        {game.background_image && !imgFailed ? (
+          <>
+            <Image src={game.background_image} alt={game.name} fill
+              style={{ objectFit: "cover", objectPosition: "top" }} sizes="260px"
+              onError={() => setImgFailed(true)} />
+            <div style={{ position: "absolute", inset: 0,
+              background: "linear-gradient(to bottom, rgba(6,13,23,0.05) 0%, var(--card) 100%)" }} />
+          </>
+        ) : (
+          <div style={{
+            width: "100%", height: "100%",
+            background: "linear-gradient(135deg, oklch(20% 0.06 240) 0%, oklch(13% 0.04 240) 100%)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <span style={{ fontSize: "32px", fontWeight: 800,
+              color: "oklch(83% 0.22 158 / 0.2)", letterSpacing: "-0.04em" }}>
+              {game.name.slice(0, 2).toUpperCase()}
+            </span>
+          </div>
+        )}
+        <button onClick={onClose} style={{
+          position: "absolute", top: "8px", right: "8px",
+          background: "rgba(6,13,23,0.65)", border: "1px solid var(--border)",
+          borderRadius: "50%", width: "24px", height: "24px",
+          color: "var(--text-secondary)", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "11px", lineHeight: 1, padding: 0,
+        }}>✕</button>
+      </div>
+      {/* Body */}
+      <div style={{ padding: "12px 14px 14px", flex: 1, overflowY: "auto" }}>
+        {/* Badges */}
+        <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginBottom: "7px" }}>
+          <span style={{
+            fontSize: "10px", fontWeight: 700, letterSpacing: "0.06em",
+            textTransform: "uppercase", color: "var(--green)",
+            padding: "2px 6px", background: "oklch(83% 0.22 158 / 0.15)",
+            borderRadius: "4px", border: "1px solid oklch(83% 0.22 158 / 0.3)",
+          }}>Game Release</span>
+          {game.metacritic && (
+            <span style={{
+              fontSize: "10px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px",
+              background: "#f5c84222", color: "#f5c842", border: "1px solid #f5c84240",
+            }}>MC {game.metacritic}</span>
+          )}
+        </div>
+        <h3 style={{ fontSize: "15px", fontWeight: 700, lineHeight: 1.2, marginBottom: "3px" }}>
+          {game.name}
+        </h3>
+        <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "6px" }}>
+          {formatDateLong(game.released)}
+        </p>
+        {game.genres.length > 0 && (
+          <p style={{ fontSize: "11px", color: "var(--text-dim)", marginBottom: "10px" }}>
+            {game.genres.slice(0, 4).join(" · ")}
+          </p>
+        )}
+        {/* Watchlist button */}
+        <button onClick={() => onWatchlistToggle(game.slug)} style={{
+          width: "100%", padding: "7px 12px", borderRadius: "7px",
+          fontWeight: 700, fontSize: "12px", cursor: "pointer",
+          border: "1px solid",
+          background: inWatchlist ? "oklch(83% 0.22 158 / 0.15)" : "oklch(83% 0.22 158 / 0.08)",
+          color: "var(--green)",
+          borderColor: inWatchlist ? "oklch(83% 0.22 158 / 0.5)" : "oklch(83% 0.22 158 / 0.3)",
+          marginBottom: "8px", transition: "all 0.15s",
+        }}>
+          {inWatchlist ? "✓ In Watchlist" : "+ Add to Watchlist"}
+        </button>
+        {/* Platforms */}
+        {platforms.length > 0 && (
+          <>
+            <div style={{
+              height: "1px", background: "var(--border)", margin: "8px 0",
+            }} />
+            <p style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
+              textTransform: "uppercase", color: "var(--text-dim)", marginBottom: "6px" }}>
+              Platforms
+            </p>
+            <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "4px" }}>
+              {platforms.map((p) => <PlatformTag key={p} name={p} />)}
+            </div>
+          </>
+        )}
+        {/* GAMES.GG link */}
+        <a href={gamesGgUrl(game.slug)} target="_blank" rel="noopener noreferrer" style={{
+          display: "block", textAlign: "center", background: "var(--green)",
+          color: "#060D17", fontWeight: 700, fontSize: "12px",
+          padding: "8px 14px", borderRadius: "7px", textDecoration: "none",
+          marginTop: "8px", transition: "opacity 0.15s",
+        }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+        >View on GAMES.GG</a>
+        <CalBtn url={calUrl} />
+      </div>
+    </div>
+  );
+}
+
+// ── Event detail panel ────────────────────────────────────────────────────────
+
+function EventDetailPanel({ event, onClose }: {
+  event: GamingEvent;
+  onClose: () => void;
+}) {
+  const isSameDay = event.startDate === event.endDate;
+  const calUrl = googleCalUrl(event.name, event.startDate, event.endDate,
+    event.description, event.location);
+  const [imgFailed, setImgFailed] = useState(false);
+  const showImg = !!event.logoUrl && !imgFailed;
+
+  return (
+    <div style={{
+      width: "260px", flexShrink: 0,
+      background: "var(--card)", border: "1px solid var(--border-hover)",
+      borderRadius: "12px", overflow: "hidden",
+      display: "flex", flexDirection: "column",
+      animation: "slideLeft 0.2s ease",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+    }}>
+      {/* Cover */}
+      <div style={{ position: "relative", height: "100px", flexShrink: 0, overflow: "hidden" }}>
+        {showImg ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={event.logoUrl} alt={event.name} onError={() => setImgFailed(true)}
+              style={{ width: "100%", height: "100%", objectFit: "cover",
+                objectPosition: "center" }} />
+            <div style={{ position: "absolute", inset: 0,
+              background: "linear-gradient(to bottom, rgba(6,13,23,0) 0%, var(--card) 100%)" }} />
+          </>
+        ) : (
+          <div style={{
+            width: "100%", height: "100%",
+            background: `linear-gradient(135deg, ${event.color}22 0%, ${event.color}08 100%)`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.1em",
+              textTransform: "uppercase", color: event.color, opacity: 0.7 }}>
+              {EVENT_TYPE_LABEL[event.type]}
+            </span>
+          </div>
+        )}
+        <button onClick={onClose} style={{
+          position: "absolute", top: "8px", right: "8px",
+          background: "rgba(6,13,23,0.65)", border: "1px solid var(--border)",
+          borderRadius: "50%", width: "24px", height: "24px",
+          color: "var(--text-secondary)", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "11px", lineHeight: 1, padding: 0,
+        }}>✕</button>
+      </div>
+      {/* Body */}
+      <div style={{ padding: "12px 14px 14px", flex: 1, overflowY: "auto" }}>
+        <span style={{
+          display: "inline-block", fontSize: "10px", fontWeight: 700,
+          letterSpacing: "0.06em", textTransform: "uppercase",
+          color: event.color, padding: "2px 6px",
+          background: event.color + "22", borderRadius: "4px",
+          border: `1px solid ${event.color}40`, marginBottom: "8px",
+        }}>{EVENT_TYPE_LABEL[event.type]}</span>
+        <h3 style={{ fontSize: "15px", fontWeight: 700, lineHeight: 1.2, marginBottom: "4px" }}>
+          {event.name}
+        </h3>
+        <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "2px" }}>
+          {isSameDay
+            ? formatDateLong(event.startDate)
+            : `${formatDateShort(event.startDate)} – ${formatDateShort(event.endDate)}`}
+        </p>
+        {event.location && (
+          <p style={{ fontSize: "12px", color: "var(--text-dim)", marginBottom: "8px" }}>
+            {event.location}
+          </p>
+        )}
+        <p style={{ fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.6,
+          marginBottom: "12px" }}>
+          {event.description}
+        </p>
+        {event.url && (
+          <a href={event.url} target="_blank" rel="noopener noreferrer" style={{
+            display: "block", textAlign: "center",
+            background: event.color + "20", color: event.color,
+            border: `1px solid ${event.color}40`, fontWeight: 700, fontSize: "12px",
+            padding: "8px 14px", borderRadius: "7px", textDecoration: "none",
+            transition: "opacity 0.15s", marginBottom: "4px",
+          }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+          >Official Website ↗</a>
+        )}
+        <CalBtn url={calUrl} />
+      </div>
     </div>
   );
 }
