@@ -353,7 +353,7 @@ function DayPopover({
         <button onClick={onClose} style={{ background: "none", border: "none",
           color: "var(--text-secondary)", cursor: "pointer", fontSize: "14px", padding: "2px 4px" }}>✕</button>
       </div>
-      <div style={{ maxHeight: "280px", overflowY: "auto", padding: "6px" }}>
+      <div style={{ maxHeight: "min(60vh, 420px)", overflowY: "auto", padding: "6px" }}>
         {items.map((item, i) => (
           <button key={i} onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
@@ -475,11 +475,11 @@ function MobileDaySheet({
 // ── Popover container ─────────────────────────────────────────────────────────
 
 function CalendarPopover({
-  item, onClose, onOpen, isMobile, wishlistToggle, wishlistHas,
+  item, onClose, onOpen, isMobile, watchlistToggle, watchlistHas,
 }: {
   item: PopoverItem; onClose: () => void;
   onOpen: (item: PopoverItem) => void; isMobile: boolean;
-  wishlistToggle: (slug: string) => void; wishlistHas: (slug: string) => boolean;
+  watchlistToggle: (slug: string) => void; watchlistHas: (slug: string) => boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const width = item.kind === "day" ? 270 : 310;
@@ -512,7 +512,7 @@ function CalendarPopover({
         overflow: "hidden", animation: "popIn 0.15s ease",
       }}>
         {item.kind === "game"  && <GamePopover  game={item.data}  onClose={onClose}
-          onWishlistToggle={wishlistToggle} inWishlist={wishlistHas(item.data.slug)} />}
+          onWishlistToggle={watchlistToggle} inWishlist={watchlistHas(item.data.slug)} />}
         {item.kind === "event" && <EventPopover event={item.data} onClose={onClose} />}
         {item.kind === "day"   && (
           <DayPopover dateStr={item.dateStr} releases={item.releases}
@@ -613,7 +613,7 @@ function CalendarCell({
 
       {/* Desktop: text pills */}
       {!isMobile && thisMonth && (() => {
-        const maxVisible = items.length > 3 ? 2 : 3;
+        const maxVisible = items.length > 2 ? 2 : items.length;
         const visible  = items.slice(0, maxVisible);
         const overflow = items.length - maxVisible;
         return (
@@ -671,17 +671,20 @@ function useCountdown(target: Date) {
 
 function GTA6Countdown() {
   const { days, hours, minutes, seconds, released } = useCountdown(GTA6_RELEASE);
+  const [collapsed, setCollapsed] = useState(false);
+
+  const border = "1px solid oklch(28% 0.04 240)";
+  const bg     = "oklch(14% 0.03 240)";
 
   if (released) {
     return (
       <div style={{
-        background: "linear-gradient(90deg, #1a0a0a 0%, #2d0a0a 50%, #1a0a0a 100%)",
-        border: "1px solid #8b1a1a", borderRadius: "8px",
-        padding: "10px 16px", marginBottom: "10px",
+        background: bg, border, borderRadius: "8px",
+        padding: "9px 14px", marginBottom: "10px",
         display: "flex", alignItems: "center", justifyContent: "center",
-        gap: "8px", flexShrink: 0,
+        flexShrink: 0,
       }}>
-        <span style={{ fontSize: "13px", fontWeight: 700, color: "#ff4444" }}>
+        <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text)" }}>
           GTA VI IS OUT NOW 🎮
         </span>
       </div>
@@ -689,11 +692,11 @@ function GTA6Countdown() {
   }
 
   const unit = (val: number, label: string) => (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "36px" }}>
-      <span style={{ fontSize: "16px", fontWeight: 800, color: "#ff4444", lineHeight: 1 }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "34px" }}>
+      <span style={{ fontSize: "15px", fontWeight: 800, color: "var(--text)", lineHeight: 1 }}>
         {String(val).padStart(2, "0")}
       </span>
-      <span style={{ fontSize: "8px", fontWeight: 600, color: "#8b1a1a",
+      <span style={{ fontSize: "8px", fontWeight: 600, color: "var(--text-dim)",
         textTransform: "uppercase", letterSpacing: "0.06em", marginTop: "2px" }}>
         {label}
       </span>
@@ -701,34 +704,40 @@ function GTA6Countdown() {
   );
 
   return (
-    <div style={{
-      background: "linear-gradient(90deg, #0f0505 0%, #1f0808 40%, #1f0808 60%, #0f0505 100%)",
-      border: "1px solid #4a0e0e", borderRadius: "8px",
-      padding: "8px 14px", marginBottom: "10px",
-      display: "flex", alignItems: "center", gap: "12px",
-      flexShrink: 0, overflow: "hidden",
-    }}>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ fontSize: "10px", fontWeight: 800, color: "#cc2222",
-          textTransform: "uppercase", letterSpacing: "0.1em", lineHeight: 1 }}>
-          GTA VI
-        </span>
-        <span style={{ fontSize: "9px", color: "#6b1a1a", marginTop: "2px" }}>Nov 19, 2026</span>
+    <div style={{ background: bg, border, borderRadius: "8px", marginBottom: "10px", flexShrink: 0 }}>
+      {/* Header row — always visible */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: "10px",
+        padding: collapsed ? "7px 12px" : "7px 12px 0",
+      }}>
+        <span style={{ fontSize: "10px", fontWeight: 800, color: "var(--text-secondary)",
+          textTransform: "uppercase", letterSpacing: "0.1em" }}>GTA VI</span>
+        <span style={{ fontSize: "9px", color: "var(--text-dim)" }}>· Nov 19, 2026</span>
+        <button onClick={() => setCollapsed((c) => !c)} style={{
+          marginLeft: "auto", background: "none", border: "none",
+          color: "var(--text-dim)", cursor: "pointer", fontSize: "11px",
+          padding: "2px 4px", transition: "color 0.15s",
+        }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-dim)")}
+        >{collapsed ? "▸ show" : "▾ hide"}</button>
       </div>
-      <div style={{ width: "1px", height: "28px", background: "#4a0e0e" }} />
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        {unit(days,    "days")}
-        <span style={{ color: "#4a0e0e", fontWeight: 700, marginBottom: "10px" }}>:</span>
-        {unit(hours,   "hrs")}
-        <span style={{ color: "#4a0e0e", fontWeight: 700, marginBottom: "10px" }}>:</span>
-        {unit(minutes, "min")}
-        <span style={{ color: "#4a0e0e", fontWeight: 700, marginBottom: "10px" }}>:</span>
-        {unit(seconds, "sec")}
-      </div>
-      <div style={{ marginLeft: "auto", fontSize: "9px", color: "#4a0e0e",
-        fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-        Rockstar Games
-      </div>
+      {/* Countdown — collapsible */}
+      {!collapsed && (
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 12px 8px" }}>
+          {unit(days,    "days")}
+          <span style={{ color: "var(--border-hover)", fontWeight: 700, marginBottom: "10px" }}>:</span>
+          {unit(hours,   "hrs")}
+          <span style={{ color: "var(--border-hover)", fontWeight: 700, marginBottom: "10px" }}>:</span>
+          {unit(minutes, "min")}
+          <span style={{ color: "var(--border-hover)", fontWeight: 700, marginBottom: "10px" }}>:</span>
+          {unit(seconds, "sec")}
+          <span style={{ marginLeft: "auto", fontSize: "9px", color: "var(--text-dim)",
+            fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Rockstar Games
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -761,41 +770,9 @@ function FilterLegendItem({
   );
 }
 
-// ── Confetti ──────────────────────────────────────────────────────────────────
+// ── Watchlist panel ───────────────────────────────────────────────────────────
 
-const CONFETTI_COLORS = ["#52d68a", "#4f9cf9", "#b06ff5", "#f5c842", "#e84855", "#ff9f43"];
-
-function Confetti() {
-  const pieces = Array.from({ length: 40 }, (_, i) => ({
-    id: i,
-    color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-    left: Math.random() * 100,
-    delay: Math.random() * 1.5,
-    duration: 2.5 + Math.random() * 2,
-    size: 6 + Math.random() * 6,
-    rotate: Math.random() * 360,
-  }));
-
-  return (
-    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 500, overflow: "hidden" }}>
-      {pieces.map((p) => (
-        <div key={p.id} style={{
-          position: "absolute", top: "-10px", left: `${p.left}%`,
-          width: `${p.size}px`, height: `${p.size}px`,
-          background: p.color,
-          borderRadius: Math.random() > 0.5 ? "50%" : "2px",
-          opacity: 0.9,
-          animation: `confettiFall ${p.duration}s ${p.delay}s ease-in forwards`,
-          transform: `rotate(${p.rotate}deg)`,
-        }} />
-      ))}
-    </div>
-  );
-}
-
-// ── Wishlist panel ────────────────────────────────────────────────────────────
-
-function WishlistPanel({
+function WatchlistPanel({
   slugs, releases, onClose, onRemove,
 }: {
   slugs: string[]; releases: GameRelease[];
@@ -825,7 +802,7 @@ function WishlistPanel({
           flexShrink: 0,
         }}>
           <span style={{ fontWeight: 700, fontSize: "14px" }}>
-            My Wishlist{saved.length > 0 && (
+            My Watchlist{saved.length > 0 && (
               <span style={{ color: "var(--text-dim)", fontWeight: 400 }}> ({saved.length})</span>
             )}
           </span>
@@ -887,12 +864,10 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
   const [month, setMonth] = useState(initialMonth);
   const [popover, setPopover]   = useState<PopoverItem | null>(null);
   const [daySheet, setDaySheet] = useState<string | null>(null);
-  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [watchlistOpen, setWatchlistOpen] = useState(false);
   const [slideDir, setSlideDir] = useState<"left" | "right" | null>(null);
   const [gridKey, setGridKey]   = useState(0);
-  const [showConfetti, setShowConfetti] = useState(false);
-
-  const { slugs: wishlistSlugs, toggle: wishlistToggle, has: wishlistHas, remove: wishlistRemove } = useWishlist();
+  const { slugs: watchlistSlugs, toggle: watchlistToggle, has: watchlistHas, remove: watchlistRemove } = useWishlist();
 
   // Filter state — all active by default
   const [activeFilters, setActiveFilters] = useState<Set<FilterKey>>(
@@ -939,16 +914,6 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
     }
   }
 
-  // Confetti on today's releases — fires once on mount
-  useEffect(() => {
-    const todayReleases = releasesByDate[todayStr];
-    if (todayReleases && todayReleases.length > 0) {
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 5000);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // Mobile day sheet data
   const sheetReleases = daySheet ? (releasesByDate[daySheet] ?? []) : [];
   const sheetEvents   = daySheet
@@ -957,8 +922,6 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
 
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-      {showConfetti && <Confetti />}
-
       {/* ── Nav row ── */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -975,17 +938,22 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
         </div>
 
         <div style={{ position: "absolute", right: "50px", display: "flex", alignItems: "center" }}>
-          <button onClick={() => setWishlistOpen(true)} style={{
-            background: wishlistSlugs.length > 0 ? "rgba(82,214,138,0.1)" : "var(--card)",
-            border: wishlistSlugs.length > 0 ? "1px solid rgba(82,214,138,0.3)" : "1px solid var(--border)",
+          <button onClick={() => setWatchlistOpen(true)} style={{
+            background: watchlistSlugs.length > 0 ? "rgba(82,214,138,0.1)" : "var(--card)",
+            border: watchlistSlugs.length > 0 ? "1px solid rgba(82,214,138,0.3)" : "1px solid var(--border)",
             borderRadius: "7px", padding: "5px 10px",
-            color: wishlistSlugs.length > 0 ? "var(--green)" : "var(--text-secondary)",
+            color: watchlistSlugs.length > 0 ? "var(--green)" : "var(--text-secondary)",
             cursor: "pointer", fontSize: "13px",
             display: "flex", alignItems: "center", gap: "5px",
             transition: "all 0.15s",
           }}>
-            + {wishlistSlugs.length > 0 && (
-              <span style={{ fontSize: "11px", fontWeight: 700 }}>{wishlistSlugs.length}</span>
+            <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.02em" }}>Watchlist</span>
+            {watchlistSlugs.length > 0 && (
+              <span style={{
+                fontSize: "10px", fontWeight: 700,
+                background: watchlistSlugs.length > 0 ? "rgba(82,214,138,0.25)" : "rgba(255,255,255,0.1)",
+                borderRadius: "10px", padding: "1px 6px", minWidth: "18px", textAlign: "center",
+              }}>{watchlistSlugs.length}</span>
             )}
           </button>
         </div>
@@ -1098,15 +1066,15 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
       {popover && (
         <CalendarPopover item={popover} onClose={() => setPopover(null)}
           onOpen={setPopover} isMobile={isMobile}
-          wishlistToggle={wishlistToggle} wishlistHas={wishlistHas} />
+          watchlistToggle={watchlistToggle} watchlistHas={watchlistHas} />
       )}
 
       {/* ── Wishlist panel ── */}
-      {wishlistOpen && (
-        <WishlistPanel
-          slugs={wishlistSlugs} releases={releases}
-          onClose={() => setWishlistOpen(false)}
-          onRemove={wishlistRemove}
+      {watchlistOpen && (
+        <WatchlistPanel
+          slugs={watchlistSlugs} releases={releases}
+          onClose={() => setWatchlistOpen(false)}
+          onRemove={watchlistRemove}
         />
       )}
     </div>
