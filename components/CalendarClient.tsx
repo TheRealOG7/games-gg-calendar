@@ -133,13 +133,14 @@ function CalendarCell({
   releases: GameRelease[]; events: GamingEvent[];
   onSelectDate: (dateStr: string) => void;
 }) {
-  const items = [
-    ...events.map((e) => ({ color: e.color })),
-    ...releases.map(()  => ({ color: GAME_COLOR_HEX })),
+  const allItems = [
+    ...events.map((e) => ({ color: e.color, name: e.name })),
+    ...releases.map((r) => ({ color: GAME_COLOR_HEX, name: r.name })),
   ];
-  const hasItems = items.length > 0;
-  const dotsToShow = items.slice(0, 3);
-  const overflow  = items.length - dotsToShow.length;
+  const hasItems = allItems.length > 0;
+  const MAX_VISIBLE = 3;
+  const visible  = allItems.slice(0, MAX_VISIBLE);
+  const overflow = allItems.length - visible.length;
 
   return (
     <div
@@ -167,19 +168,29 @@ function CalendarCell({
         color: isToday ? "#060D17" : hasItems ? "var(--text)" : "var(--text-secondary)",
         background: isToday ? "var(--green)" : "transparent",
         animation: isToday ? "pulseRing 2s ease-out infinite" : "none",
-        marginBottom: "3px", flexShrink: 0,
+        marginBottom: "2px", flexShrink: 0,
       }}>{day}</div>
       {thisMonth && hasItems && (
-        <div style={{ display: "flex", gap: "2px", flexWrap: "wrap", paddingLeft: "1px" }}>
-          {dotsToShow.map((item, i) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+          {visible.map((item, i) => (
             <div key={i} style={{
-              width: "5px", height: "5px", borderRadius: "50%",
-              background: item.color, flexShrink: 0,
-            }} />
+              display: "flex", alignItems: "center", gap: "3px", minWidth: 0,
+            }}>
+              <div style={{
+                width: "5px", height: "5px", borderRadius: "50%",
+                background: item.color, flexShrink: 0,
+              }} />
+              <span style={{
+                fontSize: "9px", lineHeight: 1.2,
+                color: "var(--text-secondary)",
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                minWidth: 0,
+              }}>{item.name}</span>
+            </div>
           ))}
           {overflow > 0 && (
-            <span style={{ fontSize: "7px", color: "var(--text-dim)", lineHeight: "5px" }}>
-              +{overflow}
+            <span style={{ fontSize: "8px", color: "var(--text-dim)", paddingLeft: "8px" }}>
+              +{overflow} more
             </span>
           )}
         </div>
