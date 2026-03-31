@@ -959,6 +959,18 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
     setActiveFilters(new Set(ALL_FILTER_KEYS));
   }, []);
 
+  // Close panels on Escape
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        if (selectedItem) setSelectedItem(null);
+        else if (selectedDate) setSelectedDate(null);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [selectedItem, selectedDate]);
+
   const { cells, numRows } = getMonthDays(year, month);
 
   const prevMonth = useCallback(() => {
@@ -985,6 +997,19 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
     }
   }
 
+  // Data for day panel
+  const dayReleases = selectedDate ? (releasesByDate[selectedDate] ?? []) : [];
+  const dayEvents   = selectedDate
+    ? getEventsForDate(selectedDate).filter((e) => activeFilters.has(e.type as FilterKey))
+    : [];
+
+  // Stable key for selected item (used to highlight active card in DayPanel)
+  const selectedItemKey = selectedItem
+    ? selectedItem.kind === "game"
+      ? `game-${selectedItem.data.slug}`
+      : `event-${(selectedItem.data as GamingEvent).id}`
+    : null;
+
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
       {/* ── Nav row ── */}
@@ -993,15 +1018,15 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
         marginBottom: isMobile ? "8px" : "10px", flexShrink: 0, position: "relative",
       }}>
         <button onClick={prevMonth} style={navBtnStyle}>‹</button>
-
         <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)",
           display: "flex", alignItems: "baseline", gap: "6px" }}>
           <span style={{ fontSize: isMobile ? "15px" : "17px", fontWeight: 700 }}>
             {MONTH_NAMES[month - 1]}
           </span>
-          <span style={{ fontSize: isMobile ? "13px" : "14px", color: "var(--text-dim)" }}>{year}</span>
+          <span style={{ fontSize: isMobile ? "13px" : "14px", color: "var(--text-dim)" }}>
+            {year}
+          </span>
         </div>
-
         <div style={{ position: "absolute", right: "50px", display: "flex", alignItems: "center" }}>
           <button onClick={() => setWatchlistOpen(true)} style={{
             background: watchlistSlugs.length > 0 ? "rgba(82,214,138,0.1)" : "var(--card)",
@@ -1016,13 +1041,13 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
             {watchlistSlugs.length > 0 && (
               <span style={{
                 fontSize: "10px", fontWeight: 700,
-                background: watchlistSlugs.length > 0 ? "rgba(82,214,138,0.25)" : "rgba(255,255,255,0.1)",
-                borderRadius: "10px", padding: "1px 6px", minWidth: "18px", textAlign: "center",
+                background: "rgba(82,214,138,0.25)",
+                borderRadius: "10px", padding: "1px 6px",
+                minWidth: "18px", textAlign: "center",
               }}>{watchlistSlugs.length}</span>
             )}
           </button>
         </div>
-
         <button onClick={nextMonth} style={{
           ...navBtnStyle,
           visibility: (year === 2026 && month === 12) ? "hidden" : "visible",
@@ -1056,61 +1081,203 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
       {/* ── GTA VI Countdown ── */}
       <GTA6Countdown />
 
-      {/* ── Grid card wrapper ── */}
-      <div key={gridKey} style={{
-        flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
-        animation: slideDir ? `${slideDir === "left" ? "slideLeft" : "slideRight"} 0.18s ease` : "none",
-        overflow: "hidden",
-      }}>
+      {/* ── Panels row ── */}
       <div style={{
-        flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
-        border: "1px solid oklch(32% 0.06 240)",
-        borderRadius: "12px", overflow: "hidden",
-        boxShadow: "0 0 0 1px rgba(255,255,255,0.04) inset, 0 12px 40px rgba(0,0,0,0.6)",
-        background: "var(--card)",
+        flex: 1, minHeight: 0, display: "flex",
+        gap: selectedDate && !isMobile ? "10px" : "0",
       }}>
 
-      {/* ── Day headers ── */}
-      <div style={{
-        display: "grid", gridTemplateColumns: "repeat(7, 1fr)", flexShrink: 0,
-      }}>
-        {DAY_LABELS.map((d) => (
-          <div key={d} style={{
-            textAlign: "center", fontSize: isMobile ? "9px" : "10px", fontWeight: 600,
-            color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.06em",
-            padding: isMobile ? "5px 0" : "6px 0", background: "var(--card)",
-            borderRight: "1px solid var(--border)", borderBottom: "1px solid var(--border)",
-          }}>{d}</div>
-        ))}
-      </div>
+        {/* Calendar panel */}
+        <div style={{
+          display: "flex", flexDirection: "column",
+          flex: selectedDate && !isMobile ? "0 0 42%" : "1",
+          minWidth: 0, transition: "flex 0.2s ease",
+        }}>
+          <div key={gridKey} style={{
+            flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
+            animation: slideDir ? `${slideDir === "left" ? "slideLeft" : "slideRight"} 0.18s ease` : "none",
+            overflow: "hidden",
+          }}>
+            <div style={{
+              flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
+              border: "1px solid oklch(32% 0.06 240)",
+              borderRadius: "12px", overflow: "hidden",
+              boxShadow: "0 0 0 1px rgba(255,255,255,0.04) inset, 0 12px 40px rgba(0,0,0,0.6)",
+              background: "var(--card)",
+            }}>
+              {/* Day headers */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", flexShrink: 0 }}>
+                {DAY_LABELS.map((d) => (
+                  <div key={d} style={{
+                    textAlign: "center", fontSize: isMobile ? "9px" : "10px", fontWeight: 600,
+                    color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.06em",
+                    padding: isMobile ? "5px 0" : "6px 0", background: "var(--card)",
+                    borderRight: "1px solid var(--border)", borderBottom: "1px solid var(--border)",
+                  }}>{d}</div>
+                ))}
+              </div>
+              {/* Calendar grid */}
+              <div style={{
+                flex: 1, minHeight: 0, display: "grid",
+                gridTemplateColumns: "repeat(7, 1fr)",
+                gridTemplateRows: `repeat(${numRows}, minmax(${isMobile ? "48px" : "0px"}, 1fr))`,
+              }}>
+                {cells.map(({ dateStr, day, thisMonth }) => {
+                  const cellReleases = thisMonth ? (releasesByDate[dateStr] ?? []) : [];
+                  const cellEvents   = thisMonth
+                    ? getEventsForDate(dateStr).filter((e) => activeFilters.has(e.type as FilterKey))
+                    : [];
+                  return (
+                    <CalendarCell
+                      key={dateStr} dateStr={dateStr} day={day}
+                      thisMonth={thisMonth} isToday={dateStr === todayStr}
+                      isSelected={dateStr === selectedDate}
+                      releases={cellReleases} events={cellEvents}
+                      onSelectDate={(d) => {
+                        setSelectedDate(d);
+                        setSelectedItem(null);
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
 
-      {/* ── Calendar grid ── */}
-      <div style={{
-        flex: 1, minHeight: 0, display: "grid",
-        gridTemplateColumns: "repeat(7, 1fr)",
-        gridTemplateRows: `repeat(${numRows}, minmax(${isMobile ? "48px" : "0px"}, 1fr))`,
-      }}>
-        {cells.map(({ dateStr, day, thisMonth }) => {
-          const cellReleases = thisMonth ? (releasesByDate[dateStr] ?? []) : [];
-          const cellEvents   = thisMonth
-            ? getEventsForDate(dateStr).filter((e) => activeFilters.has(e.type as FilterKey))
-            : [];
-          return (
-            <CalendarCell
-              key={dateStr} dateStr={dateStr} day={day}
-              thisMonth={thisMonth} isToday={dateStr === todayStr}
-              isSelected={dateStr === selectedDate}
-              releases={cellReleases} events={cellEvents}
-              onSelectDate={(d) => { setSelectedDate(d); setSelectedItem(null); }}
+        {/* Day panel (desktop only) */}
+        {selectedDate && !isMobile && (
+          <DayPanel
+            dateStr={selectedDate}
+            releases={dayReleases}
+            events={dayEvents}
+            todayStr={todayStr}
+            watchlistHas={watchlistHas}
+            watchlistToggle={watchlistToggle}
+            selectedItemKey={selectedItemKey}
+            onSelectItem={setSelectedItem}
+            onClose={() => { setSelectedDate(null); setSelectedItem(null); }}
+          />
+        )}
+
+        {/* Detail panel (desktop only) */}
+        {selectedDate && selectedItem && !isMobile && (
+          selectedItem.kind === "game" ? (
+            <GameDetailPanel
+              game={selectedItem.data}
+              inWatchlist={watchlistHas(selectedItem.data.slug)}
+              onWatchlistToggle={watchlistToggle}
+              onClose={() => setSelectedItem(null)}
             />
-          );
-        })}
+          ) : (
+            <EventDetailPanel
+              event={selectedItem.data as GamingEvent}
+              onClose={() => setSelectedItem(null)}
+            />
+          )
+        )}
       </div>
 
-      </div>{/* end grid card wrapper */}
-      </div>{/* end slide animation wrapper */}
+      {/* ── Mobile: day sheet (bottom sheet list) ── */}
+      {isMobile && selectedDate && (dayReleases.length > 0 || dayEvents.length > 0) && (
+        <>
+          <div onClick={() => { setSelectedDate(null); setSelectedItem(null); }} style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 150,
+          }} />
+          <div style={{
+            position: "fixed", bottom: 0, left: 0, right: 0,
+            background: "var(--card)", borderTop: "1px solid var(--border)",
+            borderRadius: "16px 16px 0 0", zIndex: 200,
+            maxHeight: "65vh", display: "flex", flexDirection: "column",
+            animation: "slideUp 0.2s ease",
+          }}>
+            <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 4px" }}>
+              <div style={{ width: "36px", height: "4px", borderRadius: "2px",
+                background: "rgba(255,255,255,0.15)" }} />
+            </div>
+            <div style={{ padding: "4px 16px 12px", display: "flex",
+              justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+              <div>
+                <p style={{ fontSize: "15px", fontWeight: 700, margin: 0 }}>
+                  {formatDateLong(selectedDate)}
+                </p>
+                <p style={{ fontSize: "12px", color: "var(--text-dim)", margin: "2px 0 0" }}>
+                  {dayReleases.length + dayEvents.length} item{dayReleases.length + dayEvents.length !== 1 ? "s" : ""}
+                </p>
+              </div>
+              <button onClick={() => { setSelectedDate(null); setSelectedItem(null); }} style={{
+                background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)",
+                borderRadius: "50%", width: "30px", height: "30px",
+                color: "var(--text-secondary)", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: "13px",
+              }}>✕</button>
+            </div>
+            <div style={{ overflowY: "auto", padding: "0 12px 24px" }}>
+              {[
+                ...dayEvents.map((e)  => ({ kind: "event" as const, data: e, color: e.color, label: e.name })),
+                ...dayReleases.map((r) => ({ kind: "game"  as const, data: r, color: "#52d68a", label: r.name })),
+              ].map((item, i) => (
+                <button key={i} onClick={() => setSelectedItem(
+                  item.kind === "game"
+                    ? { kind: "game",  data: item.data as GameRelease }
+                    : { kind: "event", data: item.data as GamingEvent }
+                )} style={{
+                  display: "flex", alignItems: "center", gap: "12px", width: "100%",
+                  textAlign: "left", padding: "12px", borderRadius: "10px",
+                  background: "transparent", border: "none", cursor: "pointer",
+                  marginBottom: "4px",
+                }}>
+                  <div style={{ width: "10px", height: "10px", borderRadius: "3px",
+                    background: item.color, flexShrink: 0 }} />
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ fontSize: "14px", fontWeight: 600, margin: 0,
+                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {item.label}
+                    </p>
+                    <p style={{ fontSize: "11px", color: "var(--text-dim)", margin: "2px 0 0" }}>
+                      {item.kind === "game" ? "Game Release" : EVENT_TYPE_LABEL[(item.data as GamingEvent).type]}
+                    </p>
+                  </div>
+                  <div style={{ marginLeft: "auto", color: "var(--text-dim)", fontSize: "16px" }}>›</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
-      {/* ── Wishlist panel ── */}
+      {/* ── Mobile: detail overlay ── */}
+      {isMobile && selectedItem && (
+        <>
+          <div onClick={() => setSelectedItem(null)} style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 290,
+          }} />
+          <div style={{
+            position: "fixed", top: "50%", left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "calc(100vw - 32px)", maxWidth: "380px",
+            zIndex: 300, borderRadius: "16px", overflow: "hidden",
+            animation: "popIn 0.15s ease",
+          }}>
+            {selectedItem.kind === "game" ? (
+              <GameDetailPanel
+                game={selectedItem.data}
+                inWatchlist={watchlistHas(selectedItem.data.slug)}
+                onWatchlistToggle={watchlistToggle}
+                onClose={() => setSelectedItem(null)}
+              />
+            ) : (
+              <EventDetailPanel
+                event={selectedItem.data as GamingEvent}
+                onClose={() => setSelectedItem(null)}
+              />
+            )}
+          </div>
+        </>
+      )}
+
+      {/* ── Watchlist panel ── */}
       {watchlistOpen && (
         <WatchlistPanel
           slugs={watchlistSlugs} releases={releases}
