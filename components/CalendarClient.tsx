@@ -188,6 +188,175 @@ function CalendarCell({
   );
 }
 
+// ── Game card (day panel) ─────────────────────────────────────────────────────
+
+function GameCard({ game, isSelected, inWatchlist, onSelect, onWatchlistToggle }: {
+  game: GameRelease;
+  isSelected: boolean;
+  inWatchlist: boolean;
+  onSelect: () => void;
+  onWatchlistToggle: () => void;
+}) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const platforms = deduplicatePlatforms(game.platforms).slice(0, 2);
+
+  return (
+    <div
+      onClick={onSelect}
+      style={{
+        cursor: "pointer", borderRadius: "8px", overflow: "hidden",
+        border: isSelected
+          ? "1px solid oklch(83% 0.22 158 / 0.6)"
+          : "1px solid var(--border)",
+        transition: "border-color 0.15s, transform 0.15s",
+        background: "var(--card)",
+      }}
+      onMouseEnter={(e) => {
+        if (!isSelected) (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border-hover)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = isSelected
+          ? "oklch(83% 0.22 158 / 0.6)"
+          : "var(--border)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+      }}
+    >
+      {/* Art */}
+      <div style={{ position: "relative", aspectRatio: "3/4", overflow: "hidden" }}>
+        {game.background_image && !imgFailed ? (
+          <Image src={game.background_image} alt={game.name} fill
+            style={{ objectFit: "cover", objectPosition: "top" }}
+            sizes="140px"
+            onError={() => setImgFailed(true)} />
+        ) : (
+          <div style={{
+            width: "100%", height: "100%",
+            background: "linear-gradient(135deg, oklch(20% 0.06 240) 0%, oklch(13% 0.04 240) 100%)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <span style={{ fontSize: "20px", fontWeight: 800,
+              color: "oklch(83% 0.22 158 / 0.25)", letterSpacing: "-0.04em" }}>
+              {game.name.slice(0, 2).toUpperCase()}
+            </span>
+          </div>
+        )}
+        {/* Watchlist overlay */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onWatchlistToggle(); }}
+          style={{
+            position: "absolute", top: "5px", right: "5px",
+            width: "22px", height: "22px", borderRadius: "50%",
+            background: inWatchlist ? "oklch(83% 0.22 158 / 0.25)" : "rgba(6,13,23,0.7)",
+            border: inWatchlist ? "1px solid oklch(83% 0.22 158 / 0.5)" : "1px solid rgba(255,255,255,0.15)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "11px", color: inWatchlist ? "var(--green)" : "var(--text-secondary)",
+            cursor: "pointer", transition: "all 0.15s",
+          }}
+        >{inWatchlist ? "✓" : "+"}</button>
+      </div>
+      {/* Info */}
+      <div style={{ padding: "5px 7px 7px", background: "oklch(16% 0.04 240)" }}>
+        <div style={{
+          fontSize: "10px", fontWeight: 700, color: "oklch(90% 0 0)",
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+          marginBottom: "3px",
+        }}>{game.name}</div>
+        <div style={{ display: "flex", gap: "3px", flexWrap: "wrap" }}>
+          {platforms.map((p) => (
+            <span key={p} style={{
+              fontSize: "7px", fontWeight: 600, letterSpacing: "0.03em",
+              padding: "1px 4px", borderRadius: "3px",
+              background: "rgba(255,255,255,0.07)", color: "var(--text-dim)",
+              border: "1px solid rgba(255,255,255,0.08)", textTransform: "uppercase",
+            }}>{p}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Event banner card (day panel) ─────────────────────────────────────────────
+
+function EventBannerCard({ event, isSelected, onSelect }: {
+  event: GamingEvent;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const showImg = !!event.logoUrl && !imgFailed;
+  const isSameDay = event.startDate === event.endDate;
+
+  return (
+    <div
+      onClick={onSelect}
+      style={{
+        display: "flex", cursor: "pointer", borderRadius: "8px",
+        overflow: "hidden",
+        border: isSelected
+          ? `1px solid ${event.color}66`
+          : "1px solid var(--border)",
+        background: "var(--card)", marginBottom: "8px",
+        transition: "border-color 0.15s",
+      }}
+      onMouseEnter={(e) => {
+        if (!isSelected)
+          (e.currentTarget as HTMLDivElement).style.borderColor = "var(--border-hover)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = isSelected
+          ? `${event.color}66`
+          : "var(--border)";
+      }}
+    >
+      {/* Color accent bar */}
+      <div style={{ width: "3px", background: event.color, flexShrink: 0 }} />
+      {/* Logo square */}
+      <div style={{
+        width: "64px", height: "64px", flexShrink: 0, overflow: "hidden",
+        background: showImg
+          ? "oklch(12% 0.03 240)"
+          : `linear-gradient(135deg, ${event.color}22 0%, ${event.color}08 100%)`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        {showImg ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={event.logoUrl} alt={event.name} onError={() => setImgFailed(true)}
+            style={{ width: "100%", height: "100%", objectFit: "contain", padding: "6px" }} />
+        ) : (
+          <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
+            textTransform: "uppercase", color: event.color, opacity: 0.7,
+            textAlign: "center", padding: "4px" }}>
+            {EVENT_TYPE_LABEL[event.type]}
+          </span>
+        )}
+      </div>
+      {/* Text */}
+      <div style={{ padding: "10px 12px", flex: 1, minWidth: 0 }}>
+        <span style={{
+          display: "inline-block", fontSize: "8px", fontWeight: 700,
+          letterSpacing: "0.06em", textTransform: "uppercase",
+          color: event.color, padding: "1px 5px",
+          background: event.color + "22", borderRadius: "3px",
+          border: `1px solid ${event.color}40`, marginBottom: "4px",
+        }}>{EVENT_TYPE_LABEL[event.type]}</span>
+        <div style={{
+          fontSize: "12px", fontWeight: 700, color: "var(--text)",
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+          marginBottom: "2px",
+        }}>{event.name}</div>
+        <div style={{ fontSize: "10px", color: "var(--text-dim)" }}>
+          {isSameDay
+            ? formatDateShort(event.startDate)
+            : `${formatDateShort(event.startDate)} – ${formatDateShort(event.endDate)}`}
+          {event.location && ` · ${event.location}`}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── CalBtn helper ─────────────────────────────────────────────────────────────
 
 function CalBtn({ url }: { url: string }) {
@@ -620,6 +789,128 @@ function WatchlistPanel({
         </div>
       </div>
     </>
+  );
+}
+
+// ── Day panel ─────────────────────────────────────────────────────────────────
+
+function DayPanel({
+  dateStr, releases, events, todayStr,
+  watchlistHas, watchlistToggle,
+  selectedItemKey, onSelectItem, onClose,
+}: {
+  dateStr: string;
+  releases: GameRelease[];
+  events: GamingEvent[];
+  todayStr: string;
+  watchlistHas: (slug: string) => boolean;
+  watchlistToggle: (slug: string) => void;
+  selectedItemKey: string | null;
+  onSelectItem: (item: { kind: "game"; data: GameRelease } | { kind: "event"; data: GamingEvent }) => void;
+  onClose: () => void;
+}) {
+  const date = new Date(dateStr + "T12:00:00");
+  const monthName = MONTH_NAMES[date.getMonth()].toUpperCase();
+  const dayNum    = date.getDate();
+  const isToday   = dateStr === todayStr;
+
+  return (
+    <div style={{
+      flex: 1, minWidth: 0,
+      background: "var(--card)", border: "1px solid var(--border-hover)",
+      borderRadius: "12px", overflow: "hidden",
+      display: "flex", flexDirection: "column",
+      animation: "slideLeft 0.2s ease",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+    }}>
+      {/* Header */}
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "12px 16px", borderBottom: "1px solid var(--border)",
+        flexShrink: 0,
+      }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+          <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "0.04em" }}>
+            {monthName} {dayNum}
+          </span>
+          {isToday && (
+            <span style={{
+              fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
+              textTransform: "uppercase", color: "var(--green)",
+              background: "oklch(83% 0.22 158 / 0.12)",
+              padding: "2px 7px", borderRadius: "4px",
+            }}>TODAY</span>
+          )}
+        </div>
+        <button onClick={onClose} style={{
+          background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)",
+          borderRadius: "50%", width: "26px", height: "26px",
+          color: "var(--text-secondary)", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "12px", lineHeight: 1, padding: 0,
+        }}>✕</button>
+      </div>
+
+      {/* Scrollable content */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "12px" }}>
+
+        {/* Games section */}
+        {releases.length > 0 && (
+          <>
+            <div style={{
+              fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
+              textTransform: "uppercase", color: "var(--text-dim)",
+              marginBottom: "8px",
+            }}>
+              Game Releases · {releases.length}
+            </div>
+            <div style={{
+              display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px",
+              marginBottom: events.length > 0 ? "16px" : "0",
+            }}>
+              {releases.map((game) => (
+                <GameCard
+                  key={game.slug}
+                  game={game}
+                  isSelected={selectedItemKey === `game-${game.slug}`}
+                  inWatchlist={watchlistHas(game.slug)}
+                  onSelect={() => onSelectItem({ kind: "game", data: game })}
+                  onWatchlistToggle={() => watchlistToggle(game.slug)}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Events section */}
+        {events.length > 0 && (
+          <>
+            <div style={{
+              fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
+              textTransform: "uppercase", color: "var(--text-dim)",
+              marginBottom: "8px",
+            }}>
+              Events · {events.length}
+            </div>
+            {events.map((event) => (
+              <EventBannerCard
+                key={event.id}
+                event={event}
+                isSelected={selectedItemKey === `event-${event.id}`}
+                onSelect={() => onSelectItem({ kind: "event", data: event })}
+              />
+            ))}
+          </>
+        )}
+
+        {releases.length === 0 && events.length === 0 && (
+          <p style={{ fontSize: "13px", color: "var(--text-dim)",
+            textAlign: "center", marginTop: "40px" }}>
+            Nothing scheduled for this day.
+          </p>
+        )}
+      </div>
+    </div>
   );
 }
 
