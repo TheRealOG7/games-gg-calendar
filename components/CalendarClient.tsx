@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
-import Image from "next/image";
+import { useState, useCallback, useEffect } from "react";
 import type { GameRelease } from "@/lib/releases";
 import { getReleasesForDate, deduplicatePlatforms, gamesGgUrl } from "@/lib/releases";
 import type { GamingEvent } from "@/lib/events";
@@ -11,11 +10,6 @@ import { useWishlist } from "@/lib/wishlist";
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type FilterKey = "release" | "convention" | "showcase" | "awards" | "esports";
-
-type PopoverItem =
-  | { kind: "game";  data: GameRelease; anchorRect: DOMRect }
-  | { kind: "event"; data: GamingEvent; anchorRect: DOMRect }
-  | { kind: "day";   dateStr: string; releases: GameRelease[]; events: GamingEvent[]; anchorRect: DOMRect };
 
 // ── Filter config ─────────────────────────────────────────────────────────────
 
@@ -112,29 +106,6 @@ function useIsMobile(): boolean {
   return mobile;
 }
 
-// ── Popover positioning ───────────────────────────────────────────────────────
-
-function computePopoverStyle(rect: DOMRect, width = 310, isMobile = false): React.CSSProperties {
-  if (isMobile) {
-    return {
-      position: "fixed",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      width: "calc(100vw - 32px)",
-      maxWidth: "380px",
-      zIndex: 300,
-    };
-  }
-  const MARGIN = 10, OFFSET = 6, EST_H = 420;
-  let left = rect.left;
-  let top  = rect.bottom + OFFSET;
-  if (top + EST_H > window.innerHeight - MARGIN) top = Math.max(MARGIN, rect.top - EST_H - OFFSET);
-  if (left + width > window.innerWidth  - MARGIN) left = window.innerWidth - MARGIN - width;
-  left = Math.max(MARGIN, left);
-  return { position: "fixed", top, left, width, zIndex: 200 };
-}
-
 // ── Shared styles ─────────────────────────────────────────────────────────────
 
 function PlatformTag({ name }: { name: string }) {
@@ -150,504 +121,68 @@ function PlatformTag({ name }: { name: string }) {
   );
 }
 
-const closeButtonStyle: React.CSSProperties = {
-  position: "absolute", top: "10px", right: "10px",
-  background: "rgba(6,13,23,0.6)", border: "1px solid var(--border)",
-  borderRadius: "50%", width: "26px", height: "26px",
-  color: "var(--text-secondary)", cursor: "pointer",
-  display: "flex", alignItems: "center", justifyContent: "center",
-  fontSize: "12px", lineHeight: 1, padding: 0,
-};
-
-function AddToCalendarBtn({ url }: { url: string }) {
-  return (
-    <a href={url} target="_blank" rel="noopener noreferrer" style={{
-      display: "block", textAlign: "center",
-      background: "rgba(255,255,255,0.05)", color: "var(--text-secondary)",
-      border: "1px solid var(--border)", fontWeight: 600, fontSize: "12px",
-      padding: "7px 14px", borderRadius: "7px", textDecoration: "none",
-      marginTop: "8px", transition: "background 0.15s",
-    }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.09)")}
-      onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
-    >
-      + Add to Google Calendar
-    </a>
-  );
-}
-
-// ── Game popover ──────────────────────────────────────────────────────────────
-
-function GamePopover({ game, onClose, onWishlistToggle, inWishlist }: {
-  game: GameRelease; onClose: () => void;
-  onWishlistToggle: (slug: string) => void; inWishlist: boolean;
-}) {
-  const platforms = deduplicatePlatforms(game.platforms);
-  const calUrl = googleCalUrl(
-    `${game.name} — Release`, game.released, game.released,
-    `${game.name} releases today. View on GAMES.GG: ${gamesGgUrl(game.slug)}`
-  );
-  return (
-    <div>
-      <div style={{ position: "relative", height: "130px", overflow: "hidden", flexShrink: 0 }}>
-        {game.background_image ? (
-          <>
-            <Image src={game.background_image} alt={game.name} fill
-              style={{ objectFit: "cover", objectPosition: "top" }} sizes="380px" />
-            <div style={{ position: "absolute", inset: 0,
-              background: "linear-gradient(to bottom, rgba(6,13,23,0.05) 0%, var(--card) 100%)" }} />
-          </>
-        ) : (
-          <div style={{
-            width: "100%", height: "100%",
-            background: "linear-gradient(135deg, oklch(20% 0.06 240) 0%, oklch(13% 0.04 240) 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <span style={{ fontSize: "36px", fontWeight: 800, color: "oklch(83% 0.22 158 / 0.2)", letterSpacing: "-0.04em" }}>
-              {game.name.slice(0, 2).toUpperCase()}
-            </span>
-          </div>
-        )}
-        <button onClick={onClose} style={closeButtonStyle}>✕</button>
-        <button onClick={() => onWishlistToggle(game.slug)} style={{
-          position: "absolute", top: "10px", right: "42px",
-          background: inWishlist ? "rgba(82,214,138,0.15)" : "rgba(6,13,23,0.6)",
-          border: inWishlist ? "1px solid rgba(82,214,138,0.4)" : "1px solid var(--border)",
-          borderRadius: "50%", width: "26px", height: "26px",
-          color: inWishlist ? "var(--green)" : "var(--text-secondary)",
-          cursor: "pointer", display: "flex", alignItems: "center",
-          justifyContent: "center", fontSize: "13px", lineHeight: 1,
-          transition: "all 0.15s",
-        }}>
-          {inWishlist ? "✓" : "+"}
-        </button>
-      </div>
-      <div style={{ padding: "12px 16px 14px" }}>
-        <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginBottom: "7px" }}>
-          <span style={{
-            fontSize: "10px", fontWeight: 700, letterSpacing: "0.06em",
-            textTransform: "uppercase", color: "var(--green)",
-            padding: "2px 6px", background: "oklch(83% 0.22 158 / 0.15)",
-            borderRadius: "4px", border: "1px solid oklch(83% 0.22 158 / 0.3)",
-          }}>Game Release</span>
-          {game.metacritic && (
-            <span style={{
-              fontSize: "10px", fontWeight: 700, padding: "2px 6px", borderRadius: "4px",
-              background: "#f5c84222", color: "#f5c842", border: "1px solid #f5c84240",
-            }}>MC {game.metacritic}</span>
-          )}
-        </div>
-        <h3 style={{ fontSize: "16px", fontWeight: 700, lineHeight: 1.2, marginBottom: "4px" }}>{game.name}</h3>
-        <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "8px" }}>
-          {formatDateLong(game.released)}
-        </p>
-        {game.genres.length > 0 && (
-          <p style={{ fontSize: "11px", color: "var(--text-dim)", marginBottom: "8px" }}>
-            {game.genres.slice(0, 4).join(" · ")}
-          </p>
-        )}
-        {platforms.length > 0 && (
-          <div style={{ display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "12px" }}>
-            {platforms.map((p) => <PlatformTag key={p} name={p} />)}
-          </div>
-        )}
-        <a href={gamesGgUrl(game.slug)} target="_blank" rel="noopener noreferrer" style={{
-          display: "block", textAlign: "center", background: "var(--green)",
-          color: "#060D17", fontWeight: 700, fontSize: "13px",
-          padding: "9px 14px", borderRadius: "7px", textDecoration: "none", transition: "opacity 0.15s",
-        }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-        >View on GAMES.GG</a>
-        <AddToCalendarBtn url={calUrl} />
-      </div>
-    </div>
-  );
-}
-
-// ── Event popover ─────────────────────────────────────────────────────────────
-
-function EventPopover({ event, onClose }: { event: GamingEvent; onClose: () => void }) {
-  const isSameDay = event.startDate === event.endDate;
-  const calUrl = googleCalUrl(event.name, event.startDate, event.endDate, event.description, event.location);
-  const [imgFailed, setImgFailed] = useState(false);
-  const showImage = !!event.logoUrl && !imgFailed;
-
-  return (
-    <div>
-      <div style={{ position: "relative", height: "90px", overflow: "hidden", flexShrink: 0 }}>
-        {showImage ? (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={event.logoUrl} alt={event.name} onError={() => setImgFailed(true)}
-              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
-            <div style={{ position: "absolute", inset: 0,
-              background: "linear-gradient(to bottom, rgba(6,13,23,0) 0%, var(--card) 100%)" }} />
-          </>
-        ) : (
-          <div style={{
-            width: "100%", height: "100%",
-            background: `linear-gradient(135deg, ${event.color}22 0%, ${event.color}08 100%)`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.1em",
-              textTransform: "uppercase", color: event.color, opacity: 0.6 }}>
-              {EVENT_TYPE_LABEL[event.type]}
-            </span>
-          </div>
-        )}
-        <button onClick={onClose} style={closeButtonStyle}>✕</button>
-      </div>
-      <div style={{ padding: "12px 16px 14px" }}>
-        <span style={{
-          display: "inline-block", fontSize: "10px", fontWeight: 700,
-          letterSpacing: "0.06em", textTransform: "uppercase",
-          color: event.color, padding: "2px 6px",
-          background: event.color + "22", borderRadius: "4px",
-          border: `1px solid ${event.color}40`, marginBottom: "6px",
-        }}>{EVENT_TYPE_LABEL[event.type]}</span>
-        <h3 style={{ fontSize: "15px", fontWeight: 700, lineHeight: 1.2, marginBottom: "4px" }}>{event.name}</h3>
-        <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "2px" }}>
-          {isSameDay ? formatDateLong(event.startDate) : `${formatDateShort(event.startDate)} – ${formatDateShort(event.endDate)}`}
-        </p>
-        {event.location && (
-          <p style={{ fontSize: "12px", color: "var(--text-dim)", marginBottom: "8px" }}>{event.location}</p>
-        )}
-        <p style={{ fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "12px" }}>
-          {event.description}
-        </p>
-        {event.url && (
-          <a href={event.url} target="_blank" rel="noopener noreferrer" style={{
-            display: "block", textAlign: "center",
-            background: event.color + "20", color: event.color,
-            border: `1px solid ${event.color}40`, fontWeight: 700, fontSize: "13px",
-            padding: "9px 14px", borderRadius: "7px", textDecoration: "none", transition: "opacity 0.15s",
-          }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-          >Official Website</a>
-        )}
-        <AddToCalendarBtn url={calUrl} />
-      </div>
-    </div>
-  );
-}
-
-// ── Day popover ("+N more" on desktop) ────────────────────────────────────────
-
-function DayPopover({
-  dateStr, releases, events, onClose, onOpen,
-}: {
-  dateStr: string; releases: GameRelease[]; events: GamingEvent[];
-  onClose: () => void; onOpen: (item: PopoverItem) => void;
-}) {
-  const items = [
-    ...events.map((e)  => ({ kind: "event" as const, data: e,   color: e.color,     label: e.name })),
-    ...releases.map((r) => ({ kind: "game"  as const, data: r,   color: "#52d68a",   label: r.name + " Release" })),
-  ];
-  return (
-    <div>
-      <div style={{ padding: "11px 14px 10px", borderBottom: "1px solid var(--border)",
-        display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: "12px", fontWeight: 700 }}>{formatDateShort(dateStr)} — {items.length} events</span>
-        <button onClick={onClose} style={{ background: "none", border: "none",
-          color: "var(--text-secondary)", cursor: "pointer", fontSize: "14px", padding: "2px 4px" }}>✕</button>
-      </div>
-      <div style={{ maxHeight: "min(60vh, 420px)", overflowY: "auto", padding: "6px" }}>
-        {items.map((item, i) => (
-          <button key={i} onClick={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            onOpen(item.kind === "game"
-              ? { kind: "game",  data: item.data as GameRelease, anchorRect: rect }
-              : { kind: "event", data: item.data as GamingEvent, anchorRect: rect });
-          }} style={{
-            display: "flex", alignItems: "center", gap: "8px", width: "100%",
-            textAlign: "left", padding: "7px 8px", borderRadius: "6px",
-            background: "transparent", border: "none", cursor: "pointer",
-            marginBottom: "2px", transition: "background 0.1s",
-          }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-          >
-            <div style={{ width: "8px", height: "8px", borderRadius: "2px",
-              background: item.color, flexShrink: 0 }} />
-            <span style={{ fontSize: "12px", color: "var(--text)",
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {item.label}
-            </span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ── Mobile bottom sheet ───────────────────────────────────────────────────────
-
-function MobileDaySheet({
-  dateStr, releases, events, onClose, onOpenItem,
-}: {
-  dateStr: string; releases: GameRelease[]; events: GamingEvent[];
-  onClose: () => void; onOpenItem: (item: PopoverItem) => void;
-}) {
-  const items = [
-    ...events.map((e)  => ({ kind: "event" as const, data: e,   color: e.color,   label: e.name })),
-    ...releases.map((r) => ({ kind: "game"  as const, data: r,   color: "#52d68a", label: r.name })),
-  ];
-  return (
-    <>
-      {/* Backdrop */}
-      <div onClick={onClose} style={{
-        position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 150,
-      }} />
-      {/* Sheet */}
-      <div style={{
-        position: "fixed", bottom: 0, left: 0, right: 0,
-        background: "var(--card)", borderTop: "1px solid var(--border)",
-        borderRadius: "16px 16px 0 0", zIndex: 200,
-        maxHeight: "65vh", display: "flex", flexDirection: "column",
-        animation: "slideUp 0.2s ease",
-      }}>
-        {/* Handle */}
-        <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 4px" }}>
-          <div style={{ width: "36px", height: "4px", borderRadius: "2px",
-            background: "rgba(255,255,255,0.15)" }} />
-        </div>
-        {/* Header */}
-        <div style={{ padding: "4px 16px 12px", display: "flex",
-          justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
-          <div>
-            <p style={{ fontSize: "15px", fontWeight: 700, margin: 0 }}>{formatDateLong(dateStr)}</p>
-            <p style={{ fontSize: "12px", color: "var(--text-dim)", margin: "2px 0 0" }}>
-              {items.length} event{items.length !== 1 ? "s" : ""}
-            </p>
-          </div>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.08)",
-            border: "1px solid var(--border)", borderRadius: "50%", width: "30px",
-            height: "30px", color: "var(--text-secondary)", cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px",
-          }}>✕</button>
-        </div>
-        {/* List */}
-        <div style={{ overflowY: "auto", padding: "0 12px 24px" }}>
-          {items.map((item, i) => (
-            <button key={i} onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              onOpenItem(item.kind === "game"
-                ? { kind: "game",  data: item.data as GameRelease, anchorRect: rect }
-                : { kind: "event", data: item.data as GamingEvent, anchorRect: rect });
-            }} style={{
-              display: "flex", alignItems: "center", gap: "12px", width: "100%",
-              textAlign: "left", padding: "12px", borderRadius: "10px",
-              background: "transparent", border: "none", cursor: "pointer",
-              marginBottom: "4px", transition: "background 0.1s",
-            }}
-              onTouchStart={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
-              onTouchEnd={(e)   => (e.currentTarget.style.background = "transparent")}
-            >
-              <div style={{ width: "10px", height: "10px", borderRadius: "3px",
-                background: item.color, flexShrink: 0 }} />
-              <div style={{ minWidth: 0 }}>
-                <p style={{ fontSize: "14px", fontWeight: 600, margin: 0,
-                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {item.label}
-                </p>
-                {item.kind === "game" && (
-                  <p style={{ fontSize: "11px", color: "var(--text-dim)", margin: "2px 0 0" }}>
-                    Game Release
-                  </p>
-                )}
-                {item.kind === "event" && (
-                  <p style={{ fontSize: "11px", color: "var(--text-dim)", margin: "2px 0 0" }}>
-                    {EVENT_TYPE_LABEL[(item.data as GamingEvent).type]}
-                  </p>
-                )}
-              </div>
-              <div style={{ marginLeft: "auto", color: "var(--text-dim)", fontSize: "16px", flexShrink: 0 }}>›</div>
-            </button>
-          ))}
-        </div>
-      </div>
-    </>
-  );
-}
-
-// ── Popover container ─────────────────────────────────────────────────────────
-
-function CalendarPopover({
-  item, onClose, onOpen, isMobile, watchlistToggle, watchlistHas,
-}: {
-  item: PopoverItem; onClose: () => void;
-  onOpen: (item: PopoverItem) => void; isMobile: boolean;
-  watchlistToggle: (slug: string) => void; watchlistHas: (slug: string) => boolean;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const width = item.kind === "day" ? 270 : 310;
-  const style = computePopoverStyle(item.anchorRect, width, isMobile);
-
-  useEffect(() => {
-    function onMouseDown(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
-    }
-    function onKey(e: KeyboardEvent) { if (e.key === "Escape") onClose(); }
-    document.addEventListener("mousedown", onMouseDown);
-    document.addEventListener("keydown",   onKey);
-    return () => {
-      document.removeEventListener("mousedown", onMouseDown);
-      document.removeEventListener("keydown",   onKey);
-    };
-  }, [onClose]);
-
-  return (
-    <>
-      {isMobile && (
-        <div onClick={onClose} style={{
-          position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 290,
-        }} />
-      )}
-      <div ref={ref} style={{
-        ...style,
-        background: "var(--card)", border: "1px solid var(--border-hover)",
-        borderRadius: "12px", boxShadow: "0 12px 40px rgba(0,0,0,0.7)",
-        overflow: "hidden", animation: "popIn 0.15s ease",
-      }}>
-        {item.kind === "game"  && <GamePopover  game={item.data}  onClose={onClose}
-          onWishlistToggle={watchlistToggle} inWishlist={watchlistHas(item.data.slug)} />}
-        {item.kind === "event" && <EventPopover event={item.data} onClose={onClose} />}
-        {item.kind === "day"   && (
-          <DayPopover dateStr={item.dateStr} releases={item.releases}
-            events={item.events} onClose={onClose} onOpen={onOpen} />
-        )}
-      </div>
-    </>
-  );
-}
-
 // ── Calendar cell ─────────────────────────────────────────────────────────────
 
 const GAME_COLOR_HEX = "#52d68a";
 
-function EventPill({ label, color, isGame, onClick }: {
-  label: string; color: string; isGame: boolean;
-  onClick: (e: React.MouseEvent) => void;
-}) {
-  const c = isGame ? GAME_COLOR_HEX : color;
-  return (
-    <button onClick={(e) => { e.stopPropagation(); onClick(e); }} style={{
-      width: "100%", textAlign: "left", padding: "2px 5px", borderRadius: "3px",
-      fontSize: "10px", lineHeight: "16px",
-      background: c + (isGame ? "28" : "22"), color: c,
-      overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis",
-      cursor: "pointer", border: `1px solid ${c}40`,
-      display: "block", marginBottom: "2px", transition: "opacity 0.1s, transform 0.1s",
-    }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.opacity = "0.8";
-        e.currentTarget.style.transform = "translateY(-1px)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.opacity = "1";
-        e.currentTarget.style.transform = "translateY(0)";
-      }}
-    >{label}</button>
-  );
-}
-
 function CalendarCell({
-  dateStr, day, thisMonth, isToday, releases, events,
-  onOpenPopover, onOpenSheet, isMobile,
+  dateStr, day, thisMonth, isToday, isSelected, releases, events, onSelectDate,
 }: {
-  dateStr: string; day: number; thisMonth: boolean; isToday: boolean;
+  dateStr: string; day: number; thisMonth: boolean; isToday: boolean; isSelected: boolean;
   releases: GameRelease[]; events: GamingEvent[];
-  onOpenPopover: (item: PopoverItem) => void;
-  onOpenSheet:   (dateStr: string) => void;
-  isMobile: boolean;
+  onSelectDate: (dateStr: string) => void;
 }) {
   const items = [
-    ...events.map((e)  => ({ kind: "event" as const, data: e })),
-    ...releases.map((r) => ({ kind: "game"  as const, data: r })),
+    ...events.map((e) => ({ color: e.color })),
+    ...releases.map(()  => ({ color: GAME_COLOR_HEX })),
   ];
   const hasItems = items.length > 0;
-
-  const handleCellClick = () => {
-    if (!thisMonth || !isMobile || !hasItems) return;
-    onOpenSheet(dateStr);
-  };
+  const dotsToShow = items.slice(0, 3);
+  const overflow  = items.length - dotsToShow.length;
 
   return (
-    <div onClick={handleCellClick} style={{
-      background: "var(--bg)", padding: isMobile ? "4px 3px 3px" : "5px 5px 4px",
-      borderRight: "1px solid var(--border)", borderBottom: "1px solid var(--border)",
-      borderLeft: thisMonth && events.length > 0 ? `2px solid ${events[0].color}55` : "none",
-      overflow: "hidden", opacity: thisMonth ? 1 : 0.3, minHeight: 0,
-      cursor: isMobile && thisMonth && hasItems ? "pointer" : "default",
-    }}>
-      {/* Day number */}
+    <div
+      onClick={() => { if (thisMonth) onSelectDate(dateStr); }}
+      style={{
+        background: isSelected ? "oklch(83% 0.22 158 / 0.06)" : "var(--bg)",
+        padding: "5px 5px 4px",
+        borderRight: "1px solid var(--border)",
+        borderBottom: "1px solid var(--border)",
+        borderLeft: isSelected
+          ? "2px solid oklch(83% 0.22 158 / 0.6)"
+          : thisMonth && events.length > 0
+            ? `2px solid ${events[0].color}55`
+            : "none",
+        overflow: "hidden",
+        opacity: thisMonth ? 1 : 0.3,
+        minHeight: 0,
+        cursor: thisMonth ? "pointer" : "default",
+      }}
+    >
       <div style={{
         display: "inline-flex", alignItems: "center", justifyContent: "center",
-        width: isMobile ? "22px" : "20px", height: isMobile ? "22px" : "20px",
-        borderRadius: "50%", fontSize: isMobile ? "12px" : "11px",
+        width: "20px", height: "20px", borderRadius: "50%", fontSize: "11px",
         fontWeight: isToday ? 700 : 500,
         color: isToday ? "#060D17" : hasItems ? "var(--text)" : "var(--text-secondary)",
         background: isToday ? "var(--green)" : "transparent",
         animation: isToday ? "pulseRing 2s ease-out infinite" : "none",
         marginBottom: "3px", flexShrink: 0,
       }}>{day}</div>
-
-      {/* Mobile: colored dots */}
-      {isMobile && thisMonth && hasItems && (
-        <div style={{ display: "flex", gap: "2px", flexWrap: "wrap", paddingLeft: "2px" }}>
-          {items.slice(0, 3).map((item, i) => (
+      {thisMonth && hasItems && (
+        <div style={{ display: "flex", gap: "2px", flexWrap: "wrap", paddingLeft: "1px" }}>
+          {dotsToShow.map((item, i) => (
             <div key={i} style={{
-              width: "6px", height: "6px", borderRadius: "50%", flexShrink: 0,
-              background: item.kind === "game" ? GAME_COLOR_HEX : (item.data as GamingEvent).color,
+              width: "5px", height: "5px", borderRadius: "50%",
+              background: item.color, flexShrink: 0,
             }} />
           ))}
-          {items.length > 3 && (
-            <span style={{ fontSize: "8px", color: "var(--text-dim)", lineHeight: "6px" }}>
-              +{items.length - 3}
+          {overflow > 0 && (
+            <span style={{ fontSize: "7px", color: "var(--text-dim)", lineHeight: "5px" }}>
+              +{overflow}
             </span>
           )}
         </div>
       )}
-
-      {/* Desktop: text pills */}
-      {!isMobile && thisMonth && (() => {
-        const maxVisible = items.length > 2 ? 2 : items.length;
-        const visible  = items.slice(0, maxVisible);
-        const overflow = items.length - maxVisible;
-        return (
-          <>
-            {visible.map((item, i) => item.kind === "event" ? (
-              <EventPill key={`ev-${i}`} label={item.data.name} color={item.data.color} isGame={false}
-                onClick={(e) => onOpenPopover({ kind: "event", data: item.data,
-                  anchorRect: e.currentTarget.getBoundingClientRect() })} />
-            ) : (
-              <EventPill key={`g-${i}`} label={`${item.data.name} Release`}
-                color="var(--green)" isGame={true}
-                onClick={(e) => onOpenPopover({ kind: "game", data: item.data,
-                  anchorRect: e.currentTarget.getBoundingClientRect() })} />
-            ))}
-            {overflow > 0 && (
-              <button onClick={(e) => { e.stopPropagation();
-                onOpenPopover({ kind: "day", dateStr, releases, events,
-                  anchorRect: e.currentTarget.getBoundingClientRect() }); }} style={{
-                fontSize: "9px", fontWeight: 700,
-                color: "rgba(255,255,255,0.65)",
-                background: "rgba(255,255,255,0.09)",
-                border: "1px solid rgba(255,255,255,0.18)",
-                borderRadius: "3px",
-                padding: "2px 5px", marginTop: "2px",
-                cursor: "pointer", width: "100%", textAlign: "left",
-                transition: "background 0.1s",
-              }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.15)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.09)")}
-              >+{overflow} more</button>
-            )}
-          </>
-        );
-      })()}
     </div>
   );
 }
@@ -862,8 +397,12 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
 
   const [year,  setYear]  = useState(initialYear);
   const [month, setMonth] = useState(initialMonth);
-  const [popover, setPopover]   = useState<PopoverItem | null>(null);
-  const [daySheet, setDaySheet] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<
+    | { kind: "game";  data: GameRelease }
+    | { kind: "event"; data: GamingEvent }
+    | null
+  >(null);
   const [watchlistOpen, setWatchlistOpen] = useState(false);
   const [slideDir, setSlideDir] = useState<"left" | "right" | null>(null);
   const [gridKey, setGridKey]   = useState(0);
@@ -891,14 +430,14 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
   const { cells, numRows } = getMonthDays(year, month);
 
   const prevMonth = useCallback(() => {
-    setPopover(null); setDaySheet(null);
+    setSelectedDate(null); setSelectedItem(null);
     setSlideDir("right"); setGridKey((k) => k + 1);
     if (month === 1) { setYear((y) => y - 1); setMonth(12); }
     else setMonth((m) => m - 1);
   }, [month]);
 
   const nextMonth = useCallback(() => {
-    setPopover(null); setDaySheet(null);
+    setSelectedDate(null); setSelectedItem(null);
     if (year === 2026 && month === 12) return;
     setSlideDir("left"); setGridKey((k) => k + 1);
     if (month === 12) { setYear((y) => y + 1); setMonth(1); }
@@ -913,12 +452,6 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
       releasesByDate[r.released].push(r);
     }
   }
-
-  // Mobile day sheet data
-  const sheetReleases = daySheet ? (releasesByDate[daySheet] ?? []) : [];
-  const sheetEvents   = daySheet
-    ? getEventsForDate(daySheet).filter((e) => activeFilters.has(e.type as FilterKey))
-    : [];
 
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
@@ -1034,9 +567,9 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
             <CalendarCell
               key={dateStr} dateStr={dateStr} day={day}
               thisMonth={thisMonth} isToday={dateStr === todayStr}
+              isSelected={dateStr === selectedDate}
               releases={cellReleases} events={cellEvents}
-              onOpenPopover={setPopover} onOpenSheet={setDaySheet}
-              isMobile={isMobile}
+              onSelectDate={(d) => { setSelectedDate(d); setSelectedItem(null); }}
             />
           );
         })}
@@ -1044,30 +577,6 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
 
       </div>{/* end grid card wrapper */}
       </div>{/* end slide animation wrapper */}
-
-      {/* ── Mobile tap hint ── */}
-      {isMobile && (
-        <p style={{ fontSize: "10px", color: "var(--text-dim)", textAlign: "center",
-          margin: "6px 0 0", flexShrink: 0 }}>
-          Tap a day to see events
-        </p>
-      )}
-
-      {/* ── Mobile day sheet ── */}
-      {isMobile && daySheet && (sheetReleases.length > 0 || sheetEvents.length > 0) && (
-        <MobileDaySheet
-          dateStr={daySheet} releases={sheetReleases} events={sheetEvents}
-          onClose={() => setDaySheet(null)}
-          onOpenItem={(item) => { setDaySheet(null); setPopover(item); }}
-        />
-      )}
-
-      {/* ── Popover ── */}
-      {popover && (
-        <CalendarPopover item={popover} onClose={() => setPopover(null)}
-          onOpen={setPopover} isMobile={isMobile}
-          watchlistToggle={watchlistToggle} watchlistHas={watchlistHas} />
-      )}
 
       {/* ── Wishlist panel ── */}
       {watchlistOpen && (
