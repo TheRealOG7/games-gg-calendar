@@ -6,6 +6,7 @@ import type { GameRelease } from "@/lib/releases";
 import { getReleasesForDate, deduplicatePlatforms, gamesGgUrl } from "@/lib/releases";
 import type { GamingEvent } from "@/lib/events";
 import { getEventsForDate } from "@/lib/events";
+import { useWishlist } from "@/lib/wishlist";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -177,7 +178,10 @@ function AddToCalendarBtn({ url }: { url: string }) {
 
 // ── Game popover ──────────────────────────────────────────────────────────────
 
-function GamePopover({ game, onClose }: { game: GameRelease; onClose: () => void }) {
+function GamePopover({ game, onClose, onWishlistToggle, inWishlist }: {
+  game: GameRelease; onClose: () => void;
+  onWishlistToggle: (slug: string) => void; inWishlist: boolean;
+}) {
   const platforms = deduplicatePlatforms(game.platforms);
   const calUrl = googleCalUrl(
     `${game.name} — Release`, game.released, game.released,
@@ -205,6 +209,18 @@ function GamePopover({ game, onClose }: { game: GameRelease; onClose: () => void
           </div>
         )}
         <button onClick={onClose} style={closeButtonStyle}>✕</button>
+        <button onClick={() => onWishlistToggle(game.slug)} style={{
+          position: "absolute", top: "10px", right: "42px",
+          background: inWishlist ? "rgba(82,214,138,0.15)" : "rgba(6,13,23,0.6)",
+          border: inWishlist ? "1px solid rgba(82,214,138,0.4)" : "1px solid var(--border)",
+          borderRadius: "50%", width: "26px", height: "26px",
+          color: inWishlist ? "var(--green)" : "var(--text-secondary)",
+          cursor: "pointer", display: "flex", alignItems: "center",
+          justifyContent: "center", fontSize: "13px", lineHeight: 1,
+          transition: "all 0.15s",
+        }}>
+          {inWishlist ? "✓" : "+"}
+        </button>
       </div>
       <div style={{ padding: "12px 16px 14px" }}>
         <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", marginBottom: "7px" }}>
@@ -459,10 +475,11 @@ function MobileDaySheet({
 // ── Popover container ─────────────────────────────────────────────────────────
 
 function CalendarPopover({
-  item, onClose, onOpen, isMobile,
+  item, onClose, onOpen, isMobile, wishlistToggle, wishlistHas,
 }: {
   item: PopoverItem; onClose: () => void;
   onOpen: (item: PopoverItem) => void; isMobile: boolean;
+  wishlistToggle: (slug: string) => void; wishlistHas: (slug: string) => boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const width = item.kind === "day" ? 270 : 310;
@@ -494,7 +511,8 @@ function CalendarPopover({
         borderRadius: "12px", boxShadow: "0 12px 40px rgba(0,0,0,0.7)",
         overflow: "hidden", animation: "popIn 0.15s ease",
       }}>
-        {item.kind === "game"  && <GamePopover  game={item.data}  onClose={onClose} />}
+        {item.kind === "game"  && <GamePopover  game={item.data}  onClose={onClose}
+          onWishlistToggle={wishlistToggle} inWishlist={wishlistHas(item.data.slug)} />}
         {item.kind === "event" && <EventPopover event={item.data} onClose={onClose} />}
         {item.kind === "day"   && (
           <DayPopover dateStr={item.dateStr} releases={item.releases}
@@ -521,10 +539,16 @@ function EventPill({ label, color, isGame, onClick }: {
       background: c + (isGame ? "28" : "22"), color: c,
       overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis",
       cursor: "pointer", border: `1px solid ${c}40`,
-      display: "block", marginBottom: "2px", transition: "opacity 0.1s",
+      display: "block", marginBottom: "2px", transition: "opacity 0.1s, transform 0.1s",
     }}
-      onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
-      onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.opacity = "0.8";
+        e.currentTarget.style.transform = "translateY(-1px)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.opacity = "1";
+        e.currentTarget.style.transform = "translateY(0)";
+      }}
     >{label}</button>
   );
 }
@@ -554,6 +578,7 @@ function CalendarCell({
     <div onClick={handleCellClick} style={{
       background: "var(--bg)", padding: isMobile ? "4px 3px 3px" : "5px 5px 4px",
       borderRight: "1px solid var(--border)", borderBottom: "1px solid var(--border)",
+      borderLeft: thisMonth && events.length > 0 ? `2px solid ${events[0].color}55` : "none",
       overflow: "hidden", opacity: thisMonth ? 1 : 0.3, minHeight: 0,
       cursor: isMobile && thisMonth && hasItems ? "pointer" : "default",
     }}>
@@ -565,6 +590,7 @@ function CalendarCell({
         fontWeight: isToday ? 700 : 500,
         color: isToday ? "#060D17" : hasItems ? "var(--text)" : "var(--text-secondary)",
         background: isToday ? "var(--green)" : "transparent",
+        animation: isToday ? "pulseRing 2s ease-out infinite" : "none",
         marginBottom: "3px", flexShrink: 0,
       }}>{day}</div>
 
@@ -626,6 +652,87 @@ function CalendarCell({
   );
 }
 
+// ── GTA VI Countdown ──────────────────────────────────────────────────────────
+
+const GTA6_RELEASE = new Date("2026-11-19T00:00:00");
+
+function useCountdown(target: Date) {
+  const [diff, setDiff] = useState(() => Math.max(0, target.getTime() - Date.now()));
+  useEffect(() => {
+    const id = setInterval(() => setDiff(Math.max(0, target.getTime() - Date.now())), 1000);
+    return () => clearInterval(id);
+  }, [target]);
+  const days    = Math.floor(diff / 86400000);
+  const hours   = Math.floor((diff % 86400000) / 3600000);
+  const minutes = Math.floor((diff % 3600000)  / 60000);
+  const seconds = Math.floor((diff % 60000)    / 1000);
+  return { days, hours, minutes, seconds, released: diff === 0 };
+}
+
+function GTA6Countdown() {
+  const { days, hours, minutes, seconds, released } = useCountdown(GTA6_RELEASE);
+
+  if (released) {
+    return (
+      <div style={{
+        background: "linear-gradient(90deg, #1a0a0a 0%, #2d0a0a 50%, #1a0a0a 100%)",
+        border: "1px solid #8b1a1a", borderRadius: "8px",
+        padding: "10px 16px", marginBottom: "10px",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        gap: "8px", flexShrink: 0,
+      }}>
+        <span style={{ fontSize: "13px", fontWeight: 700, color: "#ff4444" }}>
+          GTA VI IS OUT NOW 🎮
+        </span>
+      </div>
+    );
+  }
+
+  const unit = (val: number, label: string) => (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "36px" }}>
+      <span style={{ fontSize: "16px", fontWeight: 800, color: "#ff4444", lineHeight: 1 }}>
+        {String(val).padStart(2, "0")}
+      </span>
+      <span style={{ fontSize: "8px", fontWeight: 600, color: "#8b1a1a",
+        textTransform: "uppercase", letterSpacing: "0.06em", marginTop: "2px" }}>
+        {label}
+      </span>
+    </div>
+  );
+
+  return (
+    <div style={{
+      background: "linear-gradient(90deg, #0f0505 0%, #1f0808 40%, #1f0808 60%, #0f0505 100%)",
+      border: "1px solid #4a0e0e", borderRadius: "8px",
+      padding: "8px 14px", marginBottom: "10px",
+      display: "flex", alignItems: "center", gap: "12px",
+      flexShrink: 0, overflow: "hidden",
+    }}>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <span style={{ fontSize: "10px", fontWeight: 800, color: "#cc2222",
+          textTransform: "uppercase", letterSpacing: "0.1em", lineHeight: 1 }}>
+          GTA VI
+        </span>
+        <span style={{ fontSize: "9px", color: "#6b1a1a", marginTop: "2px" }}>Nov 19, 2026</span>
+      </div>
+      <div style={{ width: "1px", height: "28px", background: "#4a0e0e" }} />
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {unit(days,    "days")}
+        <span style={{ color: "#4a0e0e", fontWeight: 700, marginBottom: "10px" }}>:</span>
+        {unit(hours,   "hrs")}
+        <span style={{ color: "#4a0e0e", fontWeight: 700, marginBottom: "10px" }}>:</span>
+        {unit(minutes, "min")}
+        <span style={{ color: "#4a0e0e", fontWeight: 700, marginBottom: "10px" }}>:</span>
+        {unit(seconds, "sec")}
+      </div>
+      <div style={{ marginLeft: "auto", fontSize: "9px", color: "#4a0e0e",
+        fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        Rockstar Games
+      </div>
+    </div>
+  );
+}
+
 // ── Filter legend ─────────────────────────────────────────────────────────────
 
 function FilterLegendItem({
@@ -654,6 +761,115 @@ function FilterLegendItem({
   );
 }
 
+// ── Confetti ──────────────────────────────────────────────────────────────────
+
+const CONFETTI_COLORS = ["#52d68a", "#4f9cf9", "#b06ff5", "#f5c842", "#e84855", "#ff9f43"];
+
+function Confetti() {
+  const pieces = Array.from({ length: 40 }, (_, i) => ({
+    id: i,
+    color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+    left: Math.random() * 100,
+    delay: Math.random() * 1.5,
+    duration: 2.5 + Math.random() * 2,
+    size: 6 + Math.random() * 6,
+    rotate: Math.random() * 360,
+  }));
+
+  return (
+    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 500, overflow: "hidden" }}>
+      {pieces.map((p) => (
+        <div key={p.id} style={{
+          position: "absolute", top: "-10px", left: `${p.left}%`,
+          width: `${p.size}px`, height: `${p.size}px`,
+          background: p.color,
+          borderRadius: Math.random() > 0.5 ? "50%" : "2px",
+          opacity: 0.9,
+          animation: `confettiFall ${p.duration}s ${p.delay}s ease-in forwards`,
+          transform: `rotate(${p.rotate}deg)`,
+        }} />
+      ))}
+    </div>
+  );
+}
+
+// ── Wishlist panel ────────────────────────────────────────────────────────────
+
+function WishlistPanel({
+  slugs, releases, onClose, onRemove,
+}: {
+  slugs: string[]; releases: GameRelease[];
+  onClose: () => void; onRemove: (slug: string) => void;
+}) {
+  const releaseMap = new Map(releases.map((r) => [r.slug, r]));
+  const saved = slugs
+    .map((s) => releaseMap.get(s))
+    .filter((r): r is GameRelease => !!r)
+    .sort((a, b) => a.released.localeCompare(b.released));
+
+  return (
+    <>
+      <div onClick={onClose} style={{
+        position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 250,
+      }} />
+      <div style={{
+        position: "fixed", top: 0, right: 0, bottom: 0, width: "300px",
+        background: "var(--card)", borderLeft: "1px solid var(--border-hover)",
+        zIndex: 260, display: "flex", flexDirection: "column",
+        boxShadow: "-12px 0 40px rgba(0,0,0,0.6)",
+        animation: "slideInRight 0.2s ease",
+      }}>
+        <div style={{
+          padding: "16px", borderBottom: "1px solid var(--border)",
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          flexShrink: 0,
+        }}>
+          <span style={{ fontWeight: 700, fontSize: "14px" }}>
+            My Wishlist{saved.length > 0 && (
+              <span style={{ color: "var(--text-dim)", fontWeight: 400 }}> ({saved.length})</span>
+            )}
+          </span>
+          <button onClick={onClose} style={{
+            background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)",
+            borderRadius: "50%", width: "28px", height: "28px",
+            color: "var(--text-secondary)", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px",
+          }}>✕</button>
+        </div>
+        <div style={{ flex: 1, overflowY: "auto", padding: "8px" }}>
+          {saved.length === 0 ? (
+            <p style={{ fontSize: "13px", color: "var(--text-dim)", textAlign: "center",
+              marginTop: "40px", lineHeight: 1.6 }}>
+              No games saved yet.<br />
+              <span style={{ fontSize: "11px" }}>Click + on any game to add it.</span>
+            </p>
+          ) : saved.map((r) => (
+            <div key={r.slug} style={{
+              display: "flex", alignItems: "center", gap: "10px",
+              padding: "10px 8px", borderRadius: "8px",
+              borderBottom: "1px solid var(--border)", marginBottom: "2px",
+            }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: "13px", fontWeight: 600, margin: 0,
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {r.name}
+                </p>
+                <p style={{ fontSize: "11px", color: "var(--text-dim)", margin: "2px 0 0" }}>
+                  {formatDateShort(r.released)}
+                </p>
+              </div>
+              <button onClick={() => onRemove(r.slug)} style={{
+                background: "none", border: "none", color: "var(--text-dim)",
+                cursor: "pointer", fontSize: "14px", padding: "4px", flexShrink: 0,
+              }}>×</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ── Main calendar ─────────────────────────────────────────────────────────────
 
 interface CalendarClientProps {
@@ -671,6 +887,12 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
   const [month, setMonth] = useState(initialMonth);
   const [popover, setPopover]   = useState<PopoverItem | null>(null);
   const [daySheet, setDaySheet] = useState<string | null>(null);
+  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [slideDir, setSlideDir] = useState<"left" | "right" | null>(null);
+  const [gridKey, setGridKey]   = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  const { slugs: wishlistSlugs, toggle: wishlistToggle, has: wishlistHas, remove: wishlistRemove } = useWishlist();
 
   // Filter state — all active by default
   const [activeFilters, setActiveFilters] = useState<Set<FilterKey>>(
@@ -695,6 +917,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
 
   const prevMonth = useCallback(() => {
     setPopover(null); setDaySheet(null);
+    setSlideDir("right"); setGridKey((k) => k + 1);
     if (month === 1) { setYear((y) => y - 1); setMonth(12); }
     else setMonth((m) => m - 1);
   }, [month]);
@@ -702,6 +925,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
   const nextMonth = useCallback(() => {
     setPopover(null); setDaySheet(null);
     if (year === 2026 && month === 12) return;
+    setSlideDir("left"); setGridKey((k) => k + 1);
     if (month === 12) { setYear((y) => y + 1); setMonth(1); }
     else setMonth((m) => m + 1);
   }, [month, year]);
@@ -715,6 +939,16 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
     }
   }
 
+  // Confetti on today's releases — fires once on mount
+  useEffect(() => {
+    const todayReleases = releasesByDate[todayStr];
+    if (todayReleases && todayReleases.length > 0) {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Mobile day sheet data
   const sheetReleases = daySheet ? (releasesByDate[daySheet] ?? []) : [];
   const sheetEvents   = daySheet
@@ -723,6 +957,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
 
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+      {showConfetti && <Confetti />}
 
       {/* ── Nav row ── */}
       <div style={{
@@ -737,6 +972,22 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
             {MONTH_NAMES[month - 1]}
           </span>
           <span style={{ fontSize: isMobile ? "13px" : "14px", color: "var(--text-dim)" }}>{year}</span>
+        </div>
+
+        <div style={{ position: "absolute", right: "50px", display: "flex", alignItems: "center" }}>
+          <button onClick={() => setWishlistOpen(true)} style={{
+            background: wishlistSlugs.length > 0 ? "rgba(82,214,138,0.1)" : "var(--card)",
+            border: wishlistSlugs.length > 0 ? "1px solid rgba(82,214,138,0.3)" : "1px solid var(--border)",
+            borderRadius: "7px", padding: "5px 10px",
+            color: wishlistSlugs.length > 0 ? "var(--green)" : "var(--text-secondary)",
+            cursor: "pointer", fontSize: "13px",
+            display: "flex", alignItems: "center", gap: "5px",
+            transition: "all 0.15s",
+          }}>
+            + {wishlistSlugs.length > 0 && (
+              <span style={{ fontSize: "11px", fontWeight: 700 }}>{wishlistSlugs.length}</span>
+            )}
+          </button>
         </div>
 
         <button onClick={nextMonth} style={{
@@ -769,7 +1020,15 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
         )}
       </div>
 
+      {/* ── GTA VI Countdown ── */}
+      <GTA6Countdown />
+
       {/* ── Grid card wrapper ── */}
+      <div key={gridKey} style={{
+        flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
+        animation: slideDir ? `${slideDir === "left" ? "slideLeft" : "slideRight"} 0.18s ease` : "none",
+        overflow: "hidden",
+      }}>
       <div style={{
         flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
         border: "1px solid oklch(32% 0.06 240)",
@@ -816,6 +1075,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
       </div>
 
       </div>{/* end grid card wrapper */}
+      </div>{/* end slide animation wrapper */}
 
       {/* ── Mobile tap hint ── */}
       {isMobile && (
@@ -837,7 +1097,17 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
       {/* ── Popover ── */}
       {popover && (
         <CalendarPopover item={popover} onClose={() => setPopover(null)}
-          onOpen={setPopover} isMobile={isMobile} />
+          onOpen={setPopover} isMobile={isMobile}
+          wishlistToggle={wishlistToggle} wishlistHas={wishlistHas} />
+      )}
+
+      {/* ── Wishlist panel ── */}
+      {wishlistOpen && (
+        <WishlistPanel
+          slugs={wishlistSlugs} releases={releases}
+          onClose={() => setWishlistOpen(false)}
+          onRemove={wishlistRemove}
+        />
       )}
     </div>
   );
