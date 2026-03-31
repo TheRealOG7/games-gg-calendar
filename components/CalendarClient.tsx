@@ -243,6 +243,7 @@ function GameCard({ game, isSelected, inWatchlist, onSelect, onWatchlistToggle }
         )}
         {/* Watchlist overlay */}
         <button
+          type="button"
           onClick={(e) => { e.stopPropagation(); onWatchlistToggle(); }}
           style={{
             position: "absolute", top: "5px", right: "5px",
@@ -420,7 +421,7 @@ function GameDetailPanel({ game, inWatchlist, onWatchlistToggle, onClose }: {
             </span>
           </div>
         )}
-        <button onClick={onClose} style={{
+        <button type="button" onClick={onClose} style={{
           position: "absolute", top: "8px", right: "8px",
           background: "rgba(6,13,23,0.65)", border: "1px solid var(--border)",
           borderRadius: "50%", width: "24px", height: "24px",
@@ -458,7 +459,7 @@ function GameDetailPanel({ game, inWatchlist, onWatchlistToggle, onClose }: {
           </p>
         )}
         {/* Watchlist button */}
-        <button onClick={() => onWatchlistToggle(game.slug)} style={{
+        <button type="button" onClick={() => onWatchlistToggle(game.slug)} style={{
           width: "100%", padding: "7px 12px", borderRadius: "7px",
           fontWeight: 700, fontSize: "12px", cursor: "pointer",
           border: "1px solid",
@@ -544,7 +545,7 @@ function EventDetailPanel({ event, onClose }: {
             </span>
           </div>
         )}
-        <button onClick={onClose} style={{
+        <button type="button" onClick={onClose} style={{
           position: "absolute", top: "8px", right: "8px",
           background: "rgba(6,13,23,0.65)", border: "1px solid var(--border)",
           borderRadius: "50%", width: "24px", height: "24px",
@@ -658,7 +659,7 @@ function GTA6Countdown() {
         <span style={{ fontSize: "10px", fontWeight: 800, color: "var(--text-secondary)",
           textTransform: "uppercase", letterSpacing: "0.1em" }}>GTA VI</span>
         <span style={{ fontSize: "9px", color: "var(--text-dim)" }}>· Nov 19, 2026</span>
-        <button onClick={() => setCollapsed((c) => !c)} style={{
+        <button type="button" onClick={() => setCollapsed((c) => !c)} style={{
           marginLeft: "auto", background: "none", border: "none",
           color: "var(--text-dim)", cursor: "pointer", fontSize: "11px",
           padding: "2px 4px", transition: "color 0.15s",
@@ -696,7 +697,7 @@ function FilterLegendItem({
   onToggle: () => void; isMobile: boolean;
 }) {
   return (
-    <button onClick={onToggle} style={{
+    <button type="button" onClick={onToggle} style={{
       display: "flex", alignItems: "center", gap: isMobile ? "6px" : "5px",
       background: active ? "rgba(255,255,255,0.06)" : "transparent",
       border: active ? "1px solid rgba(255,255,255,0.12)" : "1px solid transparent",
@@ -751,7 +752,7 @@ function WatchlistPanel({
               <span style={{ color: "var(--text-dim)", fontWeight: 400 }}> ({saved.length})</span>
             )}
           </span>
-          <button onClick={onClose} style={{
+          <button type="button" onClick={onClose} style={{
             background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)",
             borderRadius: "50%", width: "28px", height: "28px",
             color: "var(--text-secondary)", cursor: "pointer",
@@ -780,7 +781,7 @@ function WatchlistPanel({
                   {formatDateShort(r.released)}
                 </p>
               </div>
-              <button onClick={() => onRemove(r.slug)} style={{
+              <button type="button" onClick={() => onRemove(r.slug)} style={{
                 background: "none", border: "none", color: "var(--text-dim)",
                 cursor: "pointer", fontSize: "14px", padding: "4px", flexShrink: 0,
               }}>×</button>
@@ -842,7 +843,7 @@ function DayPanel({
             }}>TODAY</span>
           )}
         </div>
-        <button onClick={onClose} style={{
+        <button type="button" onClick={onClose} style={{
           background: "rgba(255,255,255,0.06)", border: "1px solid var(--border)",
           borderRadius: "50%", width: "26px", height: "26px",
           color: "var(--text-secondary)", cursor: "pointer",
@@ -1017,7 +1018,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
         display: "flex", alignItems: "center", justifyContent: "space-between",
         marginBottom: isMobile ? "8px" : "10px", flexShrink: 0, position: "relative",
       }}>
-        <button onClick={prevMonth} style={navBtnStyle}>‹</button>
+        <button type="button" onClick={prevMonth} style={navBtnStyle}>‹</button>
         <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)",
           display: "flex", alignItems: "baseline", gap: "6px" }}>
           <span style={{ fontSize: isMobile ? "15px" : "17px", fontWeight: 700 }}>
@@ -1028,7 +1029,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
           </span>
         </div>
         <div style={{ position: "absolute", right: "50px", display: "flex", alignItems: "center" }}>
-          <button onClick={() => setWatchlistOpen(true)} style={{
+          <button type="button" onClick={() => setWatchlistOpen(true)} style={{
             background: watchlistSlugs.length > 0 ? "rgba(82,214,138,0.1)" : "var(--card)",
             border: watchlistSlugs.length > 0 ? "1px solid rgba(82,214,138,0.3)" : "1px solid var(--border)",
             borderRadius: "7px", padding: "5px 10px",
@@ -1048,7 +1049,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
             )}
           </button>
         </div>
-        <button onClick={nextMonth} style={{
+        <button type="button" onClick={nextMonth} style={{
           ...navBtnStyle,
           visibility: (year === 2026 && month === 12) ? "hidden" : "visible",
         }}>›</button>
@@ -1066,7 +1067,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
             onToggle={() => toggleFilter(f.key)} />
         ))}
         {!allActive && (
-          <button onClick={resetFilters} style={{
+          <button type="button" onClick={resetFilters} style={{
             fontSize: isMobile ? "12px" : "11px", color: "var(--text-dim)",
             background: "none", border: "none", cursor: "pointer",
             padding: isMobile ? "6px 8px" : "3px 6px", flexShrink: 0,
@@ -1171,7 +1172,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
             />
           ) : (
             <EventDetailPanel
-              event={selectedItem.data as GamingEvent}
+              event={selectedItem.data}
               onClose={() => setSelectedItem(null)}
             />
           )
@@ -1205,7 +1206,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
                   {dayReleases.length + dayEvents.length} item{dayReleases.length + dayEvents.length !== 1 ? "s" : ""}
                 </p>
               </div>
-              <button onClick={() => { setSelectedDate(null); setSelectedItem(null); }} style={{
+              <button type="button" onClick={() => { setSelectedDate(null); setSelectedItem(null); }} style={{
                 background: "rgba(255,255,255,0.08)", border: "1px solid var(--border)",
                 borderRadius: "50%", width: "30px", height: "30px",
                 color: "var(--text-secondary)", cursor: "pointer",
@@ -1218,7 +1219,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
                 ...dayEvents.map((e)  => ({ kind: "event" as const, data: e, color: e.color, label: e.name })),
                 ...dayReleases.map((r) => ({ kind: "game"  as const, data: r, color: "#52d68a", label: r.name })),
               ].map((item, i) => (
-                <button key={i} onClick={() => setSelectedItem(
+                <button type="button" key={i} onClick={() => setSelectedItem(
                   item.kind === "game"
                     ? { kind: "game",  data: item.data as GameRelease }
                     : { kind: "event", data: item.data as GamingEvent }
@@ -1236,7 +1237,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
                       {item.label}
                     </p>
                     <p style={{ fontSize: "11px", color: "var(--text-dim)", margin: "2px 0 0" }}>
-                      {item.kind === "game" ? "Game Release" : EVENT_TYPE_LABEL[(item.data as GamingEvent).type]}
+                      {item.kind === "game" ? "Game Release" : EVENT_TYPE_LABEL[item.data.type]}
                     </p>
                   </div>
                   <div style={{ marginLeft: "auto", color: "var(--text-dim)", fontSize: "16px" }}>›</div>
@@ -1269,7 +1270,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
               />
             ) : (
               <EventDetailPanel
-                event={selectedItem.data as GamingEvent}
+                event={selectedItem.data}
                 onClose={() => setSelectedItem(null)}
               />
             )}
