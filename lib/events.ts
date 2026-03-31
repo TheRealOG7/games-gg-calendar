@@ -13,6 +13,12 @@ export interface GamingEvent {
   logoUrl?: string;  // Official banner/og:image for popover header
 }
 
+const DEF_BANNER      = "https://focus.hidubai.com/content/images/2026/02/Dubai-Esports---Games-Festival-to-kick-off-May-8.jpg";
+const CHINAJOY_BANNER = "https://media.pcgamesinsider.biz/2025/6/134110/logo-chinajoy-2025-rx145.png";
+const LOL_WORLDS_BANNER = "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/c0ae09d9938a420ee81a25d11cd3e82f2cccaf1e-3840x2160.jpg";
+const FFWS_BANNER     = "https://liquipedia.net/commons/images/thumb/8/86/Free_Fire_World_Series_2022_darkmode.png/600px-Free_Fire_World_Series_2022_darkmode.png";
+const GOTF_BANNER     = "https://phygitalinternational.com/wp-content/uploads/2025/12/pi2-1.jpg";
+const MLBB_M7_BANNER  = "https://liquipedia.net/commons/images/d/dd/M7_World_allmode.png";
 const PAX_EAST_BANNER = "https://east.paxsite.com/content/dam/sitebuilder/rna/pax/east/2024/images/framework/pax-east-gradient-left-right-73171a-to-D9272D.jpg/_jcr_content/renditions/original.image_file.375.375.file/984193481/pax-east-gradient-left-right-73171a-to-D9272D.jpg";
 const PAX_WEST_BANNER = "https://west.paxsite.com/content/dam/sitebuilder/rna/pax/west/metadata/seo/heros/hero-miscellaneous-pax-west.png/_jcr_content/renditions/original./031809964/hero-miscellaneous-pax-west.png";
 const PAX_AUS_BANNER  = "https://aus.paxsite.com/content/dam/sitebuilder/rxau/pax/aus/branding/us-placeholders/aus-placeholder.png/_jcr_content/renditions/original.image_file.1919.960.file/290877126/aus-placeholder.png";
@@ -118,6 +124,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The region's largest gaming festival — 17 days of city-wide gaming events, the GameExpo (May 9–11), tournaments, and activations at Dubai World Trade Centre.",
     url: "https://www.dubaiesportsfestival.com",
     color: C_CONVENTION,
+    logoUrl: DEF_BANNER,
   },
   {
     id: "pax-east-2025",
@@ -235,6 +242,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The world's largest digital entertainment expo, showcasing gaming, animation, comics, and online entertainment across Asia.",
     url: "https://en.chinajoy.net",
     color: C_CONVENTION,
+    logoUrl: CHINAJOY_BANNER,
   },
   {
     id: "pax-west-2025",
@@ -270,6 +278,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The League of Legends World Championship returns to China — the most-watched annual esports event with hundreds of millions of viewers worldwide.",
     url: "https://lolesports.com",
     color: C_ESPORTS,
+    logoUrl: LOL_WORLDS_BANNER,
   },
   {
     id: "bgs-2025",
@@ -317,6 +326,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The Free Fire global championship — one of the most-watched mobile esports events in Southeast Asia and Latin America, with peak viewership exceeding 5 million.",
     url: "https://ff.garena.com",
     color: C_ESPORTS,
+    logoUrl: FFWS_BANNER,
   },
   {
     id: "gstar-2025",
@@ -388,6 +398,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Phygital sports tournament blending esports and physical disciplines — 850+ participants from 60+ countries across 11 hybrid game formats.",
     url: "https://abudhabi2025.gofuture.games/en",
     color: C_ESPORTS,
+    logoUrl: GOTF_BANNER,
   },
 
   // ── 2026 ──────────────────────────────────────────────────────────────────
@@ -402,6 +413,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The Mobile Legends: Bang Bang World Championship — Southeast Asia's most-watched mobile esports tournament with a massive global following.",
     url: "https://www.mobilelegends.com",
     color: C_ESPORTS,
+    logoUrl: MLBB_M7_BANNER,
   },
   {
     id: "taipei-game-show-2026",
@@ -473,6 +485,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The region's largest gaming festival — 17 days of gaming events, GameExpo (May 22–24), tournaments, and activations across Dubai World Trade Centre.",
     url: "https://www.dubaiesportsfestival.com",
     color: C_CONVENTION,
+    logoUrl: DEF_BANNER,
   },
   {
     id: "summer-game-fest-2026",
@@ -520,6 +533,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The world's largest digital entertainment expo, showcasing gaming, animation, comics, and online entertainment across Asia.",
     url: "https://en.chinajoy.net",
     color: C_CONVENTION,
+    logoUrl: CHINAJOY_BANNER,
   },
   {
     id: "gamescom-onl-2026",
