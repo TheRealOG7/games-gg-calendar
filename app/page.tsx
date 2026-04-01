@@ -65,6 +65,7 @@ export default async function CalendarPage() {
   // e.g. IGDB "mixtape", RAWG "mixtape--1", RAWG "mixtape-2025" → keep best entry
   function normalizeName(name: string): string {
     return name
+      .replace(/:\s+.+$/, "")          // strip subtitle after ": " e.g. "Mouse: Pi for Hire" → "Mouse"
       .toLowerCase()
       .replace(/\bzero\b/g, "0").replace(/\bone\b/g, "1").replace(/\btwo\b/g, "2")
       .replace(/\bthree\b/g, "3").replace(/\bfour\b/g, "4").replace(/\bfive\b/g, "5")
@@ -103,9 +104,6 @@ export default async function CalendarPage() {
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        padding: "16px 20px 12px",
-        maxWidth: "1100px",
-        margin: "0 auto",
         width: "100%",
         boxSizing: "border-box",
       }}
