@@ -208,7 +208,7 @@ function GTA6Banner({ collapsed, onToggle, coverImage }: { collapsed: boolean; o
         boxShadow: collapsed ? "-4px 0 24px rgba(0,0,0,0.8), -1px 0 12px rgba(168,85,247,0.2)" : "none",
         lineHeight: 1.4,
       }}>
-        {collapsed ? "GTA VI" : "›"}
+        {collapsed ? "GTA VI COUNTDOWN" : "›"}
       </button>
     </div>
   );
@@ -249,15 +249,15 @@ function CalGrid({
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Month nav */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px 10px", flexShrink: 0 }}>
-        <button type="button" onClick={onPrevMonth} style={{ background: "none", border: "none", color: "#bbb", cursor: "pointer", fontSize: "22px", lineHeight: 1, padding: "2px 10px" }}>‹</button>
+        <button type="button" onClick={onPrevMonth} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", color: "#bbb", cursor: "pointer", fontSize: "20px", lineHeight: 1, padding: "4px 12px" }}>‹</button>
         <span style={{ fontSize: "15px", fontWeight: 700, color: "#fff", letterSpacing: "0.03em" }}>
           {MONTH_NAMES[month-1]} {year}
         </span>
-        <button type="button" onClick={onNextMonth} style={{ background: "none", border: "none", color: atEnd ? "#333" : "#bbb", cursor: atEnd ? "default" : "pointer", fontSize: "22px", lineHeight: 1, padding: "2px 10px" }}>›</button>
+        <button type="button" onClick={onNextMonth} style={{ background: atEnd ? "transparent" : "rgba(255,255,255,0.08)", border: `1px solid ${atEnd ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.12)"}`, borderRadius: "8px", color: atEnd ? "#333" : "#bbb", cursor: atEnd ? "default" : "pointer", fontSize: "20px", lineHeight: 1, padding: "4px 12px" }}>›</button>
       </div>
 
       {/* Day-of-week headers */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", padding: "0 10px", flexShrink: 0 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", padding: "0 6px", gap: "1px", flexShrink: 0 }}>
         {DAY_ABBREVS.map((d, i) => (
           <div key={i} style={{ textAlign: "center", fontSize: "11px", color: "#888", fontWeight: 600, padding: "4px 0", letterSpacing: "0.04em" }}>{d}</div>
         ))}
@@ -524,7 +524,7 @@ function EventFeedRow({ event, onSelect }: { event: GamingEvent; onSelect: () =>
       onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "oklch(28% 0.06 240)"; (e.currentTarget as HTMLDivElement).style.transform = "translateY(-1px)"; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "oklch(20% 0.04 240)"; (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)"; }}>
       <div style={{ width: "4px", background: event.color, flexShrink: 0 }} />
-      <div style={{ width: "62px", height: "62px", flexShrink: 0, background: showImg ? "oklch(11% 0.03 240)" : `${event.color}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: "72px", alignSelf: "stretch", flexShrink: 0, background: showImg ? "oklch(11% 0.03 240)" : `${event.color}12`, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
         {showImg ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={event.logoUrl} alt={event.name} onError={() => setImgFailed(true)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -657,9 +657,9 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
           {/* Mobile: month nav */}
           {isMobile && (
             <>
-              <button type="button" onClick={prevMonth} style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", fontSize: "22px", padding: "2px 8px", lineHeight: 1 }}>‹</button>
+              <button type="button" onClick={prevMonth} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", color: "#aaa", cursor: "pointer", fontSize: "20px", padding: "3px 10px", lineHeight: 1 }}>‹</button>
               <span style={{ fontSize: "17px", fontWeight: 700, color: "#fff" }}>{MONTH_NAMES[month-1]} <span style={{ fontWeight: 300, color: "#666" }}>{year}</span></span>
-              <button type="button" onClick={nextMonth} style={{ background: "none", border: "none", color: atMonthEnd ? "#333" : "#aaa", cursor: atMonthEnd ? "default" : "pointer", fontSize: "22px", padding: "2px 8px", lineHeight: 1 }}>›</button>
+              <button type="button" onClick={nextMonth} style={{ background: atMonthEnd ? "transparent" : "rgba(255,255,255,0.08)", border: `1px solid ${atMonthEnd ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.12)"}`, borderRadius: "8px", color: atMonthEnd ? "#333" : "#aaa", cursor: atMonthEnd ? "default" : "pointer", fontSize: "20px", padding: "3px 10px", lineHeight: 1 }}>›</button>
             </>
           )}
           {/* Filter pills */}
