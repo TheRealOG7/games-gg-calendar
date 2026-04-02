@@ -331,8 +331,8 @@ function CalGrid({
               {/* Day number */}
               <div style={{ display: "flex", justifyContent: "center", marginBottom: "3px" }}>
                 <div style={{
-                  width: "26px", height: "26px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "13px", fontWeight: isToday ? 800 : hasContent ? 600 : 400,
+                  width: "28px", height: "28px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "14px", fontWeight: isToday ? 800 : hasContent ? 600 : 400,
                   background: isToday ? "var(--green)" : "transparent",
                   color: isToday ? "#060D17" : isSelected ? "oklch(83% 0.22 158)" : hasContent ? "#eee" : "#555",
                   flexShrink: 0,
@@ -340,7 +340,7 @@ function CalGrid({
               </div>
               {/* Content items */}
               {thisMonth && cellContent.slice(0, 3).map((item, idx) => (
-                <div key={idx} style={{ fontSize: "11px", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: item.color, padding: "0 3px", marginBottom: "1px" }}>
+                <div key={idx} style={{ fontSize: "12px", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: item.color, padding: "0 3px", marginBottom: "1px" }}>
                   {item.label}
                 </div>
               ))}
@@ -636,11 +636,14 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
   >(null);
   const [watchlistOpen,   setWatchlistOpen]   = useState(false);
   const [countdownHidden, setCountdownHidden] = useState(false);
+  const [isInIframe, setIsInIframe] = useState(false);
   const [filtersOpen,     setFiltersOpen]     = useState(false);
   const [miniCalOpen,     setMiniCalOpen]     = useState(true);
   const [activeFilters, setActiveFilters] = useState<Set<FilterKey>>(() => new Set<FilterKey>(["release", "convention"]));
 
   const { slugs: watchlistSlugs, toggle: watchlistToggle, has: watchlistHas, remove: watchlistRemove } = useWishlist();
+
+  useEffect(() => { setIsInIframe(window.self !== window.top); }, []);
 
   // Report height to parent page for iframe sizing
   useEffect(() => {
@@ -777,7 +780,7 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
       )}
 
       {/* ── GTA VI countdown (desktop only — overlaps on mobile) ── */}
-      {!isMobile && <GTA6Banner collapsed={countdownHidden} onToggle={() => setCountdownHidden((v) => !v)} coverImage={gta6Cover} />}
+      {!isMobile && !isInIframe && <GTA6Banner collapsed={countdownHidden} onToggle={() => setCountdownHidden((v) => !v)} coverImage={gta6Cover} />}
 
       {/* ── Main content: calendar grid + feed ── */}
       <div style={{ flex: 1, minHeight: 0, display: "flex", overflow: "hidden" }}>
