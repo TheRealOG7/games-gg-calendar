@@ -644,12 +644,11 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
 
   // Report height to parent page for iframe sizing
   useEffect(() => {
-    const sendHeight = () => window.parent.postMessage({ type: "IFRAME_HEIGHT", height: document.body.scrollHeight }, "*");
-    window.addEventListener("load", sendHeight);
+    const sendHeight = () => window.parent.postMessage({ type: "IFRAME_HEIGHT", height: document.documentElement.scrollHeight }, "*");
     const ro = new ResizeObserver(sendHeight);
-    ro.observe(document.body);
+    ro.observe(document.documentElement);
     sendHeight();
-    return () => { window.removeEventListener("load", sendHeight); ro.disconnect(); };
+    return () => ro.disconnect();
   }, []);
 
   // Find GTA VI cover for the countdown widget
