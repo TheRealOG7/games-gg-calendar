@@ -10,28 +10,39 @@ const RAWG_API_KEY = process.env.RAWG_API_KEY ?? "";
 const DASHBOARD_URL = process.env.DASHBOARD_URL ?? "";
 const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID ?? "";
 const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET ?? "";
-// Set GAMES_GG_API_URL to the endpoint that returns featured game slugs,
-// e.g. https://games.gg/api/games — expects JSON array of slugs or objects with a .slug field
-const GAMES_GG_API_URL = process.env.GAMES_GG_API_URL ?? "";
+// GAM3S.GG Strapi v5 CMS — fetch all game slugs to gate the "View on GAMES.GG" button
+const GAMES_GG_CMS = process.env.GAMES_GG_CMS_URL ?? "https://cms.games.gg";
+const CMS_PAGE_SIZE = 200;
 
-async function fetchFeaturedSlugs(apiUrl: string): Promise<string[]> {
-  if (!apiUrl) return [];
+async function fetchCmsPage(page: number): Promise<{ slugs: string[]; pageCount: number }> {
   try {
-    const res = await fetch(apiUrl, {
-      next: { revalidate: 3600 },
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return [];
+    const res = await fetch(
+      `${GAMES_GG_CMS}/api/games?fields[0]=slug&pagination[pageSize]=${CMS_PAGE_SIZE}&pagination[page]=${page}`,
+      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(8000) }
+    );
+    if (!res.ok) return { slugs: [], pageCount: 1 };
     const data = await res.json();
-    const items: unknown[] = Array.isArray(data)
-      ? data
-      : (data.data ?? data.results ?? data.games ?? []);
-    return items
-      .map((i) => (typeof i === "string" ? i : (i as Record<string, string>).slug ?? ""))
+    const slugs = ((data.data ?? []) as Array<{ slug?: string }>)
+      .map((i) => i.slug ?? "")
       .filter(Boolean);
+    const pageCount = (data.meta?.pagination?.pageCount as number) ?? 1;
+    return { slugs, pageCount };
   } catch {
-    return [];
+    return { slugs: [], pageCount: 1 };
   }
+}
+
+async function fetchFeaturedSlugs(): Promise<string[]> {
+  const first = await fetchCmsPage(1);
+  if (first.slugs.length === 0) return [];
+  const all = [...first.slugs];
+  if (first.pageCount > 1) {
+    const rest = await Promise.all(
+      Array.from({ length: first.pageCount - 1 }, (_, i) => fetchCmsPage(i + 2))
+    );
+    for (const page of rest) all.push(...page.slugs);
+  }
+  return all;
 }
 
 export default async function CalendarPage() {
@@ -52,7 +63,7 @@ export default async function CalendarPage() {
     fetchAllReleases(startStr, endStr, RAWG_API_KEY),
     fetchDashboardReleases(DASHBOARD_URL),
     fetchIgdbReleases(TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET),
-    fetchFeaturedSlugs(GAMES_GG_API_URL),
+    fetchFeaturedSlugs(),
   ]);
 
   // Merge priority: RAWG (has images + metacritic) → IGDB direct → dashboard cache
