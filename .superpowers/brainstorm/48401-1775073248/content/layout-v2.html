@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout Options</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0c12; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px; }
+
+  h1 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 24px; }
+
+  .label-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .option-label { font-size: 12px; font-weight: 700; letter-spacing: 1px; color: #888; text-transform: uppercase; }
+  .recommend { background: #52d68a22; border: 1px solid #52d68a; color: #52d68a; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+
+  .preview-wrapper { border: 2px solid #222; border-radius: 12px; overflow: hidden; margin-bottom: 32px; cursor: pointer; transition: border-color 0.2s; }
+  .preview-wrapper:hover { border-color: #444; }
+  .preview-wrapper.selected { border-color: #52d68a; }
+
+  .select-btn { display: block; width: 100%; text-align: center; padding: 10px; background: #151820; color: #666; font-size: 12px; font-weight: 600; border: none; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .preview-wrapper.selected .select-btn { background: #52d68a1a; color: #52d68a; }
+
+  /* ===== OPTION A: OperaGX feed ===== */
+  .app-a { display: flex; height: 580px; background: #0d0f18; }
+
+  /* Left sidebar */
+  .sidebar-a { width: 200px; flex-shrink: 0; background: #0a0c14; border-right: 1px solid #1c1f2e; padding: 16px; display: flex; flex-direction: column; gap: 16px; overflow: hidden; }
+
+  .month-nav { display: flex; align-items: center; justify-content: space-between; }
+  .month-nav span { font-size: 13px; font-weight: 700; color: #fff; }
+  .month-nav button { background: none; border: none; color: #666; cursor: pointer; font-size: 14px; }
+
+  .mini-cal { }
+  .mini-cal-header { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; margin-bottom: 4px; }
+  .mini-cal-header span { font-size: 9px; color: #444; text-align: center; font-weight: 600; }
+  .mini-cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+  .mc-day { font-size: 10px; text-align: center; padding: 3px 0; border-radius: 4px; cursor: pointer; color: #555; }
+  .mc-day.active { color: #ccc; }
+  .mc-day.has-event { color: #fff; }
+  .mc-day.has-event::after { content: ''; display: block; width: 3px; height: 3px; border-radius: 50%; background: #52d68a; margin: 1px auto 0; }
+  .mc-day.today { background: #52d68a; color: #000; font-weight: 700; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; margin: auto; }
+  .mc-day.selected-day { background: #1e3a2a; color: #52d68a; font-weight: 700; border-radius: 4px; }
+
+  .filters-section { }
+  .filters-title { font-size: 10px; font-weight: 700; color: #444; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .filter-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; cursor: pointer; }
+  .filter-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .filter-item span { font-size: 11px; color: #888; }
+  .filter-item.on span { color: #ddd; }
+
+  /* Center feed */
+  .feed-a { flex: 1; overflow-y: auto; padding: 20px; scrollbar-width: thin; scrollbar-color: #222 transparent; }
+  .feed-a::-webkit-scrollbar { width: 4px; }
+  .feed-a::-webkit-scrollbar-track { background: transparent; }
+  .feed-a::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
+
+  .day-section { margin-bottom: 28px; }
+  .day-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #1c1f2e; }
+  .day-number { font-size: 28px; font-weight: 800; color: #fff; line-height: 1; }
+  .day-meta { display: flex; flex-direction: column; }
+  .day-weekday { font-size: 11px; font-weight: 700; color: #52d68a; letter-spacing: 1px; text-transform: uppercase; }
+  .day-label { font-size: 10px; color: #444; }
+
+  .games-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+  .game-tile { width: 120px; cursor: pointer; }
+  .game-art { width: 120px; height: 160px; border-radius: 8px; overflow: hidden; position: relative; background: #1a1d2e; }
+  .game-art img { width: 100%; height: 100%; object-fit: cover; }
+  .game-art-gradient { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.95) 100%); }
+  .game-art-name { position: absolute; bottom: 8px; left: 8px; right: 8px; font-size: 11px; font-weight: 700; color: #fff; line-height: 1.2; }
+  .game-art-platforms { position: absolute; top: 6px; right: 6px; display: flex; gap: 3px; flex-wrap: wrap; justify-content: flex-end; }
+  .platform-tag { background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); color: #ccc; font-size: 8px; font-weight: 700; padding: 2px 5px; border-radius: 3px; }
+  .game-name-below { font-size: 11px; color: #ccc; margin-top: 5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .game-date-below { font-size: 10px; color: #555; }
+
+  .event-tile { width: 100%; background: #12141f; border: 1px solid #1c1f2e; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
+  .event-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .event-name { font-size: 12px; font-weight: 600; color: #ddd; }
+  .event-sub { font-size: 10px; color: #555; }
+  .event-badge { margin-left: auto; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 10px; text-transform: uppercase; }
+
+  /* Right detail */
+  .detail-a { width: 240px; flex-shrink: 0; background: #0a0c14; border-left: 1px solid #1c1f2e; display: flex; flex-direction: column; overflow: hidden; }
+  .detail-cover { width: 100%; aspect-ratio: 3/4; background: linear-gradient(135deg, #1a3a28, #0d1f16); overflow: hidden; position: relative; }
+  .detail-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .detail-cover-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(10,12,20,1)); height: 60px; }
+  .detail-body { padding: 14px; flex: 1; overflow-y: auto; }
+  .detail-title { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .detail-date { font-size: 11px; color: #52d68a; margin-bottom: 10px; font-weight: 600; }
+  .detail-platforms { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 14px; }
+  .detail-platform { background: #1c1f2e; color: #888; font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px; }
+  .detail-btn { width: 100%; padding: 10px; border-radius: 8px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
+  .detail-btn.primary { background: #52d68a; color: #000; }
+  .detail-btn.secondary { background: #1c1f2e; color: #888; }
+
+  /* ===== OPTION B: Enhanced Grid ===== */
+  .app-b { background: #0d0f18; }
+
+  .topbar-b { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid #1c1f2e; }
+  .topbar-b .nav-title { font-size: 20px; font-weight: 800; color: #fff; }
+  .topbar-b .nav-year { font-size: 20px; font-weight: 300; color: #444; margin-left: 6px; }
+  .topbar-b .watchlist-btn { background: #1c1f2e; color: #888; font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1px solid #2a2d3e; cursor: pointer; }
+
+  .filters-bar { display: flex; gap: 8px; padding: 12px 20px; border-bottom: 1px solid #1c1f2e; }
+  .filter-pill { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid transparent; }
+  .filter-pill.active-pill { border-color: currentColor; }
+  .filter-pill.inactive-pill { background: #12141f; color: #444; border-color: #1c1f2e; }
+  .filter-dot-pill { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .content-b { display: flex; height: 500px; }
+
+  .calendar-grid-b { flex: 1; padding: 16px 20px; }
+  .cal-header-b { display: grid; grid-template-columns: repeat(7,1fr); gap: 1px; margin-bottom: 2px; }
+  .cal-header-b span { font-size: 10px; font-weight: 700; color: #444; text-align: center; padding: 6px 0; letter-spacing: 0.5px; }
+  .cal-grid-b { display: grid; grid-template-columns: repeat(7,1fr); gap: 1px; background: #111318; border: 1px solid #111318; border-radius: 8px; overflow: hidden; }
+
+  .cal-cell { background: #0d0f18; padding: 8px; min-height: 88px; cursor: pointer; transition: background 0.15s; }
+  .cal-cell:hover { background: #12141f; }
+  .cal-cell.other-month { opacity: 0.3; }
+  .cal-cell.selected-cell { background: #0f1f15; }
+  .cal-cell.today-cell { background: #0d1f12; }
+  .cal-num { font-size: 12px; font-weight: 700; color: #666; margin-bottom: 4px; }
+  .cal-cell.selected-cell .cal-num { color: #52d68a; }
+  .cal-cell.today-cell .cal-num { color: #fff; }
+  .cal-cell.has-content .cal-num { color: #ccc; }
+
+  .cell-art { width: 100%; height: 50px; border-radius: 4px; overflow: hidden; position: relative; margin-bottom: 2px; }
+  .cell-art-bg { width: 100%; height: 100%; background-size: cover; background-position: center top; }
+  .cell-art-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 20%, rgba(0,0,0,0.85) 100%); }
+  .cell-art-title { position: absolute; bottom: 3px; left: 4px; right: 4px; font-size: 7px; color: #fff; font-weight: 700; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .cell-more { font-size: 9px; color: #555; }
+  .cell-event-dot { display: flex; align-items: center; gap: 3px; font-size: 8px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px; }
+  .cell-event-dot::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .cell-event-dot.release::before { background: #52d68a; }
+  .cell-event-dot.convention::before { background: #4f9cf9; }
+
+  .day-panel-b { width: 280px; flex-shrink: 0; background: #0a0c14; border-left: 1px solid #1c1f2e; overflow-y: auto; padding: 16px; }
+  .day-panel-title { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .day-panel-sub { font-size: 11px; color: #52d68a; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+  .dp-section-title { font-size: 10px; font-weight: 700; color: #444; letter-spacing: 1px; text-transform: uppercase; margin: 14px 0 8px; }
+
+  .dp-game { display: flex; gap: 10px; margin-bottom: 10px; cursor: pointer; }
+  .dp-game-art { width: 64px; height: 85px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #1a1d2e; }
+  .dp-game-art img { width: 100%; height: 100%; object-fit: cover; }
+  .dp-game-info { flex: 1; padding-top: 2px; }
+  .dp-game-name { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.3; }
+  .dp-game-platforms { display: flex; gap: 4px; flex-wrap: wrap; }
+  .dp-game-plat { background: #1c1f2e; color: #666; font-size: 8px; font-weight: 700; padding: 2px 5px; border-radius: 3px; }
+
+  /* Game art placeholders using CSS gradients */
+  .art-mixtape { background: linear-gradient(135deg, #2d4a3e 0%, #1a2e26 50%, #0f1f18 100%); }
+  .art-occultist { background: linear-gradient(135deg, #2a1a3a 0%, #1a0f28 50%, #0f0a18 100%); }
+  .art-pokemon { background: linear-gradient(135deg, #3a2a1a 0%, #2e1e0f 50%, #1f140a 100%); }
+  .art-forza { background: linear-gradient(135deg, #1a2a3a 0%, #0f1e2e 50%, #080f18 100%); }
+  .art-samson { background: linear-gradient(135deg, #3a1a1a 0%, #2e0f0f 50%, #1f0808 100%); }
+  .art-lego { background: linear-gradient(135deg, #3a3a1a 0%, #2e2e0f 50%, #1f1f08 100%); }
+
+  .art-mixtape-full { background: linear-gradient(160deg, #3d6b55 0%, #2a4a3a 30%, #1a3028 60%, #0d1e16 100%); }
+</style>
+</head>
+<body>
+
+<h1>Which layout direction?</h1>
+<p class="subtitle">Click an option below to select it</p>
+
+<!-- OPTION A -->
+<div class="label-row">
+  <span class="option-label">Option A</span>
+  <span style="font-size:12px;color:#666">OperaGX-style: mini calendar + scrollable day feed + detail panel</span>
+  <span class="recommend">Recommended</span>
+</div>
+<div class="preview-wrapper" id="opt-a" onclick="selectOption('a')">
+  <div class="app-a">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar-a">
+      <div>
+        <div class="month-nav">
+          <button>‹</button>
+          <span>May 2026</span>
+          <button>›</button>
+        </div>
+      </div>
+
+      <div class="mini-cal">
+        <div class="mini-cal-header">
+          <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+        </div>
+        <div class="mini-cal-grid">
+          <span class="mc-day">26</span><span class="mc-day">27</span><span class="mc-day">28</span><span class="mc-day">29</span><span class="mc-day">30</span><span class="mc-day active">1</span><span class="mc-day active">2</span>
+          <span class="mc-day active">3</span><span class="mc-day active">4</span><span class="mc-day active">5</span><span class="mc-day active">6</span><span class="mc-day has-event selected-day">7</span><span class="mc-day has-event active">8</span><span class="mc-day active">9</span>
+          <span class="mc-day active">10</span><span class="mc-day has-event active">11</span><span class="mc-day active">12</span><span class="mc-day active">13</span><span class="mc-day has-event active">14</span><span class="mc-day active">15</span><span class="mc-day active">16</span>
+          <span class="mc-day active">17</span><span class="mc-day active">18</span><span class="mc-day has-event active">19</span><span class="mc-day active">20</span><span class="mc-day has-event active">21</span><span class="mc-day active">22</span><span class="mc-day active">23</span>
+          <span class="mc-day active">24</span><span class="mc-day active">25</span><span class="mc-day has-event active">26</span><span class="mc-day active">27</span><span class="mc-day active">28</span><span class="mc-day active">29</span><span class="mc-day active">30</span>
+          <span class="mc-day has-event active">31</span>
+        </div>
+      </div>
+
+      <div class="filters-section">
+        <div class="filters-title">Showing</div>
+        <div class="filter-item on" style="color:#52d68a">
+          <div class="filter-dot" style="background:#52d68a"></div>
+          <span>Releases</span>
+        </div>
+        <div class="filter-item on" style="color:#4f9cf9">
+          <div class="filter-dot" style="background:#4f9cf9"></div>
+          <span>Conventions</span>
+        </div>
+        <div class="filter-item" style="color:#b06ff5">
+          <div class="filter-dot" style="background:#333"></div>
+          <span>Showcases</span>
+        </div>
+        <div class="filter-item on" style="color:#f5c842">
+          <div class="filter-dot" style="background:#f5c842"></div>
+          <span>Awards</span>
+        </div>
+        <div class="filter-item" style="color:#e84855">
+          <div class="filter-dot" style="background:#333"></div>
+          <span>Esports</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER FEED -->
+    <div class="feed-a">
+
+      <div class="day-section">
+        <div class="day-header">
+          <div class="day-number">7</div>
+          <div class="day-meta">
+            <span class="day-weekday">Wednesday</span>
+            <span class="day-label">May 2026</span>
+          </div>
+        </div>
+        <div class="games-grid">
+          <div class="game-tile">
+            <div class="game-art art-mixtape-full">
+              <div class="game-art-gradient"></div>
+              <div class="game-art-platforms">
+                <span class="platform-tag">XBOX</span>
+                <span class="platform-tag">SW2</span>
+              </div>
+              <div class="game-art-name">Mixtape</div>
+            </div>
+          </div>
+          <div class="game-tile">
+            <div class="game-art art-samson">
+              <div class="game-art-gradient"></div>
+              <div class="game-art-platforms">
+                <span class="platform-tag">PC</span>
+                <span class="platform-tag">PS5</span>
+              </div>
+              <div class="game-art-name">Samson</div>
+            </div>
+          </div>
+          <div class="game-tile">
+            <div class="game-art art-occultist">
+              <div class="game-art-gradient"></div>
+              <div class="game-art-platforms">
+                <span class="platform-tag">PS5</span>
+              </div>
+              <div class="game-art-name">The Occultist</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-section">
+        <div class="day-header">
+          <div class="day-number" style="color:#555">8</div>
+          <div class="day-meta">
+            <span class="day-weekday" style="color:#555">Thursday</span>
+            <span class="day-label">May 2026</span>
+          </div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div class="event-tile">
+            <div class="event-dot" style="background:#4f9cf9"></div>
+            <div>
+              <div class="event-name">Dubai Esports Festival</div>
+              <div class="event-sub">Dubai, UAE · May 8–18</div>
+            </div>
+            <span class="event-badge" style="background:#4f9cf922;color:#4f9cf9">CONVENTION</span>
+          </div>
+        </div>
+        <div class="games-grid">
+          <div class="game-tile">
+            <div class="game-art art-forza">
+              <div class="game-art-gradient"></div>
+              <div class="game-art-platforms">
+                <span class="platform-tag">XBOX</span>
+                <span class="platform-tag">PC</span>
+              </div>
+              <div class="game-art-name">Forza Horizon 6</div>
+            </div>
+          </div>
+          <div class="game-tile">
+            <div class="game-art art-lego">
+              <div class="game-art-gradient"></div>
+              <div class="game-art-platforms">
+                <span class="platform-tag">ALL</span>
+              </div>
+              <div class="game-art-name">LEGO Brawls 2</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-section">
+        <div class="day-header">
+          <div class="day-number" style="color:#555">9</div>
+          <div class="day-meta">
+            <span class="day-weekday" style="color:#555">Friday</span>
+            <span class="day-label">May 2026</span>
+          </div>
+        </div>
+        <div class="games-grid">
+          <div class="game-tile">
+            <div class="game-art art-pokemon">
+              <div class="game-art-gradient"></div>
+              <div class="game-art-platforms">
+                <span class="platform-tag">SW2</span>
+              </div>
+              <div class="game-art-name">Pokémon Champions</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT DETAIL PANEL -->
+    <div class="detail-a">
+      <div class="detail-cover art-mixtape-full" style="height:220px">
+        <div class="detail-cover-overlay"></div>
+      </div>
+      <div class="detail-body">
+        <div class="detail-title">Mixtape</div>
+        <div class="detail-date">May 7, 2026</div>
+        <div class="detail-platforms">
+          <span class="detail-platform">XBOX SERIES</span>
+          <span class="detail-platform">SWITCH 2</span>
+        </div>
+        <button class="detail-btn primary">+ Add to Watchlist</button>
+        <button class="detail-btn secondary">View on GAMES.GG</button>
+        <button class="detail-btn secondary" style="font-size:11px">+ Add to Google Calendar</button>
+      </div>
+    </div>
+
+  </div>
+  <button class="select-btn">Click to select Option A</button>
+</div>
+
+<!-- OPTION B -->
+<div class="label-row">
+  <span class="option-label">Option B</span>
+  <span style="font-size:12px;color:#666">Enhanced month grid — familiar layout, bigger cells with cover art thumbnails</span>
+</div>
+<div class="preview-wrapper" id="opt-b" onclick="selectOption('b')">
+  <div class="app-b">
+
+    <div class="topbar-b">
+      <div>
+        <span style="font-size:14px;color:#555;margin-right:10px">‹</span>
+        <span class="nav-title">May</span>
+        <span class="nav-year">2026</span>
+        <span style="font-size:14px;color:#555;margin-left:10px">›</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="watchlist-btn">Watchlist 2</button>
+      </div>
+    </div>
+
+    <div class="filters-bar">
+      <div class="filter-pill active-pill" style="color:#52d68a;background:#52d68a18">
+        <div class="filter-dot-pill"></div>Release
+      </div>
+      <div class="filter-pill active-pill" style="color:#4f9cf9;background:#4f9cf918">
+        <div class="filter-dot-pill"></div>Convention
+      </div>
+      <div class="filter-pill inactive-pill">Esports</div>
+      <div class="filter-pill inactive-pill">Showcase</div>
+      <div class="filter-pill active-pill" style="color:#f5c842;background:#f5c84218">
+        <div class="filter-dot-pill"></div>Awards
+      </div>
+    </div>
+
+    <div class="content-b">
+      <div class="calendar-grid-b">
+        <div class="cal-header-b">
+          <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
+        </div>
+        <div class="cal-grid-b">
+          <!-- Row 1 -->
+          <div class="cal-cell other-month"><div class="cal-num">26</div></div>
+          <div class="cal-cell other-month"><div class="cal-num">27</div></div>
+          <div class="cal-cell other-month"><div class="cal-num">28</div></div>
+          <div class="cal-cell other-month"><div class="cal-num">29</div></div>
+          <div class="cal-cell other-month"><div class="cal-num">30</div></div>
+          <div class="cal-cell has-content"><div class="cal-num">1</div></div>
+          <div class="cal-cell"><div class="cal-num">2</div></div>
+          <!-- Row 2 -->
+          <div class="cal-cell"><div class="cal-num">3</div></div>
+          <div class="cal-cell"><div class="cal-num">4</div></div>
+          <div class="cal-cell"><div class="cal-num">5</div></div>
+          <div class="cal-cell"><div class="cal-num">6</div></div>
+          <div class="cal-cell selected-cell has-content">
+            <div class="cal-num">7</div>
+            <div class="cell-art"><div class="cell-art-bg art-mixtape-full"></div><div class="cell-art-overlay"></div><div class="cell-art-title">Mixtape</div></div>
+            <div class="cell-event-dot release">+2 releases</div>
+          </div>
+          <div class="cal-cell has-content">
+            <div class="cal-num">8</div>
+            <div class="cell-event-dot convention">Dubai Esports</div>
+            <div class="cell-art" style="height:38px"><div class="cell-art-bg art-forza"></div><div class="cell-art-overlay"></div><div class="cell-art-title">Forza Horizon 6</div></div>
+          </div>
+          <div class="cal-cell has-content">
+            <div class="cal-num">9</div>
+            <div class="cell-art"><div class="cell-art-bg art-pokemon"></div><div class="cell-art-overlay"></div><div class="cell-art-title">Pokémon Champions</div></div>
+          </div>
+          <!-- Row 3 -->
+          <div class="cal-cell"><div class="cal-num">10</div></div>
+          <div class="cal-cell has-content"><div class="cal-num">11</div><div class="cell-event-dot convention">Dubai E...</div></div>
+          <div class="cal-cell"><div class="cal-num">12</div></div>
+          <div class="cal-cell has-content"><div class="cal-num">13</div><div class="cell-event-dot convention">Dubai E...</div></div>
+          <div class="cal-cell has-content"><div class="cal-num">14</div><div class="cell-event-dot convention">Dubai E...</div></div>
+          <div class="cal-cell has-content"><div class="cal-num">15</div><div class="cell-event-dot convention">Dubai E...</div></div>
+          <div class="cal-cell has-content"><div class="cal-num">16</div><div class="cell-event-dot convention">Dubai E...</div></div>
+          <!-- Row 4 -->
+          <div class="cal-cell has-content"><div class="cal-num">17</div><div class="cell-event-dot convention">Dubai E...</div></div>
+          <div class="cal-cell has-content"><div class="cal-num">18</div>
+            <div class="cell-event-dot convention">Dubai E...</div>
+            <div class="cell-art" style="height:38px"><div class="cell-art-bg art-forza"></div><div class="cell-art-overlay"></div></div>
+          </div>
+          <div class="cal-cell has-content"><div class="cal-num">19</div><div class="cell-event-dot convention">Dubai E...</div></div>
+          <div class="cal-cell has-content"><div class="cal-num">20</div></div>
+          <div class="cal-cell has-content"><div class="cal-num">21</div><div class="cell-art"><div class="cell-art-bg art-lego"></div><div class="cell-art-overlay"></div><div class="cell-art-title">Lego Brawls 2</div></div></div>
+          <div class="cal-cell has-content"><div class="cal-num">22</div><div class="cell-art"><div class="cell-art-bg art-occultist"></div><div class="cell-art-overlay"></div></div></div>
+          <div class="cal-cell"><div class="cal-num">23</div></div>
+        </div>
+      </div>
+
+      <!-- Day panel -->
+      <div class="day-panel-b">
+        <div class="day-panel-title">May 7</div>
+        <div class="day-panel-sub">Wednesday · 3 releases</div>
+
+        <div class="dp-section-title">Game Releases · 3</div>
+        <div class="dp-game">
+          <div class="dp-game-art art-mixtape-full"></div>
+          <div class="dp-game-info">
+            <div class="dp-game-name">Mixtape</div>
+            <div class="dp-game-platforms">
+              <span class="dp-game-plat">XBOX</span>
+              <span class="dp-game-plat">SW2</span>
+            </div>
+          </div>
+        </div>
+        <div class="dp-game">
+          <div class="dp-game-art art-samson"></div>
+          <div class="dp-game-info">
+            <div class="dp-game-name">Samson</div>
+            <div class="dp-game-platforms">
+              <span class="dp-game-plat">PC</span>
+              <span class="dp-game-plat">PS5</span>
+            </div>
+          </div>
+        </div>
+        <div class="dp-game">
+          <div class="dp-game-art art-occultist"></div>
+          <div class="dp-game-info">
+            <div class="dp-game-name">The Occultist</div>
+            <div class="dp-game-platforms">
+              <span class="dp-game-plat">PS5</span>
+              <span class="dp-game-plat">XBOX</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <button class="select-btn">Click to select Option B</button>
+</div>
+
+<script>
+function selectOption(choice) {
+  document.querySelectorAll('.preview-wrapper').forEach(el => el.classList.remove('selected'));
+  document.getElementById('opt-' + choice).classList.add('selected');
+  if (window.recordChoice) recordChoice(choice, 'Option ' + choice.toUpperCase());
+}
+</script>
+</body>
+</html>

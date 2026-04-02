@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout Design</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #060D17;
+    color: oklch(98% 0 0);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 24px;
+    min-height: 100vh;
+  }
+
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: oklch(65% 0.01 240); margin-bottom: 20px; }
+
+  /* --- MOCKUP CONTAINER --- */
+  .mockup-wrap {
+    background: oklch(10% 0.03 240);
+    border: 1px solid oklch(22% 0.05 240);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .mockup-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: oklch(50% 0.01 240);
+    margin-bottom: 10px;
+  }
+
+  /* --- HEADER --- */
+  .app-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 0 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid oklch(22% 0.05 240);
+  }
+  .app-title { font-size: 13px; font-weight: 800; letter-spacing: -0.02em; }
+  .app-title span { color: oklch(65% 0.01 240); }
+  .header-filters { display: flex; gap: 5px; margin-left: 4px; }
+  .filter-pill {
+    font-size: 9px; font-weight: 700; padding: 3px 7px; border-radius: 20px;
+    border: 1px solid; cursor: pointer; letter-spacing: 0.03em;
+  }
+  .filter-active { background: oklch(83% 0.22 158 / 0.15); color: oklch(83% 0.22 158); border-color: oklch(83% 0.22 158 / 0.4); }
+  .filter-dim { background: oklch(16% 0.04 240); color: oklch(50% 0.01 240); border-color: oklch(22% 0.05 240); }
+  .header-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+  .watchlist-btn {
+    font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 6px;
+    background: oklch(16% 0.04 240); border: 1px solid oklch(22% 0.05 240);
+    color: oklch(65% 0.01 240); cursor: pointer;
+  }
+
+  /* --- 3-PANEL LAYOUT --- */
+  .three-panel {
+    display: flex;
+    gap: 10px;
+    height: 520px;
+  }
+
+  /* Panel 1: Monthly grid (compressed) */
+  .panel-calendar {
+    width: 42%;
+    flex-shrink: 0;
+    background: oklch(14% 0.04 240);
+    border: 1px solid oklch(22% 0.05 240);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cal-month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid oklch(22% 0.05 240);
+  }
+  .cal-month-name { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; }
+  .cal-nav-btn { font-size: 11px; color: oklch(50% 0.01 240); cursor: pointer; background: none; border: none; color: oklch(65% 0.01 240); }
+
+  .cal-day-headers {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 6px 8px 2px;
+    gap: 2px;
+  }
+  .cal-day-header { font-size: 8px; font-weight: 600; color: oklch(50% 0.01 240); text-align: center; letter-spacing: 0.04em; }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 4px 8px 8px;
+    gap: 3px;
+    flex: 1;
+  }
+
+  .cal-cell {
+    border-radius: 5px;
+    padding: 4px 3px;
+    cursor: pointer;
+    position: relative;
+    min-height: 52px;
+    background: oklch(16% 0.04 240);
+    border: 1px solid oklch(20% 0.04 240);
+    transition: border-color 0.1s;
+  }
+  .cal-cell:hover { border-color: oklch(30% 0.06 240); }
+  .cal-cell.other-month { opacity: 0.3; }
+  .cal-cell.today { border-color: oklch(83% 0.22 158 / 0.5); }
+  .cal-cell.selected {
+    background: oklch(83% 0.22 158 / 0.08);
+    border-color: oklch(83% 0.22 158 / 0.6);
+  }
+  .cal-cell-day {
+    font-size: 9px;
+    font-weight: 700;
+    color: oklch(65% 0.01 240);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .cal-cell.today .cal-cell-day { color: oklch(83% 0.22 158); }
+  .cal-cell.selected .cal-cell-day { color: oklch(83% 0.22 158); }
+
+  .cal-dot-row { display: flex; gap: 2px; flex-wrap: wrap; }
+  .cal-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+  .cal-overflow { font-size: 7px; color: oklch(50% 0.01 240); font-weight: 600; margin-top: 1px; }
+
+  /* Panel 2: Day view */
+  .panel-day {
+    flex: 1;
+    background: oklch(14% 0.04 240);
+    border: 1px solid oklch(22% 0.05 240);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slideInRight 0.22s ease-out;
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid oklch(22% 0.05 240);
+    flex-shrink: 0;
+  }
+  .day-title {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  .day-title .today-badge {
+    font-size: 9px;
+    font-weight: 700;
+    color: oklch(83% 0.22 158);
+    background: oklch(83% 0.22 158 / 0.12);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    letter-spacing: 0.06em;
+  }
+  .day-close {
+    background: none; border: none; color: oklch(50% 0.01 240);
+    cursor: pointer; font-size: 14px; line-height: 1;
+  }
+
+  .day-content { flex: 1; overflow-y: auto; padding: 10px; }
+  .day-content::-webkit-scrollbar { width: 3px; }
+  .day-content::-webkit-scrollbar-thumb { background: oklch(22% 0.05 240); border-radius: 2px; }
+
+  /* Game art grid */
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .game-card {
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid oklch(22% 0.05 240);
+    transition: border-color 0.15s, transform 0.15s;
+    position: relative;
+  }
+  .game-card:hover { border-color: oklch(30% 0.06 240); transform: translateY(-2px); }
+  .game-card.active { border-color: oklch(83% 0.22 158 / 0.6); }
+
+  .game-art {
+    aspect-ratio: 3/4;
+    position: relative;
+    overflow: hidden;
+  }
+  .game-art-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .game-art-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: oklch(83% 0.22 158 / 0.2);
+  }
+  .game-watchlist-btn {
+    position: absolute; top: 5px; right: 5px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(6,13,23,0.7); border: 1px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: oklch(65% 0.01 240); cursor: pointer;
+  }
+  .game-watchlist-btn.saved {
+    background: oklch(83% 0.22 158 / 0.2);
+    border-color: oklch(83% 0.22 158 / 0.5);
+    color: oklch(83% 0.22 158);
+  }
+
+  .game-info {
+    padding: 6px 7px;
+    background: oklch(16% 0.04 240);
+  }
+  .game-name {
+    font-size: 10px; font-weight: 700; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+    color: oklch(90% 0 0);
+  }
+  .game-platforms {
+    display: flex; gap: 3px; margin-top: 3px; flex-wrap: wrap;
+  }
+  .game-platform-tag {
+    font-size: 7px; font-weight: 600; letter-spacing: 0.03em;
+    padding: 1px 4px; border-radius: 3px;
+    background: rgba(255,255,255,0.07); color: oklch(50% 0.01 240);
+    border: 1px solid rgba(255,255,255,0.08); text-transform: uppercase;
+  }
+
+  /* Event card (full width in day view) */
+  .event-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid oklch(22% 0.05 240);
+    margin-bottom: 8px;
+    display: flex;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .event-card:hover { border-color: oklch(30% 0.06 240); }
+  .event-accent { width: 3px; flex-shrink: 0; }
+  .event-card-body { padding: 10px 12px; flex: 1; }
+  .event-type-tag {
+    font-size: 8px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 2px 5px; border-radius: 3px; display: inline-block; margin-bottom: 4px;
+  }
+  .event-card-title { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+  .event-card-dates { font-size: 9px; color: oklch(65% 0.01 240); }
+
+  /* Section dividers */
+  .day-section-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: oklch(50% 0.01 240);
+    margin: 10px 0 6px;
+  }
+
+  /* Panel 3: Game detail */
+  .panel-detail {
+    width: 260px;
+    flex-shrink: 0;
+    background: oklch(14% 0.04 240);
+    border: 1px solid oklch(22% 0.05 240);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slideInRight 0.22s ease-out;
+  }
+
+  .detail-cover {
+    width: 100%; height: 130px;
+    object-fit: cover;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .detail-cover-img {
+    width: 100%; height: 100%; object-fit: cover; object-position: top;
+  }
+  .detail-cover-gradient {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(6,13,23,0.1) 0%, oklch(14% 0.04 240) 100%);
+  }
+  .detail-body { padding: 12px 14px; flex: 1; overflow-y: auto; }
+  .detail-body::-webkit-scrollbar { width: 3px; }
+  .detail-body::-webkit-scrollbar-thumb { background: oklch(22% 0.05 240); border-radius: 2px; }
+
+  .detail-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+  .detail-tag {
+    font-size: 8px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.04em;
+    text-transform: uppercase; border: 1px solid;
+  }
+  .detail-title { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 3px; }
+  .detail-date { font-size: 11px; color: oklch(65% 0.01 240); margin-bottom: 8px; }
+  .detail-genres { font-size: 10px; color: oklch(50% 0.01 240); margin-bottom: 10px; }
+  .detail-watchlist-btn {
+    width: 100%; padding: 7px 12px; border-radius: 7px; font-size: 11px; font-weight: 700;
+    cursor: pointer; border: 1px solid; margin-bottom: 8px; text-align: center;
+    transition: all 0.15s;
+  }
+  .detail-watchlist-add {
+    background: oklch(83% 0.22 158 / 0.1);
+    color: oklch(83% 0.22 158);
+    border-color: oklch(83% 0.22 158 / 0.4);
+  }
+  .detail-separator { height: 1px; background: oklch(22% 0.05 240); margin: 10px 0; }
+  .detail-section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(50% 0.01 240); margin-bottom: 6px; }
+  .detail-platforms { display: flex; gap: 4px; flex-wrap: wrap; }
+  .detail-platform {
+    font-size: 9px; font-weight: 600; padding: 3px 7px; border-radius: 4px;
+    background: rgba(255,255,255,0.07); color: oklch(65% 0.01 240);
+    border: 1px solid rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .detail-cal-btn {
+    display: block; width: 100%; text-align: center; padding: 7px 12px; border-radius: 7px;
+    font-size: 11px; font-weight: 600; text-decoration: none;
+    background: rgba(255,255,255,0.05); color: oklch(65% 0.01 240);
+    border: 1px solid oklch(22% 0.05 240); margin-top: 6px; cursor: pointer;
+  }
+
+  /* Note box */
+  .note {
+    background: oklch(83% 0.22 158 / 0.08);
+    border: 1px solid oklch(83% 0.22 158 / 0.25);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: oklch(83% 0.22 158);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .note strong { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<h2>Layout Design — Option B</h2>
+<p class="subtitle">Monthly grid stays on left · Day view slides in on right · Game detail panel appears when you click a game</p>
+
+<div class="note">
+  <strong>This is the proposed layout.</strong> The left panel is your existing calendar (compressed slightly). The middle panel slides in when you click any date. The right panel appears when you click a game. All three can be visible at once on desktop.
+</div>
+
+<!-- ═══════════════════════════════════════════════ MOCKUP ══════════════════════════════════════════════ -->
+<div class="mockup-wrap">
+  <div class="mockup-label">State: Day selected + Game selected (all 3 panels visible)</div>
+
+  <!-- APP HEADER -->
+  <div class="app-header">
+    <div class="app-title">GAMES<span>.GG</span> CALENDAR</div>
+    <div class="header-filters">
+      <div class="filter-pill filter-active">Releases</div>
+      <div class="filter-pill filter-dim">Esports</div>
+      <div class="filter-pill filter-dim">Events</div>
+    </div>
+    <div class="header-right">
+      <div class="watchlist-btn">Watchlist 3</div>
+    </div>
+  </div>
+
+  <!-- 3-PANEL -->
+  <div class="three-panel">
+
+    <!-- ─── PANEL 1: Calendar grid ─── -->
+    <div class="panel-calendar">
+      <div class="cal-month-nav">
+        <button class="cal-nav-btn">‹</button>
+        <span class="cal-month-name">MARCH 2026</span>
+        <button class="cal-nav-btn">›</button>
+      </div>
+      <div class="cal-day-headers">
+        <div class="cal-day-header">SU</div>
+        <div class="cal-day-header">MO</div>
+        <div class="cal-day-header">TU</div>
+        <div class="cal-day-header">WE</div>
+        <div class="cal-day-header">TH</div>
+        <div class="cal-day-header">FR</div>
+        <div class="cal-day-header">SA</div>
+      </div>
+      <div class="cal-grid">
+        <!-- Week 1 -->
+        <div class="cal-cell other-month"><div class="cal-cell-day">23</div></div>
+        <div class="cal-cell other-month"><div class="cal-cell-day">24</div></div>
+        <div class="cal-cell other-month"><div class="cal-cell-day">25</div></div>
+        <div class="cal-cell other-month"><div class="cal-cell-day">26</div></div>
+        <div class="cal-cell other-month"><div class="cal-cell-day">27</div></div>
+        <div class="cal-cell other-month"><div class="cal-cell-day">28</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">1</div></div>
+        <!-- Week 2 -->
+        <div class="cal-cell"><div class="cal-cell-day">2</div><div class="cal-dot-row"><div class="cal-dot" style="background:#52d68a"></div></div></div>
+        <div class="cal-cell"><div class="cal-cell-day">3</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">4</div><div class="cal-dot-row"><div class="cal-dot" style="background:#52d68a"></div><div class="cal-dot" style="background:#52d68a"></div></div></div>
+        <div class="cal-cell"><div class="cal-cell-day">5</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">6</div><div class="cal-dot-row"><div class="cal-dot" style="background:#e84855"></div></div></div>
+        <div class="cal-cell"><div class="cal-cell-day">7</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">8</div></div>
+        <!-- Week 3 -->
+        <div class="cal-cell"><div class="cal-cell-day">9</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">10</div><div class="cal-dot-row"><div class="cal-dot" style="background:#52d68a"></div></div></div>
+        <div class="cal-cell"><div class="cal-cell-day">11</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">12</div><div class="cal-dot-row"><div class="cal-dot" style="background:#52d68a"></div><div class="cal-dot" style="background:#b06ff5"></div></div></div>
+        <div class="cal-cell"><div class="cal-cell-day">13</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">14</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">15</div><div class="cal-dot-row"><div class="cal-dot" style="background:#52d68a"></div></div></div>
+        <!-- Week 4 -->
+        <div class="cal-cell"><div class="cal-cell-day">16</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">17</div><div class="cal-dot-row"><div class="cal-dot" style="background:#52d68a"></div><div class="cal-dot" style="background:#52d68a"></div></div></div>
+        <div class="cal-cell"><div class="cal-cell-day">18</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">19</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">20</div><div class="cal-dot-row"><div class="cal-dot" style="background:#f5c842"></div></div></div>
+        <div class="cal-cell"><div class="cal-cell-day">21</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">22</div></div>
+        <!-- Week 5 -->
+        <div class="cal-cell"><div class="cal-cell-day">23</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">24</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">25</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">26</div><div class="cal-dot-row"><div class="cal-dot" style="background:#52d68a"></div></div></div>
+        <div class="cal-cell"><div class="cal-cell-day">27</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">28</div></div>
+        <div class="cal-cell"><div class="cal-cell-day">29</div><div class="cal-dot-row"><div class="cal-dot" style="background:#52d68a"></div></div></div>
+        <!-- Week 6 -->
+        <div class="cal-cell"><div class="cal-cell-day">30</div><div class="cal-dot-row"><div class="cal-dot" style="background:#52d68a"></div><div class="cal-dot" style="background:#52d68a"></div></div></div>
+        <div class="cal-cell today selected"><div class="cal-cell-day">31</div><div class="cal-dot-row"><div class="cal-dot" style="background:#52d68a"></div><div class="cal-dot" style="background:#52d68a"></div><div class="cal-dot" style="background:#52d68a"></div></div><div class="cal-overflow">+5</div></div>
+        <div class="cal-cell other-month"><div class="cal-cell-day">1</div></div>
+        <div class="cal-cell other-month"><div class="cal-cell-day">2</div></div>
+        <div class="cal-cell other-month"><div class="cal-cell-day">3</div></div>
+        <div class="cal-cell other-month"><div class="cal-cell-day">4</div></div>
+        <div class="cal-cell other-month"><div class="cal-cell-day">5</div></div>
+      </div>
+    </div>
+
+    <!-- ─── PANEL 2: Day view ─── -->
+    <div class="panel-day">
+      <div class="day-header">
+        <div class="day-title">MARCH 31 <span class="today-badge">TODAY</span></div>
+        <button class="day-close">✕</button>
+      </div>
+      <div class="day-content">
+        <div class="day-section-label">Game Releases · 8</div>
+        <div class="game-grid">
+          <!-- Game 1 (active/selected) -->
+          <div class="game-card active">
+            <div class="game-art">
+              <div class="game-art-placeholder" style="background: linear-gradient(135deg, #1a1020 0%, #2d1040 100%);">GR</div>
+              <div class="game-watchlist-btn saved">✓</div>
+            </div>
+            <div class="game-info">
+              <div class="game-name">GRIME II</div>
+              <div class="game-platforms"><span class="game-platform-tag">PC</span></div>
+            </div>
+          </div>
+          <!-- Game 2 -->
+          <div class="game-card">
+            <div class="game-art">
+              <div class="game-art-placeholder" style="background: linear-gradient(135deg, #101a20 0%, #103040 100%);">CS</div>
+              <div class="game-watchlist-btn">+</div>
+            </div>
+            <div class="game-info">
+              <div class="game-name">Cooking Sim 2</div>
+              <div class="game-platforms"><span class="game-platform-tag">PC</span><span class="game-platform-tag">PS5</span></div>
+            </div>
+          </div>
+          <!-- Game 3 -->
+          <div class="game-card">
+            <div class="game-art">
+              <div class="game-art-placeholder" style="background: linear-gradient(135deg, #1a2010 0%, #304020 100%);">RC</div>
+              <div class="game-watchlist-btn">+</div>
+            </div>
+            <div class="game-info">
+              <div class="game-name">Raccoin</div>
+              <div class="game-platforms"><span class="game-platform-tag">PC</span></div>
+            </div>
+          </div>
+          <!-- Game 4 -->
+          <div class="game-card">
+            <div class="game-art">
+              <div class="game-art-placeholder" style="background: linear-gradient(135deg, #201010 0%, #401020 100%);">SB</div>
+              <div class="game-watchlist-btn">+</div>
+            </div>
+            <div class="game-info">
+              <div class="game-name">Subliminal</div>
+              <div class="game-platforms"><span class="game-platform-tag">PC</span></div>
+            </div>
+          </div>
+          <!-- Game 5 -->
+          <div class="game-card">
+            <div class="game-art">
+              <div class="game-art-placeholder" style="background: linear-gradient(135deg, #201a10 0%, #403020 100%);">LM</div>
+              <div class="game-watchlist-btn">+</div>
+            </div>
+            <div class="game-info">
+              <div class="game-name">Last Man Sitting</div>
+              <div class="game-platforms"><span class="game-platform-tag">PC</span><span class="game-platform-tag">XSX</span></div>
+            </div>
+          </div>
+          <!-- Game 6 (overflow) -->
+          <div class="game-card">
+            <div class="game-art">
+              <div class="game-art-placeholder" style="background: linear-gradient(135deg, #101020 0%, #202040 100%); font-size: 11px; color: oklch(50% 0.01 240);">+3 more</div>
+            </div>
+            <div class="game-info">
+              <div class="game-name" style="color: oklch(50% 0.01 240);">3 more games</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── PANEL 3: Game detail ─── -->
+    <div class="panel-detail">
+      <div class="detail-cover" style="height: 130px; background: linear-gradient(135deg, #1a1020 0%, #2d1040 100%); display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; color: oklch(83% 0.22 158 / 0.15); flex-shrink:0;">GR</div>
+      <div class="detail-body">
+        <div class="detail-tags">
+          <span class="detail-tag" style="color: oklch(83% 0.22 158); border-color: oklch(83% 0.22 158 / 0.3); background: oklch(83% 0.22 158 / 0.1);">Game Release</span>
+          <span class="detail-tag" style="color: #f5c842; border-color: #f5c84240; background: #f5c84215;">MC 84</span>
+        </div>
+        <div class="detail-title">GRIME II</div>
+        <div class="detail-date">March 31, 2026</div>
+        <div class="detail-genres">Action · RPG · Metroidvania</div>
+        <button class="detail-watchlist-btn detail-watchlist-add">+ Add to Watchlist</button>
+        <div class="detail-separator"></div>
+        <div class="detail-section-label">Platforms</div>
+        <div class="detail-platforms">
+          <span class="detail-platform">PC</span>
+          <span class="detail-platform">PS5</span>
+        </div>
+        <button class="detail-cal-btn">+ Add to Google Calendar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Notes on behavior -->
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 4px;">
+  <div style="background: oklch(16% 0.04 240); border: 1px solid oklch(22% 0.05 240); border-radius: 8px; padding: 12px;">
+    <div style="font-size: 10px; font-weight: 700; color: oklch(83% 0.22 158); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;">Panel 1 — Calendar</div>
+    <div style="font-size: 11px; color: oklch(65% 0.01 240); line-height: 1.6;">Existing monthly grid. Cells show colored dots instead of pills (more compact). Clicking a date opens the day panel. Selected date highlighted in green.</div>
+  </div>
+  <div style="background: oklch(16% 0.04 240); border: 1px solid oklch(22% 0.05 240); border-radius: 8px; padding: 12px;">
+    <div style="font-size: 10px; font-weight: 700; color: oklch(83% 0.22 158); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;">Panel 2 — Day View</div>
+    <div style="font-size: 11px; color: oklch(65% 0.01 240); line-height: 1.6;">Game art in 3-col portrait grid. Events (esports, conventions) shown as full-width cards below. Watchlist + button on each cover. Slides in on date click.</div>
+  </div>
+  <div style="background: oklch(16% 0.04 240); border: 1px solid oklch(22% 0.05 240); border-radius: 8px; padding: 12px;">
+    <div style="font-size: 10px; font-weight: 700; color: oklch(83% 0.22 158); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;">Panel 3 — Detail</div>
+    <div style="font-size: 11px; color: oklch(65% 0.01 240); line-height: 1.6;">Appears when you click a game card. Cover art, title, metacritic, genres, platforms, watchlist button, add to calendar. Slides in from the right.</div>
+  </div>
+</div>
+
+</body>
+</html>

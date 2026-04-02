@@ -1,0 +1,115 @@
+<h2>Overall Layout Direction</h2>
+<p class="subtitle">The current calendar is a month grid with a side panel. The OperaGX reference uses a scrollable day-feed. Which direction fits your vision?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:16px;font-family:system-ui;min-height:220px;display:flex;gap:12px">
+      <!-- Mini left panel -->
+      <div style="width:130px;flex-shrink:0">
+        <div style="background:#1a1d2e;border-radius:8px;padding:10px;font-size:10px;color:#aaa">
+          <div style="color:#52d68a;font-weight:700;font-size:11px;margin-bottom:8px">◀ MAY 2026 ▶</div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;color:#666;font-size:9px;margin-bottom:4px">
+            <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:9px">
+            <span style="color:#555">27</span><span style="color:#555">28</span><span style="color:#555">29</span><span style="color:#555">30</span><span>1</span><span>2</span><span>3</span>
+            <span>4</span><span>5</span><span>6</span><span style="background:#52d68a;border-radius:50%;color:#000;width:14px;height:14px;display:flex;align-items:center;justify-content:center;margin:auto">7</span><span>8</span><span>9</span><span>10</span>
+            <span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span>
+            <span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span>
+          </div>
+        </div>
+        <div style="background:#1a1d2e;border-radius:8px;padding:8px;margin-top:8px;font-size:9px;color:#888">
+          <div style="color:#52d68a;font-weight:600;font-size:10px;margin-bottom:4px">FILTERS</div>
+          <div style="display:flex;align-items:center;gap:4px;margin:3px 0"><span style="width:6px;height:6px;border-radius:50%;background:#52d68a;display:inline-block"></span> Releases</div>
+          <div style="display:flex;align-items:center;gap:4px;margin:3px 0"><span style="width:6px;height:6px;border-radius:50%;background:#4f9cf9;display:inline-block"></span> Conventions</div>
+          <div style="display:flex;align-items:center;gap:4px;margin:3px 0"><span style="width:6px;height:6px;border-radius:50%;background:#b06ff5;display:inline-block"></span> Showcases</div>
+        </div>
+      </div>
+      <!-- Main day feed -->
+      <div style="flex:1;overflow:hidden">
+        <div style="font-size:11px;color:#52d68a;font-weight:700;margin-bottom:8px;letter-spacing:1px">MAY 7 · WEDNESDAY</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <div style="width:80px;height:110px;border-radius:6px;background:linear-gradient(135deg,#1a3a2a,#0f1f17);flex-shrink:0;overflow:hidden;position:relative">
+            <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.9));padding:6px 4px;font-size:8px;color:#fff;font-weight:600">Mixtape</div>
+            <div style="position:absolute;top:4px;right:4px;background:#52d68a;color:#000;font-size:7px;font-weight:700;padding:1px 4px;border-radius:3px">XBOX</div>
+          </div>
+          <div style="width:80px;height:110px;border-radius:6px;background:linear-gradient(135deg,#1a1a3a,#0f0f1f);flex-shrink:0;overflow:hidden;position:relative">
+            <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.9));padding:6px 4px;font-size:8px;color:#fff;font-weight:600">Samson</div>
+            <div style="position:absolute;top:4px;right:4px;background:#555;color:#fff;font-size:7px;font-weight:700;padding:1px 4px;border-radius:3px">PC</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:#aaa;font-weight:700;margin-bottom:8px;letter-spacing:1px;border-top:1px solid #222;padding-top:8px">MAY 8 · THURSDAY</div>
+        <div style="display:flex;gap:8px">
+          <div style="width:80px;height:110px;border-radius:6px;background:linear-gradient(135deg,#2a1a1a,#1f0f0f);flex-shrink:0;overflow:hidden;position:relative">
+            <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.9));padding:6px 4px;font-size:8px;color:#fff;font-weight:600">Dubai E...</div>
+          </div>
+        </div>
+      </div>
+      <!-- Right detail panel -->
+      <div style="width:120px;flex-shrink:0;background:#1a1d2e;border-radius:8px;padding:10px;font-size:9px;color:#888">
+        <div style="width:100%;aspect-ratio:3/4;border-radius:5px;background:linear-gradient(135deg,#1a3a2a,#0f1f17);margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#52d68a;font-weight:900">MX</div>
+        <div style="color:#fff;font-weight:700;font-size:10px;margin-bottom:4px">Mixtape</div>
+        <div style="color:#666;margin-bottom:6px">May 7, 2026</div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:8px">
+          <span style="background:#333;padding:2px 5px;border-radius:3px;font-size:8px;color:#aaa">XBOX</span>
+          <span style="background:#333;padding:2px 5px;border-radius:3px;font-size:8px;color:#aaa">SW2</span>
+        </div>
+        <div style="background:#52d68a;color:#000;font-size:8px;font-weight:700;text-align:center;padding:4px;border-radius:4px">+ WATCHLIST</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Option A — OperaGX-Style Feed</h3>
+      <p>Mini calendar on left · Scrollable day-feed in center with large cover art · Detail panel on right. Biggest visual change, matches the reference closely.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:16px;font-family:system-ui;min-height:220px">
+      <!-- Filters row -->
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <span style="background:#52d68a22;border:1px solid #52d68a;color:#52d68a;font-size:9px;padding:3px 8px;border-radius:20px;font-weight:600">✓ RELEASE</span>
+        <span style="background:#4f9cf922;border:1px solid #4f9cf9;color:#4f9cf9;font-size:9px;padding:3px 8px;border-radius:20px;font-weight:600">✓ CONVENTION</span>
+        <span style="background:#33333344;border:1px solid #444;color:#666;font-size:9px;padding:3px 8px;border-radius:20px">ESPORTS</span>
+      </div>
+      <!-- Big grid cells -->
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:#222;border-radius:6px;overflow:hidden">
+        <div style="background:#151720;padding:6px;text-align:center;font-size:9px;color:#555">SUN</div>
+        <div style="background:#151720;padding:6px;text-align:center;font-size:9px;color:#555">MON</div>
+        <div style="background:#151720;padding:6px;text-align:center;font-size:9px;color:#555">TUE</div>
+        <div style="background:#151720;padding:6px;text-align:center;font-size:9px;color:#555">WED</div>
+        <div style="background:#151720;padding:6px;text-align:center;font-size:9px;color:#555">THU</div>
+        <div style="background:#151720;padding:6px;text-align:center;font-size:9px;color:#555">FRI</div>
+        <div style="background:#151720;padding:6px;text-align:center;font-size:9px;color:#555">SAT</div>
+
+        <div style="background:#151720;padding:6px;font-size:9px;color:#555;min-height:60px">26</div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#555;min-height:60px">27</div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#555;min-height:60px">28</div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#555;min-height:60px">29</div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#555;min-height:60px">30</div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#fff;min-height:60px">1</div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#fff;min-height:60px">2</div>
+
+        <div style="background:#151720;padding:6px;font-size:9px;color:#555;min-height:60px">3</div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#555;min-height:60px">4</div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#555;min-height:60px">5</div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#555;min-height:60px">6</div>
+        <div style="background:#1a3a2a;padding:6px;font-size:9px;color:#52d68a;min-height:60px;border:1px solid #52d68a44">
+          <span style="font-weight:700">7</span>
+          <div style="width:100%;height:36px;border-radius:3px;background:linear-gradient(135deg,#1a3a2a,#0f2010);margin-top:3px;overflow:hidden;position:relative">
+            <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);font-size:7px;color:#fff;padding:2px 3px">Mixtape</div>
+          </div>
+        </div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#fff;min-height:60px">8
+          <div style="width:100%;height:36px;border-radius:3px;background:linear-gradient(135deg,#1a1a3a,#0f0f2a);margin-top:3px"></div>
+        </div>
+        <div style="background:#151720;padding:6px;font-size:9px;color:#fff;min-height:60px">9</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Option B — Enhanced Month Grid</h3>
+      <p>Keep the familiar calendar grid, but make cells taller with mini cover art inside each day. Day popover/panel shows full large images. Less dramatic change.</p>
+    </div>
+  </div>
+
+</div>

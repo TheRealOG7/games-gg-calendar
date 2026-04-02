@@ -1,0 +1,170 @@
+<h2>How should the day view open?</h2>
+<p class="subtitle">When you click a date cell on the monthly grid, how does the OperaGX-style view appear?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="overlay" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #0d1520; padding: 12px; height: 180px; display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center;">
+      <!-- Calendar grid behind (dimmed) -->
+      <div style="width: 100%; height: 100%; position: relative;">
+        <!-- Dimmed grid -->
+        <div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; opacity: 0.2;">
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+          <div style="background:#1a2535; border-radius:3px"></div>
+        </div>
+        <!-- Overlay panel on top -->
+        <div style="position: absolute; inset: 8px; background: oklch(16% 0.04 240); border: 1px solid oklch(30% 0.06 240); border-radius: 8px; display: flex; gap: 4px; padding: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);">
+          <!-- Mini cal -->
+          <div style="width: 70px; background: oklch(14% 0.03 240); border-radius: 5px; padding: 6px; flex-shrink: 0;">
+            <div style="font-size: 7px; font-weight: 700; color: oklch(65% 0.01 240); margin-bottom: 4px; letter-spacing: 0.05em;">MARCH 2026</div>
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px;">
+              <div style="font-size: 5px; color: oklch(50% 0.01 240); text-align:center">S</div>
+              <div style="font-size: 5px; color: oklch(50% 0.01 240); text-align:center">M</div>
+              <div style="font-size: 5px; color: oklch(50% 0.01 240); text-align:center">T</div>
+              <div style="font-size: 5px; color: oklch(50% 0.01 240); text-align:center">W</div>
+              <div style="font-size: 5px; color: oklch(50% 0.01 240); text-align:center">T</div>
+              <div style="font-size: 5px; color: oklch(50% 0.01 240); text-align:center">F</div>
+              <div style="font-size: 5px; color: oklch(50% 0.01 240); text-align:center">S</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">1</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">2</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">3</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">4</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">5</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">6</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">7</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">8</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">9</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">10</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">11</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">12</div>
+              <div style="font-size: 5px; color: oklch(65% 0.01 240); text-align:center">13</div>
+              <div style="font-size: 5px; background: oklch(83% 0.22 158); color: #060D17; border-radius: 2px; text-align:center; font-weight:700">31</div>
+            </div>
+          </div>
+          <!-- Game grid -->
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+            <div style="font-size: 8px; font-weight: 700; color: white; letter-spacing: 0.05em;">MARCH 31 <span style="color: oklch(83% 0.22 158);">TODAY</span></div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; flex: 1;">
+              <div style="background: linear-gradient(135deg, #2a1f3d, #1a1530); border-radius: 4px; aspect-ratio: 1; display:flex; align-items:center; justify-content:center; font-size:7px; color:oklch(65% 0.01 240);">Cover</div>
+              <div style="background: linear-gradient(135deg, #1f3020, #151f10); border-radius: 4px; aspect-ratio: 1; display:flex; align-items:center; justify-content:center; font-size:7px; color:oklch(65% 0.01 240);">Cover</div>
+              <div style="background: linear-gradient(135deg, #3d1f1f, #251515); border-radius: 4px; aspect-ratio: 1; display:flex; align-items:center; justify-content:center; font-size:7px; color:oklch(65% 0.01 240);">Cover</div>
+            </div>
+          </div>
+          <!-- Detail panel -->
+          <div style="width: 80px; background: oklch(14% 0.03 240); border-radius: 5px; padding: 6px; flex-shrink: 0;">
+            <div style="font-size: 7px; font-weight: 700; color: white; margin-bottom: 3px;">GAME TITLE</div>
+            <div style="height: 40px; background: linear-gradient(135deg, #1a2535, #0d1520); border-radius: 3px; margin-bottom: 3px;"></div>
+            <div style="font-size: 5px; color: oklch(50% 0.01 240);">Description text here showing game details and info...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Full-screen Overlay</h3>
+      <p>Monthly grid dims behind a centered modal. The 3-panel view (mini-cal + game grid + detail) fills the viewport. Press Escape or click outside to return.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="slide-over" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #0d1520; padding: 12px; height: 180px; display: flex; gap: 6px;">
+      <!-- Calendar grid (compressed left) -->
+      <div style="width: 40%; display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(5, 1fr); gap: 2px; align-content: start; padding-top: 4px; opacity: 0.6;">
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#52d68a22; border-radius:2px; height: 20px; border: 1px solid #52d68a44;"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+        <div style="background:#1a2535; border-radius:2px; height: 20px"></div>
+      </div>
+      <!-- OperaGX panel sliding in from right -->
+      <div style="flex: 1; background: oklch(16% 0.04 240); border: 1px solid oklch(30% 0.06 240); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 5px;">
+        <div style="font-size: 8px; font-weight: 700; color: white; letter-spacing: 0.05em;">MARCH 31 · <span style="color: oklch(83% 0.22 158);">TODAY</span></div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;">
+          <div style="background: linear-gradient(135deg, #2a1f3d, #1a1530); border-radius: 4px; aspect-ratio: 1;"></div>
+          <div style="background: linear-gradient(135deg, #1f3020, #151f10); border-radius: 4px; aspect-ratio: 1;"></div>
+          <div style="background: linear-gradient(135deg, #3d1f1f, #251515); border-radius: 4px; aspect-ratio: 1;"></div>
+          <div style="background: linear-gradient(135deg, #1f2a3d, #151a25); border-radius: 4px; aspect-ratio: 1;"></div>
+          <div style="background: linear-gradient(135deg, #2a2a1f, #1a1a15); border-radius: 4px; aspect-ratio: 1;"></div>
+          <div style="background: oklch(22% 0.05 240); border-radius: 4px; aspect-ratio: 1; display:flex;align-items:center;justify-content:center;font-size:8px;color:oklch(50% 0.01 240);">+4</div>
+        </div>
+        <div style="font-size: 6px; color: oklch(50% 0.01 240); text-align: center;">← close to return to calendar</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Side Panel Slide-In</h3>
+      <p>Calendar grid stays visible (compressed) on the left. The day view slides in as a panel on the right side. Both visible at once — easy to jump between dates.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="replace" onclick="toggleSelect(this)">
+    <div class="card-image" style="background: #0d1520; padding: 12px; height: 180px; display: flex; flex-direction: column; gap: 5px;">
+      <div style="background: oklch(16% 0.04 240); border-radius: 6px; padding: 6px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid oklch(22% 0.05 240);">
+        <div style="font-size: 7px; color: oklch(65% 0.01 240); cursor: pointer;">← Calendar</div>
+        <div style="font-size: 8px; font-weight: 700; color: white;">MARCH 31 <span style="color: oklch(83% 0.22 158); font-size: 7px;">TODAY</span></div>
+      </div>
+      <div style="flex: 1; display: flex; gap: 5px;">
+        <!-- Mini cal sidebar -->
+        <div style="width: 65px; background: oklch(14% 0.03 240); border-radius: 5px; padding: 6px; flex-shrink: 0;">
+          <div style="font-size: 6px; font-weight: 700; color: oklch(65% 0.01 240); margin-bottom: 3px;">MAR 2026</div>
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px;">
+            <div style="font-size: 4px; color: oklch(50% 0.01 240); text-align:center">S</div>
+            <div style="font-size: 4px; color: oklch(50% 0.01 240); text-align:center">M</div>
+            <div style="font-size: 4px; color: oklch(50% 0.01 240); text-align:center">T</div>
+            <div style="font-size: 4px; color: oklch(50% 0.01 240); text-align:center">W</div>
+            <div style="font-size: 4px; color: oklch(50% 0.01 240); text-align:center">T</div>
+            <div style="font-size: 4px; color: oklch(50% 0.01 240); text-align:center">F</div>
+            <div style="font-size: 4px; color: oklch(50% 0.01 240); text-align:center">S</div>
+            <div style="font-size: 4px; color: oklch(65% 0.01 240); text-align:center">1</div>
+            <div style="font-size: 4px; color: oklch(65% 0.01 240); text-align:center">2</div>
+            <div style="font-size: 4px; color: oklch(65% 0.01 240); text-align:center">3</div>
+            <div style="font-size: 4px; color: oklch(65% 0.01 240); text-align:center">4</div>
+            <div style="font-size: 4px; color: oklch(65% 0.01 240); text-align:center">5</div>
+            <div style="font-size: 4px; color: oklch(65% 0.01 240); text-align:center">6</div>
+            <div style="font-size: 4px; color: oklch(65% 0.01 240); text-align:center">7</div>
+            <div style="font-size: 4px; background: oklch(83% 0.22 158); color: #060D17; border-radius: 2px; text-align:center; font-weight:700">31</div>
+          </div>
+        </div>
+        <!-- Game grid center -->
+        <div style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; align-content: start;">
+          <div style="background: linear-gradient(135deg, #2a1f3d, #1a1530); border-radius: 4px; aspect-ratio: 1;"></div>
+          <div style="background: linear-gradient(135deg, #1f3020, #151f10); border-radius: 4px; aspect-ratio: 1;"></div>
+          <div style="background: linear-gradient(135deg, #3d1f1f, #251515); border-radius: 4px; aspect-ratio: 1;"></div>
+          <div style="background: linear-gradient(135deg, #1f2a3d, #151a25); border-radius: 4px; aspect-ratio: 1;"></div>
+          <div style="background: linear-gradient(135deg, #2a2a1f, #1a1a15); border-radius: 4px; aspect-ratio: 1;"></div>
+          <div style="background: oklch(22% 0.05 240); border-radius: 4px; aspect-ratio: 1;"></div>
+        </div>
+        <!-- Detail panel -->
+        <div style="width: 75px; background: oklch(14% 0.03 240); border-radius: 5px; padding: 6px; flex-shrink: 0;">
+          <div style="font-size: 6px; font-weight: 700; color: white; margin-bottom: 3px;">GAME TITLE</div>
+          <div style="height: 35px; background: linear-gradient(135deg, #1a2535, #0d1520); border-radius: 3px; margin-bottom: 3px;"></div>
+          <div style="font-size: 5px; color: oklch(50% 0.01 240); line-height: 1.4">Game description, genre tags, platforms...</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Full Replace with Back Button</h3>
+      <p>Calendar fades out, the full OperaGX 3-panel view fades in as the new page. A "← Calendar" button in the header returns you. Cleanest, most like OperaGX's actual design.</p>
+    </div>
+  </div>
+
+</div>

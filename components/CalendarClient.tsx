@@ -527,7 +527,7 @@ function EventFeedRow({ event, onSelect }: { event: GamingEvent; onSelect: () =>
       <div style={{ width: "62px", height: "62px", flexShrink: 0, background: showImg ? "oklch(11% 0.03 240)" : `${event.color}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
         {showImg ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={event.logoUrl} alt={event.name} onError={() => setImgFailed(true)} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "8px" }} />
+          <img src={event.logoUrl} alt={event.name} onError={() => setImgFailed(true)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
           <span style={{ fontSize: "8px", fontWeight: 700, color: event.color, opacity: 0.6, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", padding: "4px" }}>{EVENT_TYPE_LABEL[event.type]}</span>
         )}

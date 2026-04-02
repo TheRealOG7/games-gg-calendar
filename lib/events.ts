@@ -14,7 +14,7 @@ export interface GamingEvent {
 }
 
 const DEF_BANNER      = "https://focus.hidubai.com/content/images/2026/02/Dubai-Esports---Games-Festival-to-kick-off-May-8.jpg";
-const CHINAJOY_BANNER = "https://media.pcgamesinsider.biz/2025/6/134110/logo-chinajoy-2025-rx145.png";
+const CHINAJOY_BANNER = "/images/events/chinajoy.png";
 const LOL_WORLDS_BANNER = "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/c0ae09d9938a420ee81a25d11cd3e82f2cccaf1e-3840x2160.jpg";
 const FFWS_BANNER     = "https://liquipedia.net/commons/images/thumb/8/86/Free_Fire_World_Series_2022_darkmode.png/600px-Free_Fire_World_Series_2022_darkmode.png";
 const GOTF_BANNER     = "https://liquipedia.net/commons/images/1/1b/Phygital_Games_of_the_Future_2025_lightmode.png";
@@ -24,7 +24,7 @@ const PAX_WEST_BANNER = "https://west.paxsite.com/content/dam/sitebuilder/rna/pa
 const PAX_AUS_BANNER  = "https://aus.paxsite.com/content/dam/sitebuilder/rxau/pax/aus/branding/us-placeholders/aus-placeholder.png/_jcr_content/renditions/original.image_file.1919.960.file/290877126/aus-placeholder.png";
 const SGF_BANNER      = "https://cdn.prod.website-files.com/65f20ae26ba45240543579bc/67fd991dca5be10f868c4971_load_image_desktop_v5.webp";
 const SDCC_BANNER     = "https://comic-con-prod-uploads.s3.amazonaws.com/uploads/sites/4/2023/09/cc-hero-1024x679.jpg";
-const BGS_BANNER      = "https://www.brasilgameshow.com.br/wp-content/themes/newsitebgs/images/slogan2026v4.webp";
+const BGS_BANNER      = "/images/events/bgs.png";
 const GSTAR_BANNER    = "https://www.gstar.or.kr/img/img_exhibition.png";
 const TGS_TW_BANNER   = "https://tgs.tca.org.tw/images/banner/_1767319692.jpg";
 const EWC_BANNER      = "https://d3h9qea4qy4169.cloudfront.net/887a601e_7716_4974_bccb_509d4016e2be_1f3cd47ecc.jpg";
@@ -32,7 +32,7 @@ const MEFCC_BANNER    = "https://knect365.imgix.net/uploads/MEFCC-Abu-Dhabi-Logo
 const GAMESCOM_BANNER = "https://eu-central-1-gamescom.graphassets.com/AMwDHZTUSMaIlRlMFLL7Qz/PssD8VBzTXq72TP0ISkN";
 const ONL_BANNER      = "https://eu-central-1-gamescom.graphassets.com/AMwDHZTUSMaIlRlMFLL7Qz/cmehi4nva0h9g07w4fdvuvwnp";
 const GDC_BANNER      = "https://knect365.imgix.net/uploads/GDC-white-a7871e2b774f7ecda4ee930bd43649c8.png?auto=format&fit=max&w=800";
-const TGA_BANNER      = "https://cdn.thegameawards.com/frontend/jpegs/2026-Share-Banner.jpg";
+const TGA_BANNER      = "/images/events/game-awards.png";
 const GJA_BANNER      = "https://assets.swoogo.com/uploads/medium/5147707-67ec194eeb105.png";
 const XBOX_SCH_BANNER = "https://xboxwire.thesourcemediaassets.com/sites/2/2025/06/2025_FINAL_RGB_16x9_HERO-164d81ba2776e8915ffd.jpg";
 const TGS_BANNER      = "https://tgs.cesa.or.jp/images/meta/ogp.png";
@@ -100,7 +100,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The British Academy's annual ceremony honouring the best in interactive entertainment — one of the most prestigious awards in the global games industry.",
     url: "https://www.bafta.org/awards/games",
     color: C_AWARDS,
-    logoUrl: "https://media.bafta.org/m/1fbbf5c9b45c4e3/original/BAFTA_Games_Awards_logo.png",
+    logoUrl: "/images/events/bafta.png",
   },
   {
     id: "mefcc-2025",
@@ -473,7 +473,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "The British Academy's annual ceremony honouring the best in interactive entertainment — one of the most prestigious awards in the global games industry.",
     url: "https://www.bafta.org/awards/games",
     color: C_AWARDS,
-    logoUrl: "https://media.bafta.org/m/1fbbf5c9b45c4e3/original/BAFTA_Games_Awards_logo.png",
+    logoUrl: "/images/events/bafta.png",
   },
   {
     id: "dubai-esports-festival-2026",
@@ -605,6 +605,7 @@ export const GAMING_EVENTS: GamingEvent[] = [
     description: "Saudi Arabia's flagship gaming event debut — 20,000+ visitors, 300 exhibitors, 500 studios and developers, state-backed.",
     url: "https://esportsworldcup.com",
     color: C_CONVENTION,
+    logoUrl: "/images/events/kingdom-of-gaming.png",
   },
   {
     id: "the-game-awards-2026",
@@ -617,6 +618,90 @@ export const GAMING_EVENTS: GamingEvent[] = [
     url: "https://thegameawards.com",
     color: C_AWARDS,
     logoUrl: TGA_BANNER,
+  },
+  {
+    id: "pax-west-2026",
+    name: "PAX West 2026",
+    type: "convention",
+    startDate: "2026-08-28",
+    endDate: "2026-08-31",
+    location: "Seattle, WA",
+    description: "Four days of games, panels, tournaments, and community events on the Pacific Coast.",
+    url: "https://west.paxsite.com",
+    color: C_CONVENTION,
+    logoUrl: PAX_WEST_BANNER,
+  },
+  {
+    id: "tokyo-game-show-2026",
+    name: "Tokyo Game Show 2026",
+    type: "convention",
+    startDate: "2026-09-24",
+    endDate: "2026-09-27",
+    location: "Chiba, Japan",
+    description: "Japan's premier gaming expo where major publishers reveal upcoming titles, with both online and in-person components.",
+    url: "https://tgs.cesa.or.jp/english",
+    color: C_CONVENTION,
+    logoUrl: TGS_BANNER,
+  },
+  {
+    id: "pax-aus-2026",
+    name: "PAX Aus 2026",
+    type: "convention",
+    startDate: "2026-10-23",
+    endDate: "2026-10-25",
+    location: "Melbourne, Australia",
+    description: "Australia's biggest gaming convention with three days of gaming, esports, tabletop, and developer panels.",
+    url: "https://aus.paxsite.com",
+    color: C_CONVENTION,
+    logoUrl: PAX_AUS_BANNER,
+  },
+  {
+    id: "gamescom-asia-2026",
+    name: "Gamescom Asia 2026",
+    type: "convention",
+    startDate: "2026-10-14",
+    endDate: "2026-10-17",
+    location: "Bangkok, Thailand",
+    description: "The Asian edition of the world's biggest gaming trade fair, connecting publishers and players across Southeast Asia and the broader Asia-Pacific region.",
+    url: "https://www.gamescom.global",
+    color: C_CONVENTION,
+    logoUrl: GAMESCOM_BANNER,
+  },
+  {
+    id: "golden-joystick-2026",
+    name: "Golden Joystick Awards 2026",
+    type: "awards",
+    startDate: "2026-11-19",
+    endDate: "2026-11-19",
+    location: "London, UK",
+    description: "The world's longest-running public-voted gaming awards, celebrating the best games and creators of the year across 20+ categories.",
+    url: "https://www.goldenjoystickawards.com",
+    color: C_AWARDS,
+    logoUrl: GJA_BANNER,
+  },
+  {
+    id: "lol-worlds-2026",
+    name: "LoL World Championship 2026",
+    type: "esports",
+    startDate: "2026-10-22",
+    endDate: "2026-11-15",
+    location: "TBA",
+    description: "The League of Legends World Championship — the most-watched annual esports event with hundreds of millions of viewers worldwide.",
+    url: "https://lolesports.com",
+    color: C_ESPORTS,
+    logoUrl: LOL_WORLDS_BANNER,
+  },
+  {
+    id: "igdc-2026",
+    name: "India Game Developer Conference 2026",
+    type: "convention",
+    startDate: "2026-11-04",
+    endDate: "2026-11-06",
+    location: "Chennai, India",
+    description: "India's premier game development conference, connecting developers, publishers, and investors across South Asia.",
+    url: "https://indiagdc.com",
+    color: C_CONVENTION,
+    logoUrl: IGDC_BANNER,
   },
 ];
 

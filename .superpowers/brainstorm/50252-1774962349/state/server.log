@@ -1,0 +1,4 @@
+{"type":"server-started","port":65350,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:65350","screen_dir":"/Users/og/Desktop/Claude/calendar/.superpowers/brainstorm/50252-1774962349/content","state_dir":"/Users/og/Desktop/Claude/calendar/.superpowers/brainstorm/50252-1774962349/state"}
+{"type":"screen-added","file":"/Users/og/Desktop/Claude/calendar/.superpowers/brainstorm/50252-1774962349/content/day-view-approach.html"}
+{"type":"screen-added","file":"/Users/og/Desktop/Claude/calendar/.superpowers/brainstorm/50252-1774962349/content/layout-design.html"}
+{"type":"server-stopped","reason":"idle timeout"}

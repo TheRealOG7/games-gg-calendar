@@ -1,0 +1,5 @@
+{"type":"server-started","port":60773,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:60773","screen_dir":"/Users/og/Desktop/Claude/calendar/.superpowers/brainstorm/48401-1775073248/content","state_dir":"/Users/og/Desktop/Claude/calendar/.superpowers/brainstorm/48401-1775073248/state"}
+{"type":"screen-added","file":"/Users/og/Desktop/Claude/calendar/.superpowers/brainstorm/48401-1775073248/content/layout.html"}
+{"type":"screen-added","file":"/Users/og/Desktop/Claude/calendar/.superpowers/brainstorm/48401-1775073248/content/layout-v2.html"}
+{"type":"screen-added","file":"/Users/og/Desktop/Claude/calendar/.superpowers/brainstorm/48401-1775073248/content/waiting.html"}
+{"type":"server-stopped","reason":"idle timeout"}
