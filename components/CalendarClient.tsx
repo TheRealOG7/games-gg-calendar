@@ -137,6 +137,46 @@ function useIsMobile(): boolean {
   return mobile;
 }
 
+// ── Mobile mini calendar ──────────────────────────────────────────────────────
+
+function MobileMiniCal({ year, month, todayStr, selectedDate, releases, activeFilters, onSelectDate }: {
+  year: number; month: number; todayStr: string; selectedDate: string | null;
+  releases: GameRelease[]; activeFilters: Set<FilterKey>;
+  onSelectDate: (d: string) => void;
+}) {
+  const cells = getMonthDays(year, month);
+  const datesWithContent = new Set<string>();
+  for (const cell of cells) {
+    if (!cell.thisMonth) continue;
+    const hasRel = activeFilters.has("release") && releases.some((r) => r.released === cell.dateStr);
+    const hasEvt = getEventsForDate(cell.dateStr).some((e) => eventMatchesFilter(e, activeFilters));
+    if (hasRel || hasEvt) datesWithContent.add(cell.dateStr);
+  }
+  return (
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", padding: "0 10px" }}>
+        {DAY_ABBREVS.map((d, i) => (
+          <div key={i} style={{ textAlign: "center", fontSize: "10px", color: "#555", fontWeight: 600, padding: "2px 0 4px" }}>{d}</div>
+        ))}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", padding: "0 10px 10px", gap: "2px" }}>
+        {cells.map(({ dateStr, day, thisMonth }) => {
+          const isToday    = dateStr === todayStr;
+          const isSel      = dateStr === selectedDate;
+          const hasDot     = datesWithContent.has(dateStr) && thisMonth;
+          return (
+            <button key={dateStr} type="button" onClick={() => thisMonth && onSelectDate(dateStr)}
+              style={{ background: isSel ? "oklch(83% 0.22 158)" : isToday ? "oklch(83% 0.22 158 / 0.15)" : "transparent", border: isToday && !isSel ? "1px solid oklch(83% 0.22 158 / 0.45)" : "1px solid transparent", borderRadius: "7px", padding: "5px 2px 4px", cursor: thisMonth ? "pointer" : "default", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px" }}>
+              <span style={{ fontSize: "14px", fontWeight: isSel || isToday ? 700 : 400, color: isSel ? "#060D17" : isToday ? "oklch(83% 0.22 158)" : thisMonth ? "#ccc" : "#2a2a2a", lineHeight: 1 }}>{day}</span>
+              <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: hasDot ? (isSel ? "#060D17" : "oklch(83% 0.22 158)") : "transparent" }} />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── GTA VI Countdown ──────────────────────────────────────────────────────────
 
 const GTA6_RELEASE = new Date("2026-11-19T00:00:00");
@@ -578,6 +618,7 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
   const [watchlistOpen,   setWatchlistOpen]   = useState(false);
   const [countdownHidden, setCountdownHidden] = useState(false);
   const [filtersOpen,     setFiltersOpen]     = useState(false);
+  const [miniCalOpen,     setMiniCalOpen]     = useState(true);
   const [activeFilters, setActiveFilters] = useState<Set<FilterKey>>(() => new Set(ALL_FILTER_KEYS));
 
   const { slugs: watchlistSlugs, toggle: watchlistToggle, has: watchlistHas, remove: watchlistRemove } = useWishlist();
@@ -651,37 +692,64 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
-      {/* ── Top bar — filters + watchlist on one line ── */}
-      <div style={{ flexShrink: 0, borderBottom: "1px solid oklch(17% 0.04 240)", background: "oklch(10% 0.025 240)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 20px", overflowX: "auto", scrollbarWidth: "none" }}>
-          {/* Mobile: month nav */}
-          {isMobile && (
-            <>
-              <button type="button" onClick={prevMonth} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", color: "#aaa", cursor: "pointer", fontSize: "20px", padding: "3px 10px", lineHeight: 1 }}>‹</button>
-              <span style={{ fontSize: "17px", fontWeight: 700, color: "#fff" }}>{MONTH_NAMES[month-1]} <span style={{ fontWeight: 300, color: "#666" }}>{year}</span></span>
-              <button type="button" onClick={nextMonth} style={{ background: atMonthEnd ? "transparent" : "rgba(255,255,255,0.08)", border: `1px solid ${atMonthEnd ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.12)"}`, borderRadius: "8px", color: atMonthEnd ? "#333" : "#aaa", cursor: atMonthEnd ? "default" : "pointer", fontSize: "20px", padding: "3px 10px", lineHeight: 1 }}>›</button>
-            </>
+      {isMobile ? (
+        /* ══ MOBILE TOP BAR ══════════════════════════════════════════════════ */
+        <div style={{ flexShrink: 0, background: "oklch(10% 0.025 240)", borderBottom: "1px solid oklch(17% 0.04 240)" }}>
+          {/* Row 1: nav + watchlist */}
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 14px 6px", gap: "8px" }}>
+            <button type="button" onClick={prevMonth} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", color: "#aaa", cursor: "pointer", fontSize: "18px", lineHeight: 1, padding: "4px 11px", flexShrink: 0 }}>‹</button>
+            <button type="button" onClick={() => setMiniCalOpen((v) => !v)} style={{ flex: 1, background: "none", border: "none", cursor: "pointer", textAlign: "center", padding: 0 }}>
+              <span style={{ fontSize: "17px", fontWeight: 700, color: "#fff" }}>{MONTH_NAMES[month-1]} </span>
+              <span style={{ fontSize: "17px", fontWeight: 300, color: "#666" }}>{year}</span>
+              <span style={{ fontSize: "10px", color: "#555", marginLeft: "6px" }}>{miniCalOpen ? "▲" : "▼"}</span>
+            </button>
+            <button type="button" onClick={nextMonth} style={{ background: atMonthEnd ? "transparent" : "rgba(255,255,255,0.08)", border: `1px solid ${atMonthEnd ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.12)"}`, borderRadius: "8px", color: atMonthEnd ? "#333" : "#aaa", cursor: atMonthEnd ? "default" : "pointer", fontSize: "18px", lineHeight: 1, padding: "4px 11px", flexShrink: 0 }}>›</button>
+            <button type="button" onClick={() => setWatchlistOpen(true)} style={{ background: watchlistSlugs.length > 0 ? "oklch(83% 0.22 158 / 0.12)" : "rgba(255,255,255,0.06)", border: `1px solid ${watchlistSlugs.length > 0 ? "oklch(83% 0.22 158 / 0.35)" : "rgba(255,255,255,0.1)"}`, borderRadius: "8px", color: watchlistSlugs.length > 0 ? "var(--green)" : "#888", cursor: "pointer", fontSize: "12px", fontWeight: 700, padding: "5px 10px", flexShrink: 0, display: "flex", alignItems: "center", gap: "5px" }}>
+              ★{watchlistSlugs.length > 0 && <span>{watchlistSlugs.length}</span>}
+            </button>
+          </div>
+          {/* Mini calendar (collapsible) */}
+          {miniCalOpen && (
+            <MobileMiniCal year={year} month={month} todayStr={todayStr} selectedDate={selectedDate}
+              releases={releases} activeFilters={activeFilters}
+              onSelectDate={(d) => { setSelectedDate(d); setSelectedItem(null); setMiniCalOpen(false); }} />
           )}
-          {/* Filter pills */}
-          {FILTERS.map((f) => {
-            const on = activeFilters.has(f.key);
-            return (
-              <button key={f.key} type="button" onClick={() => toggleFilter(f.key)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "5px 12px", borderRadius: "20px", border: `1px solid ${on ? f.color+"55" : "oklch(20% 0.04 240)"}`, background: on ? f.color+"14" : "transparent", cursor: "pointer", transition: "all 0.15s", flexShrink: 0 }}>
-                <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: on ? f.color : "#444", transition: "background 0.15s" }} />
-                <span style={{ fontSize: "13px", fontWeight: on ? 600 : 400, color: on ? "#fff" : "#777", transition: "color 0.15s", whiteSpace: "nowrap" }}>{f.label}</span>
-              </button>
-            );
-          })}
-          <div style={{ flex: 1, minWidth: "8px" }} />
-          {/* Watchlist */}
-          <button type="button" onClick={() => setWatchlistOpen(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "7px 14px", borderRadius: "8px", background: watchlistSlugs.length > 0 ? "oklch(83% 0.22 158 / 0.1)" : "oklch(13% 0.03 240)", border: `1px solid ${watchlistSlugs.length > 0 ? "oklch(83% 0.22 158 / 0.3)" : "oklch(20% 0.04 240)"}`, color: watchlistSlugs.length > 0 ? "var(--green)" : "#888", cursor: "pointer", fontSize: "13px", fontWeight: 600, flexShrink: 0 }}>
-            Watchlist{watchlistSlugs.length > 0 && <span style={{ fontSize: "11px", fontWeight: 700, background: "oklch(83% 0.22 158 / 0.2)", borderRadius: "10px", padding: "1px 7px" }}>{watchlistSlugs.length}</span>}
-          </button>
+          {/* Compact filter chips */}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 12px 10px", overflowX: "auto", scrollbarWidth: "none" }}>
+            {FILTERS.map((f) => {
+              const on = activeFilters.has(f.key);
+              return (
+                <button key={f.key} type="button" onClick={() => toggleFilter(f.key)} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "3px 10px", borderRadius: "14px", border: `1px solid ${on ? f.color+"60" : "oklch(22% 0.04 240)"}`, background: on ? f.color+"18" : "transparent", cursor: "pointer", flexShrink: 0 }}>
+                  <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: on ? f.color : "#3a3a3a" }} />
+                  <span style={{ fontSize: "11px", fontWeight: on ? 600 : 400, color: on ? "#ddd" : "#555", whiteSpace: "nowrap" }}>{f.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : (
+        /* ══ DESKTOP TOP BAR ═════════════════════════════════════════════════ */
+        <div style={{ flexShrink: 0, borderBottom: "1px solid oklch(17% 0.04 240)", background: "oklch(10% 0.025 240)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 20px", overflowX: "auto", scrollbarWidth: "none" }}>
+            {FILTERS.map((f) => {
+              const on = activeFilters.has(f.key);
+              return (
+                <button key={f.key} type="button" onClick={() => toggleFilter(f.key)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "5px 12px", borderRadius: "20px", border: `1px solid ${on ? f.color+"55" : "oklch(20% 0.04 240)"}`, background: on ? f.color+"14" : "transparent", cursor: "pointer", transition: "all 0.15s", flexShrink: 0 }}>
+                  <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: on ? f.color : "#444", transition: "background 0.15s" }} />
+                  <span style={{ fontSize: "13px", fontWeight: on ? 600 : 400, color: on ? "#fff" : "#777", transition: "color 0.15s", whiteSpace: "nowrap" }}>{f.label}</span>
+                </button>
+              );
+            })}
+            <div style={{ flex: 1, minWidth: "8px" }} />
+            <button type="button" onClick={() => setWatchlistOpen(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "7px 14px", borderRadius: "8px", background: watchlistSlugs.length > 0 ? "oklch(83% 0.22 158 / 0.1)" : "oklch(13% 0.03 240)", border: `1px solid ${watchlistSlugs.length > 0 ? "oklch(83% 0.22 158 / 0.3)" : "oklch(20% 0.04 240)"}`, color: watchlistSlugs.length > 0 ? "var(--green)" : "#888", cursor: "pointer", fontSize: "13px", fontWeight: 600, flexShrink: 0 }}>
+              Watchlist{watchlistSlugs.length > 0 && <span style={{ fontSize: "11px", fontWeight: 700, background: "oklch(83% 0.22 158 / 0.2)", borderRadius: "10px", padding: "1px 7px" }}>{watchlistSlugs.length}</span>}
+            </button>
+          </div>
+        </div>
+      )}
 
-      {/* ── GTA VI countdown (fixed right-side widget) ── */}
-      <GTA6Banner collapsed={countdownHidden} onToggle={() => setCountdownHidden((v) => !v)} coverImage={gta6Cover} />
+      {/* ── GTA VI countdown (desktop only — overlaps on mobile) ── */}
+      {!isMobile && <GTA6Banner collapsed={countdownHidden} onToggle={() => setCountdownHidden((v) => !v)} coverImage={gta6Cover} />}
 
       {/* ── Main content: calendar grid + feed ── */}
       <div style={{ flex: 1, minHeight: 0, display: "flex", overflow: "hidden" }}>
@@ -699,7 +767,7 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
         )}
 
         {/* Right: scrollable day feed */}
-        <div ref={feedRef} style={{ flex: 1, overflowY: "auto", padding: isMobile ? "20px 16px 40px" : "24px 28px 48px" }}>
+        <div ref={feedRef} style={{ flex: 1, overflowY: "auto", padding: isMobile ? "16px 14px 80px" : "24px 28px 48px" }}>
           {feedDays.length === 0 ? (
             <div style={{ textAlign: "center", padding: "80px 20px", color: "var(--text-dim)" }}>
               <p style={{ fontSize: "16px", fontWeight: 600 }}>Nothing scheduled for {MONTH_NAMES[month-1]} {year}</p>
@@ -711,13 +779,13 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
             const weekday = getWeekday(dateStr);
 
             return (
-              <div key={dateStr} ref={(el) => { dayRefs.current[dateStr] = el; }} style={{ marginBottom: "48px" }}>
+              <div key={dateStr} ref={(el) => { dayRefs.current[dateStr] = el; }} style={{ marginBottom: isMobile ? "32px" : "48px" }}>
                 {/* Day header */}
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "14px", marginBottom: "16px", paddingBottom: "12px", borderBottom: `1px solid ${isSelected ? "oklch(83% 0.22 158 / 0.2)" : "oklch(17% 0.04 240)"}` }}>
-                  <span style={{ fontSize: "54px", fontWeight: 900, lineHeight: 1, color: isSelected ? "oklch(83% 0.22 158)" : isToday ? "oklch(83% 0.22 158)" : "#fff" }}>{day}</span>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "3px", paddingTop: "4px" }}>
-                    <span style={{ fontSize: "16px", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: isToday || isSelected ? "oklch(83% 0.22 158)" : "#fff" }}>{weekday}</span>
-                    <span style={{ fontSize: "12px", color: "#666" }}>{MONTH_NAMES[month-1]} {year}</span>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: isMobile ? "10px" : "14px", marginBottom: "16px", paddingBottom: "10px", borderBottom: `1px solid ${isSelected ? "oklch(83% 0.22 158 / 0.2)" : "oklch(17% 0.04 240)"}` }}>
+                  <span style={{ fontSize: isMobile ? "38px" : "54px", fontWeight: 900, lineHeight: 1, color: isSelected ? "oklch(83% 0.22 158)" : isToday ? "oklch(83% 0.22 158)" : "#fff" }}>{day}</span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "2px", paddingTop: isMobile ? "3px" : "4px" }}>
+                    <span style={{ fontSize: isMobile ? "13px" : "16px", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: isToday || isSelected ? "oklch(83% 0.22 158)" : "#fff" }}>{weekday}</span>
+                    <span style={{ fontSize: "11px", color: "#666" }}>{MONTH_NAMES[month-1]} {year}</span>
                   </div>
                   {isToday && <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--green)", background: "oklch(83% 0.22 158 / 0.1)", padding: "3px 10px", borderRadius: "4px", border: "1px solid oklch(83% 0.22 158 / 0.2)" }}>TODAY</span>}
                 </div>
@@ -737,7 +805,7 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
                     {dayEvts.length > 0 && (
                       <p style={{ fontSize: "10px", fontWeight: 700, color: "#333", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "10px" }}>Game Releases · {dayRels.length}</p>
                     )}
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: "10px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(auto-fill, minmax(130px, 1fr))" : "repeat(auto-fill, minmax(150px, 1fr))", gap: "10px" }}>
                       {dayRels.map((game) => (
                         <GameFeedTile
                           key={game.slug} game={game}
@@ -773,26 +841,6 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
         <WatchlistModal slugs={watchlistSlugs} releases={releases} onClose={() => setWatchlistOpen(false)} onRemove={watchlistRemove} />
       )}
 
-      {/* Mobile filters bottom sheet */}
-      {isMobile && filtersOpen && (
-        <>
-          <div onClick={() => setFiltersOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 280 }} />
-          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "oklch(15% 0.04 240)", borderTop: "1px solid oklch(28% 0.06 240)", borderRadius: "16px 16px 0 0", zIndex: 290, padding: "14px 18px 36px", animation: "slideUp 0.2s ease" }}>
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: "14px" }}>
-              <div style={{ width: "36px", height: "4px", borderRadius: "2px", background: "rgba(255,255,255,0.15)" }} />
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              {FILTERS.map((f) => (
-                <button key={f.key} type="button" onClick={() => toggleFilter(f.key)} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 14px", borderRadius: "10px", background: activeFilters.has(f.key) ? `${f.color}10` : "oklch(13% 0.03 240)", border: `1px solid ${activeFilters.has(f.key) ? f.color+"38" : "oklch(20% 0.04 240)"}`, cursor: "pointer" }}>
-                  <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: activeFilters.has(f.key) ? f.color : "#2a2a2a", flexShrink: 0 }} />
-                  <span style={{ fontSize: "14px", fontWeight: 600, color: activeFilters.has(f.key) ? "#ddd" : "#444", flex: 1, textAlign: "left" }}>{f.label}</span>
-                  {activeFilters.has(f.key) && <span style={{ color: f.color, fontSize: "12px" }}>✓</span>}
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 }
