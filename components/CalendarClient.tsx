@@ -469,6 +469,30 @@ function EventDetailModal({ event, onClose }: { event: GamingEvent; onClose: () 
   );
 }
 
+// ── Watchlist row ─────────────────────────────────────────────────────────────
+
+function WatchlistRow({ release: r, onRemove }: { release: GameRelease; onRemove: (slug: string) => void }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 8px", borderBottom: "1px solid oklch(20% 0.04 240)" }}>
+      <div style={{ width: "44px", height: "60px", flexShrink: 0, borderRadius: "6px", overflow: "hidden", position: "relative", background: "linear-gradient(135deg, oklch(22% 0.08 240), oklch(12% 0.04 240))" }}>
+        {r.background_image && !imgFailed ? (
+          <Image src={r.background_image} alt={r.name} fill style={{ objectFit: "cover", objectPosition: "top" }} sizes="44px" onError={() => setImgFailed(true)} />
+        ) : (
+          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: "14px", fontWeight: 800, color: "oklch(83% 0.22 158 / 0.4)" }}>{r.name.slice(0, 2).toUpperCase()}</span>
+          </div>
+        )}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ fontSize: "14px", fontWeight: 600, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</p>
+        <p style={{ fontSize: "12px", color: "var(--text-dim)", margin: "3px 0 0" }}>{formatDateShort(r.released)}</p>
+      </div>
+      <button type="button" onClick={() => onRemove(r.slug)} style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer", fontSize: "20px", padding: "4px", flexShrink: 0, lineHeight: 1 }}>×</button>
+    </div>
+  );
+}
+
 // ── Watchlist modal ───────────────────────────────────────────────────────────
 
 function WatchlistModal({ slugs, releases, onClose, onRemove }: { slugs: string[]; releases: GameRelease[]; onClose: () => void; onRemove: (slug: string) => void }) {
@@ -484,13 +508,7 @@ function WatchlistModal({ slugs, releases, onClose, onRemove }: { slugs: string[
         {saved.length === 0 ? (
           <p style={{ fontSize: "14px", color: "var(--text-dim)", textAlign: "center", margin: "40px 0", lineHeight: 1.6 }}>No games saved yet.<br /><span style={{ fontSize: "12px" }}>Tap + on any game to add it.</span></p>
         ) : saved.map((r) => (
-          <div key={r.slug} style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 8px", borderBottom: "1px solid oklch(20% 0.04 240)" }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: "14px", fontWeight: 600, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</p>
-              <p style={{ fontSize: "12px", color: "var(--text-dim)", margin: "3px 0 0" }}>{formatDateShort(r.released)}</p>
-            </div>
-            <button type="button" onClick={() => onRemove(r.slug)} style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer", fontSize: "20px", padding: "4px", flexShrink: 0, lineHeight: 1 }}>×</button>
-          </div>
+          <WatchlistRow key={r.slug} release={r} onRemove={onRemove} />
         ))}
       </div>
     </ModalBackdrop>

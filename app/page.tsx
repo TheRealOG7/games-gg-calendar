@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { CalendarClient } from "@/components/CalendarClient";
-import { fetchAllReleases } from "@/lib/releases";
+import { fetchAllReleases, fetchRawgDescriptions } from "@/lib/releases";
 import { fetchDashboardReleases } from "@/lib/dashboard";
 import { fetchIgdbReleases } from "@/lib/igdb";
 import type { GameRelease } from "@/lib/releases";
@@ -192,6 +192,20 @@ export default async function CalendarPage() {
   const releases = final
     .filter((r) => !BLACKLISTED_SLUGS.has(r.slug))
     .sort((a, b) => a.released.localeCompare(b.released));
+
+  // Enrich games missing descriptions using RAWG individual endpoint (Steam-sourced, 2-3 sentences)
+  if (RAWG_API_KEY) {
+    const needsDesc = releases.filter((r) => !r.description).map((r) => r.slug);
+    if (needsDesc.length > 0) {
+      const descMap = await fetchRawgDescriptions(needsDesc, RAWG_API_KEY);
+      for (const r of releases) {
+        if (!r.description) {
+          const desc = descMap.get(r.slug);
+          if (desc) r.description = desc;
+        }
+      }
+    }
+  }
 
   return (
     <main

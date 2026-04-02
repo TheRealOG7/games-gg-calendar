@@ -90,6 +90,45 @@ export async function fetchUpcomingReleases(
   return [...bySlug.values()].sort((a, b) => a.released.localeCompare(b.released));
 }
 
+// Fetch descriptions for games missing them — calls individual RAWG endpoint which
+// includes description_raw (plain text, Steam-sourced). Batched at concurrency 5.
+export async function fetchRawgDescriptions(
+  slugs: string[],
+  apiKey: string
+): Promise<Map<string, string>> {
+  const result = new Map<string, string>();
+  if (!apiKey || slugs.length === 0) return result;
+
+  const BATCH = 5;
+  for (let i = 0; i < slugs.length; i += BATCH) {
+    const batch = slugs.slice(i, i + BATCH);
+    const entries = await Promise.all(
+      batch.map(async (slug) => {
+        try {
+          const res = await fetch(
+            `https://api.rawg.io/api/games/${encodeURIComponent(slug)}?key=${apiKey}`,
+            { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }
+          );
+          if (!res.ok) return null;
+          const data = await res.json();
+          const raw: string = (data.description_raw ?? "").replace(/\r?\n+/g, " ").trim();
+          if (!raw) return null;
+          const sentences = raw.split(/\. /).filter((s: string) => s.trim());
+          let desc = sentences.slice(0, 3).join(". ").trim();
+          if (desc && !/[.!?]$/.test(desc)) desc += ".";
+          return desc ? { slug, desc } : null;
+        } catch {
+          return null;
+        }
+      })
+    );
+    for (const e of entries) {
+      if (e) result.set(e.slug, e.desc);
+    }
+  }
+  return result;
+}
+
 export async function fetchAllReleases(
   startDate: string,
   endDate: string,
