@@ -80,7 +80,7 @@ export async function fetchIgdbReleases(
 
   // Fetch two pages of games in parallel (up to 1000 games)
   const gameQuery = (offset: number) =>
-    `fields name,url,hypes,follows,first_release_date,platforms.name;` +
+    `fields name,url,hypes,follows,first_release_date,platforms.name,summary;` +
     ` where first_release_date >= ${nowSec} & first_release_date <= ${futureSec} & hypes >= 10;` +
     ` sort first_release_date asc; limit 500; offset ${offset};`;
 
@@ -182,6 +182,7 @@ export async function fetchIgdbReleases(
         : null,
       platforms: [...new Set(platforms.map((p) => normalizePlatform(p.name)))],
       genres: [],
+      description: (game.summary as string | undefined) ?? null,
     });
   }
 

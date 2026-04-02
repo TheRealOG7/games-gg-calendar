@@ -11,6 +11,7 @@ export interface GameRelease {
   metacritic?: number | null;
   rating?: number;
   ratings_count?: number;
+  description?: string | null;
 }
 
 interface RawgGame {

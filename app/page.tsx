@@ -42,7 +42,7 @@ export default async function CalendarPage() {
     }
   }
 
-  // Layer 2: RAWG — overrides with richer metadata (ratings, genres) but keep IGDB cover if RAWG has none
+  // Layer 2: RAWG — overrides with richer metadata (ratings, genres) but keep IGDB cover/description if RAWG has none
   for (const r of rawgAndHardcoded) {
     if (r.released >= startStr && r.released <= endStr) {
       const existing = bySlug.get(r.slug);
@@ -50,6 +50,7 @@ export default async function CalendarPage() {
         ...r,
         background_image: r.background_image ?? existing?.background_image ?? null,
         platforms: r.platforms.length > 0 ? r.platforms : (existing?.platforms ?? []),
+        description: existing?.description ?? r.description ?? null,
       });
     }
   }
@@ -76,6 +77,21 @@ export default async function CalendarPage() {
       .trim();
   }
 
+  // Merge helper — keep best image, most platforms, description
+  function mergeEntries(a: GameRelease, b: GameRelease): GameRelease {
+    const base = a.background_image ? a : (b.background_image ? b : a);
+    return {
+      ...base,
+      // prefer earlier release date as authoritative
+      released: a.released <= b.released ? a.released : b.released,
+      background_image: a.background_image ?? b.background_image,
+      platforms: [...new Set([...a.platforms, ...b.platforms])],
+      genres: a.genres.length >= b.genres.length ? a.genres : b.genres,
+      description: a.description ?? b.description ?? null,
+    };
+  }
+
+  // Pass 1: exact date + normalized name
   const byName = new Map<string, GameRelease>();
   for (const r of bySlug.values()) {
     const key = `${r.released}::${normalizeName(r.name)}`;
@@ -83,18 +99,28 @@ export default async function CalendarPage() {
     if (!existing) {
       byName.set(key, r);
     } else {
-      // Keep the entry with more data: prefer one with image, then more platforms
-      const betterImage = !existing.background_image && r.background_image;
-      const betterPlatforms = r.platforms.length > existing.platforms.length;
-      if (betterImage || (!existing.background_image && betterPlatforms)) {
-        byName.set(key, { ...r, background_image: r.background_image ?? existing.background_image });
-      }
+      byName.set(key, mergeEntries(existing, r));
     }
   }
 
-  const releases = [...byName.values()].sort((a, b) =>
-    a.released.localeCompare(b.released)
-  );
+  // Pass 2: cross-date fuzzy — same normalized name within 7 days → same game from different sources
+  const sorted = [...byName.values()].sort((a, b) => a.released.localeCompare(b.released));
+  const final: GameRelease[] = [];
+  for (const r of sorted) {
+    const normR = normalizeName(r.name);
+    const match = final.findIndex((e) => {
+      if (normalizeName(e.name) !== normR) return false;
+      const diff = Math.abs(new Date(r.released).getTime() - new Date(e.released).getTime()) / 86400000;
+      return diff <= 7;
+    });
+    if (match === -1) {
+      final.push(r);
+    } else {
+      final[match] = mergeEntries(final[match], r);
+    }
+  }
+
+  const releases = final.sort((a, b) => a.released.localeCompare(b.released));
 
   return (
     <main
