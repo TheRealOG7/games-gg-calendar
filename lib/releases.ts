@@ -12,6 +12,7 @@ export interface GameRelease {
   rating?: number;
   ratings_count?: number;
   description?: string | null;
+  steamAppId?: string;
 }
 
 interface RawgGame {

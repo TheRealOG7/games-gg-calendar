@@ -105,8 +105,8 @@ export async function fetchIgdbReleases(
     batches.push(allIds.slice(i, i + 500));
   }
 
-  // Fetch release dates and covers for all batches in parallel
-  const [rdResults, coverResults] = await Promise.all([
+  // Fetch release dates, covers, and Steam App IDs in parallel
+  const [rdResults, coverResults, extGameResults] = await Promise.all([
     Promise.all(
       batches.map((batch) =>
         igdbPost(
@@ -122,6 +122,17 @@ export async function fetchIgdbReleases(
         igdbPost(
           "covers",
           `fields game,image_id; where game = (${batch.join(",")}); limit 500;`,
+          clientId,
+          token
+        )
+      )
+    ).then((pages) => pages.flat()),
+    // category 1 = Steam
+    Promise.all(
+      batches.map((batch) =>
+        igdbPost(
+          "external_games",
+          `fields game,uid,category; where game = (${batch.join(",")}) & category = 1; limit 500;`,
           clientId,
           token
         )
@@ -152,6 +163,14 @@ export async function fetchIgdbReleases(
     const gid = c.game as number;
     const imageId = c.image_id as string;
     if (gid && imageId) coverMap.set(gid, imageId);
+  }
+
+  // Build Steam App ID map: game id → steam appid string
+  const steamAppIdMap = new Map<number, string>();
+  for (const e of extGameResults) {
+    const gid = e.game as number;
+    const uid = e.uid as string;
+    if (gid && uid) steamAppIdMap.set(gid, uid);
   }
 
   // Fetch screenshots as fallback for games without cover art
@@ -211,6 +230,7 @@ export async function fetchIgdbReleases(
       platforms: [...new Set(platforms.map((p) => normalizePlatform(p.name)))],
       genres: [],
       description: (game.summary as string | undefined) ?? (game.storyline as string | undefined) ?? null,
+      steamAppId: steamAppIdMap.get(gid),
     });
   }
 

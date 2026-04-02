@@ -1,9 +1,10 @@
 export const dynamic = "force-dynamic";
 
 import { CalendarClient } from "@/components/CalendarClient";
-import { fetchAllReleases, fetchRawgDescriptions } from "@/lib/releases";
+import { fetchAllReleases } from "@/lib/releases";
 import { fetchDashboardReleases } from "@/lib/dashboard";
 import { fetchIgdbReleases } from "@/lib/igdb";
+import { fetchSteamDescriptions } from "@/lib/steam";
 import type { GameRelease } from "@/lib/releases";
 
 const RAWG_API_KEY = process.env.RAWG_API_KEY ?? "";
@@ -98,6 +99,7 @@ export default async function CalendarPage() {
         background_image: r.background_image ?? existing?.background_image ?? null,
         platforms: r.platforms.length > 0 ? r.platforms : (existing?.platforms ?? []),
         description: existing?.description ?? r.description ?? null,
+        steamAppId: existing?.steamAppId ?? r.steamAppId,
       });
     }
   }
@@ -157,6 +159,7 @@ export default async function CalendarPage() {
       platforms: [...new Set([...a.platforms, ...b.platforms])],
       genres: a.genres.length >= b.genres.length ? a.genres : b.genres,
       description: a.description ?? b.description ?? null,
+      steamAppId: a.steamAppId ?? b.steamAppId,
     };
   }
 
@@ -193,16 +196,15 @@ export default async function CalendarPage() {
     .filter((r) => !BLACKLISTED_SLUGS.has(r.slug))
     .sort((a, b) => a.released.localeCompare(b.released));
 
-  // Enrich games missing descriptions using RAWG individual endpoint (Steam-sourced, 2-3 sentences)
-  if (RAWG_API_KEY) {
-    const needsDesc = releases.filter((r) => !r.description).map((r) => r.slug);
-    if (needsDesc.length > 0) {
-      const descMap = await fetchRawgDescriptions(needsDesc, RAWG_API_KEY);
-      for (const r of releases) {
-        if (!r.description) {
-          const desc = descMap.get(r.slug);
-          if (desc) r.description = desc;
-        }
+  // Enrich games missing descriptions via Steam store API (uses Steam App IDs from IGDB)
+  const needsSteamDesc = releases.filter((r) => !r.description && r.steamAppId);
+  if (needsSteamDesc.length > 0) {
+    const appIds = needsSteamDesc.map((r) => r.steamAppId!);
+    const steamDescMap = await fetchSteamDescriptions(appIds);
+    for (const r of releases) {
+      if (!r.description && r.steamAppId) {
+        const desc = steamDescMap.get(r.steamAppId);
+        if (desc) r.description = desc;
       }
     }
   }
