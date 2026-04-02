@@ -160,13 +160,13 @@ function GTA6Banner({ collapsed, onToggle, coverImage }: { collapsed: boolean; o
           borderBottom: "1px solid rgba(255,120,50,0.2)",
           boxShadow: "-8px 0 40px rgba(0,0,0,0.8), -2px 0 16px rgba(255,100,30,0.12)",
         }}>
-          <div style={{ fontSize: "11px", fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", color: "#FF8040", marginBottom: "3px" }}>GTA VI</div>
-          <div style={{ fontSize: "9px", color: "rgba(255,255,255,0.38)", marginBottom: "12px" }}>Nov 19, 2026</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "4px" }}>
+          <div style={{ fontSize: "13px", fontWeight: 900, letterSpacing: "0.22em", textTransform: "uppercase", color: "#FF8040", marginBottom: "2px" }}>GTA VI</div>
+          <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.55)", marginBottom: "14px" }}>Nov 19, 2026</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "6px" }}>
             {([[ days,"DAYS"],[hours,"HRS"],[minutes,"MIN"],[seconds,"SEC"]] as [number,string][]).map(([v,l]) => (
               <div key={l} style={{ textAlign: "center" }}>
-                <div style={{ fontSize: l === "DAYS" ? "18px" : "16px", fontWeight: 900, color: "#FFFFFF", lineHeight: 1, letterSpacing: "-0.02em" }}>{String(v).padStart(l==="DAYS"?3:2,"0")}</div>
-                <div style={{ fontSize: "6px", color: "rgba(255,255,255,0.3)", letterSpacing: "0.05em", marginTop: "3px" }}>{l}</div>
+                <div style={{ fontSize: l === "DAYS" ? "22px" : "20px", fontWeight: 900, color: "#FFFFFF", lineHeight: 1, letterSpacing: "-0.03em", textShadow: "0 1px 8px rgba(0,0,0,0.9)" }}>{String(v).padStart(l==="DAYS"?3:2,"0")}</div>
+                <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.45)", letterSpacing: "0.06em", marginTop: "4px", fontWeight: 600 }}>{l}</div>
               </div>
             ))}
           </div>
@@ -235,7 +235,7 @@ function CalGrid({
       {/* Month nav */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px 10px", flexShrink: 0 }}>
         <button type="button" onClick={onPrevMonth} style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "20px", lineHeight: 1, padding: "2px 8px" }}>‹</button>
-        <span style={{ fontSize: "13px", fontWeight: 700, color: "#ccc", letterSpacing: "0.03em" }}>
+        <span style={{ fontSize: "15px", fontWeight: 700, color: "#ddd", letterSpacing: "0.03em" }}>
           {MONTH_NAMES[month-1]} {year}
         </span>
         <button type="button" onClick={onNextMonth} style={{ background: "none", border: "none", color: atEnd ? "#222" : "#555", cursor: atEnd ? "default" : "pointer", fontSize: "20px", lineHeight: 1, padding: "2px 8px" }}>›</button>
@@ -244,7 +244,7 @@ function CalGrid({
       {/* Day-of-week headers */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", padding: "0 10px", flexShrink: 0 }}>
         {DAY_ABBREVS.map((d, i) => (
-          <div key={i} style={{ textAlign: "center", fontSize: "10px", color: "#333", fontWeight: 700, padding: "4px 0", letterSpacing: "0.04em" }}>{d}</div>
+          <div key={i} style={{ textAlign: "center", fontSize: "11px", color: "#888", fontWeight: 600, padding: "4px 0", letterSpacing: "0.04em" }}>{d}</div>
         ))}
       </div>
 
@@ -275,21 +275,21 @@ function CalGrid({
               {/* Day number */}
               <div style={{ display: "flex", justifyContent: "center", marginBottom: "3px" }}>
                 <div style={{
-                  width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "11px", fontWeight: isToday ? 800 : hasContent ? 600 : 400,
+                  width: "26px", height: "26px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "13px", fontWeight: isToday ? 800 : hasContent ? 600 : 400,
                   background: isToday ? "var(--green)" : "transparent",
-                  color: isToday ? "#060D17" : isSelected ? "oklch(83% 0.22 158)" : hasContent ? "#ddd" : "#333",
+                  color: isToday ? "#060D17" : isSelected ? "oklch(83% 0.22 158)" : hasContent ? "#eee" : "#555",
                   flexShrink: 0,
                 }}>{day}</div>
               </div>
               {/* Content items */}
               {thisMonth && cellContent.slice(0, 3).map((item, idx) => (
-                <div key={idx} style={{ fontSize: "7px", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: item.color, opacity: 0.9, padding: "0 2px", marginBottom: "1px" }}>
+                <div key={idx} style={{ fontSize: "9px", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: item.color, padding: "0 2px", marginBottom: "1px" }}>
                   {item.label}
                 </div>
               ))}
               {thisMonth && cellContent.length > 3 && (
-                <div style={{ fontSize: "7px", color: "#555", padding: "0 2px" }}>+{cellContent.length - 3} more</div>
+                <div style={{ fontSize: "8px", color: "#666", padding: "0 2px" }}>+{cellContent.length - 3} more</div>
               )}
             </div>
           );
@@ -654,8 +654,8 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
             const on = activeFilters.has(f.key);
             return (
               <button key={f.key} type="button" onClick={() => toggleFilter(f.key)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "5px 12px", borderRadius: "20px", border: `1px solid ${on ? f.color+"55" : "oklch(20% 0.04 240)"}`, background: on ? f.color+"14" : "transparent", cursor: "pointer", transition: "all 0.15s", flexShrink: 0 }}>
-                <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: on ? f.color : "#2a2a2a", transition: "background 0.15s" }} />
-                <span style={{ fontSize: "12px", fontWeight: on ? 600 : 400, color: on ? "#ccc" : "#3a3a3a", transition: "color 0.15s", whiteSpace: "nowrap" }}>{f.label}</span>
+                <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: on ? f.color : "#444", transition: "background 0.15s" }} />
+                <span style={{ fontSize: "13px", fontWeight: on ? 600 : 400, color: on ? "#fff" : "#777", transition: "color 0.15s", whiteSpace: "nowrap" }}>{f.label}</span>
               </button>
             );
           })}
@@ -696,10 +696,10 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
               <div key={dateStr} ref={(el) => { dayRefs.current[dateStr] = el; }} style={{ marginBottom: "48px" }}>
                 {/* Day header */}
                 <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "16px", paddingBottom: "12px", borderBottom: `1px solid ${isSelected ? "oklch(83% 0.22 158 / 0.2)" : "oklch(17% 0.04 240)"}` }}>
-                  <span style={{ fontSize: "50px", fontWeight: 900, lineHeight: 1, color: isSelected ? "oklch(83% 0.22 158)" : isToday ? "oklch(83% 0.22 158)" : "#282828" }}>{day}</span>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
-                    <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: isToday || isSelected ? "oklch(83% 0.22 158 / 0.7)" : "#444" }}>{weekday}</span>
-                    <span style={{ fontSize: "11px", color: "#2e2e2e" }}>{MONTH_NAMES[month-1]} {year}</span>
+                  <span style={{ fontSize: "52px", fontWeight: 900, lineHeight: 1, color: isSelected ? "oklch(83% 0.22 158)" : isToday ? "oklch(83% 0.22 158)" : "#999" }}>{day}</span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                    <span style={{ fontSize: "16px", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: isToday || isSelected ? "oklch(83% 0.22 158)" : "#bbb" }}>{weekday}</span>
+                    <span style={{ fontSize: "12px", color: "#666" }}>{MONTH_NAMES[month-1]} {year}</span>
                   </div>
                   {isToday && <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--green)", background: "oklch(83% 0.22 158 / 0.1)", padding: "3px 10px", borderRadius: "4px", border: "1px solid oklch(83% 0.22 158 / 0.2)" }}>TODAY</span>}
                 </div>
@@ -740,7 +740,17 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
 
       {/* ── Modals ── */}
       {selectedItem?.kind === "game" && (
-        <GameDetailModal game={selectedItem.data} inWatchlist={watchlistHas(selectedItem.data.slug)} onWatchlistToggle={watchlistToggle} onClose={() => setSelectedItem(null)} isFeatured={featuredSlugs.length === 0 || featuredSet.has(selectedItem.data.slug)} />
+        <GameDetailModal
+          game={selectedItem.data}
+          inWatchlist={watchlistHas(selectedItem.data.slug)}
+          onWatchlistToggle={watchlistToggle}
+          onClose={() => setSelectedItem(null)}
+          isFeatured={
+            featuredSlugs.length === 0 ||
+            featuredSet.has(selectedItem.data.slug) ||
+            featuredSet.has(selectedItem.data.name.toLowerCase().replace(/[^a-z0-9]/g, ""))
+          }
+        />
       )}
       {selectedItem?.kind === "event" && (
         <EventDetailModal event={selectedItem.data} onClose={() => setSelectedItem(null)} />

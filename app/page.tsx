@@ -14,33 +14,42 @@ const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET ?? "";
 const GAMES_GG_CMS = process.env.GAMES_GG_CMS_URL ?? "https://cms.games.gg";
 const CMS_PAGE_SIZE = 200;
 
-async function fetchCmsPage(page: number): Promise<{ slugs: string[]; pageCount: number }> {
+// Normalize a CMS/game name to a slug-like token for fuzzy matching
+function cmNorm(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+async function fetchCmsPage(page: number): Promise<{ tokens: string[]; pageCount: number }> {
   try {
     const res = await fetch(
-      `${GAMES_GG_CMS}/api/games?fields[0]=slug&pagination[pageSize]=${CMS_PAGE_SIZE}&pagination[page]=${page}`,
+      `${GAMES_GG_CMS}/api/games?fields[0]=slug&fields[1]=name&pagination[pageSize]=${CMS_PAGE_SIZE}&pagination[page]=${page}`,
       { next: { revalidate: 3600 }, signal: AbortSignal.timeout(8000) }
     );
-    if (!res.ok) return { slugs: [], pageCount: 1 };
+    if (!res.ok) return { tokens: [], pageCount: 1 };
     const data = await res.json();
-    const slugs = ((data.data ?? []) as Array<{ slug?: string }>)
-      .map((i) => i.slug ?? "")
-      .filter(Boolean);
+    const items = (data.data ?? []) as Array<{ slug?: string; name?: string }>;
+    // Return both the exact slug AND a normalized name token — catches slug mismatches across sources
+    const tokens: string[] = [];
+    for (const i of items) {
+      if (i.slug) tokens.push(i.slug);
+      if (i.name) tokens.push(cmNorm(i.name));
+    }
     const pageCount = (data.meta?.pagination?.pageCount as number) ?? 1;
-    return { slugs, pageCount };
+    return { tokens, pageCount };
   } catch {
-    return { slugs: [], pageCount: 1 };
+    return { tokens: [], pageCount: 1 };
   }
 }
 
 async function fetchFeaturedSlugs(): Promise<string[]> {
   const first = await fetchCmsPage(1);
-  if (first.slugs.length === 0) return [];
-  const all = [...first.slugs];
+  if (first.tokens.length === 0) return [];
+  const all = [...first.tokens];
   if (first.pageCount > 1) {
     const rest = await Promise.all(
       Array.from({ length: first.pageCount - 1 }, (_, i) => fetchCmsPage(i + 2))
     );
-    for (const page of rest) all.push(...page.slugs);
+    for (const page of rest) all.push(...page.tokens);
   }
   return all;
 }
@@ -97,6 +106,28 @@ export default async function CalendarPage() {
     }
   }
 
+  // Games to exclude entirely (no image + not worth showing)
+  const BLACKLISTED_SLUGS = new Set(["all-will-fall"]);
+
+  // Known slug aliases: maps a variant slug → canonical slug so dedup can merge them
+  // e.g. RAWG calls it "mouse-pi-for-hire", IGDB calls it "mouse"
+  const SLUG_ALIASES: Record<string, string> = {
+    "mouse-pi-for-hire": "mouse",
+    "mouse-p-i-for-hire": "mouse",
+  };
+  for (const [variant, canon] of Object.entries(SLUG_ALIASES)) {
+    const variantEntry = bySlug.get(variant);
+    if (!variantEntry) continue;
+    const canonEntry = bySlug.get(canon);
+    bySlug.set(
+      canon,
+      canonEntry
+        ? mergeEntries(canonEntry, { ...variantEntry, slug: canon })
+        : { ...variantEntry, slug: canon }
+    );
+    bySlug.delete(variant);
+  }
+
   // Final dedup by normalized name — catches same game with different slugs across sources
   // e.g. IGDB "mixtape", RAWG "mixtape--1", RAWG "mixtape-2025" → keep best entry
   function normalizeName(name: string): string {
@@ -146,7 +177,7 @@ export default async function CalendarPage() {
     const match = final.findIndex((e) => {
       if (normalizeName(e.name) !== normR) return false;
       const diff = Math.abs(new Date(r.released).getTime() - new Date(e.released).getTime()) / 86400000;
-      return diff <= 7;
+      return diff <= 14;
     });
     if (match === -1) {
       final.push(r);
@@ -155,7 +186,9 @@ export default async function CalendarPage() {
     }
   }
 
-  const releases = final.sort((a, b) => a.released.localeCompare(b.released));
+  const releases = final
+    .filter((r) => !BLACKLISTED_SLUGS.has(r.slug))
+    .sort((a, b) => a.released.localeCompare(b.released));
 
   return (
     <main
