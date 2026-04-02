@@ -101,12 +101,27 @@ function googleCalUrl(name: string, start: string, end: string, description = ""
   );
 }
 
+// Strip em/en dashes and clean up description text
+function cleanDesc(text: string | null | undefined): string {
+  if (!text) return "";
+  return text.replace(/[—–]/g, " - ").replace(/\s{2,}/g, " ").trim();
+}
+
 // Truncate description to N words
 function truncate(text: string | null | undefined, words: number): string {
-  if (!text) return "";
-  const parts = text.split(/\s+/);
-  if (parts.length <= words) return text;
+  const cleaned = cleanDesc(text);
+  if (!cleaned) return "";
+  const parts = cleaned.split(/\s+/);
+  if (parts.length <= words) return cleaned;
   return parts.slice(0, words).join(" ") + "…";
+}
+
+// Fallback description when no summary is available
+function gameDescFallback(game: GameRelease): string | null {
+  const parts: string[] = [];
+  if (game.genres.length > 0) parts.push(game.genres.slice(0, 3).join(", ") + " game");
+  if (game.platforms.length > 0) parts.push("available on " + game.platforms.slice(0, 3).join(", "));
+  return parts.length > 0 ? parts.map((p, i) => i === 0 ? p.charAt(0).toUpperCase() + p.slice(1) : p).join(", ") + "." : null;
 }
 
 // ── Mobile detection ──────────────────────────────────────────────────────────
@@ -147,26 +162,26 @@ function GTA6Banner({ collapsed, onToggle, coverImage }: { collapsed: boolean; o
       {/* Expanded card */}
       {!collapsed && (
         <div style={{
-          width: "186px",
+          width: "220px",
           backgroundImage: coverImage
-            ? `linear-gradient(to right, rgba(4,2,1,0.72) 0%, rgba(4,2,1,0.93) 100%), url(${coverImage})`
-            : "linear-gradient(160deg, #130702, #271003)",
+            ? `linear-gradient(to right, rgba(6,2,14,0.7) 0%, rgba(6,2,14,0.93) 100%), url(${coverImage})`
+            : "linear-gradient(160deg, #0d0618, #1a0d2e)",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          borderRadius: "10px 0 0 10px",
-          padding: "16px 14px",
-          borderTop: "1px solid rgba(255,120,50,0.35)",
-          borderLeft: "1px solid rgba(255,120,50,0.35)",
-          borderBottom: "1px solid rgba(255,120,50,0.2)",
-          boxShadow: "-8px 0 40px rgba(0,0,0,0.8), -2px 0 16px rgba(255,100,30,0.12)",
+          borderRadius: "12px 0 0 12px",
+          padding: "18px 16px",
+          borderTop: "1px solid rgba(168,85,247,0.4)",
+          borderLeft: "1px solid rgba(168,85,247,0.4)",
+          borderBottom: "1px solid rgba(168,85,247,0.25)",
+          boxShadow: "-8px 0 40px rgba(0,0,0,0.85), -2px 0 20px rgba(168,85,247,0.15)",
         }}>
-          <div style={{ fontSize: "13px", fontWeight: 900, letterSpacing: "0.22em", textTransform: "uppercase", color: "#FF8040", marginBottom: "2px" }}>GTA VI</div>
-          <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.55)", marginBottom: "14px" }}>Nov 19, 2026</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "6px" }}>
+          <div style={{ fontSize: "14px", fontWeight: 900, letterSpacing: "0.22em", textTransform: "uppercase", color: "#C084FC", marginBottom: "3px" }}>GTA VI</div>
+          <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", marginBottom: "16px" }}>Nov 19, 2026</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "8px" }}>
             {([[ days,"DAYS"],[hours,"HRS"],[minutes,"MIN"],[seconds,"SEC"]] as [number,string][]).map(([v,l]) => (
               <div key={l} style={{ textAlign: "center" }}>
-                <div style={{ fontSize: l === "DAYS" ? "22px" : "20px", fontWeight: 900, color: "#FFFFFF", lineHeight: 1, letterSpacing: "-0.03em", textShadow: "0 1px 8px rgba(0,0,0,0.9)" }}>{String(v).padStart(l==="DAYS"?3:2,"0")}</div>
-                <div style={{ fontSize: "8px", color: "rgba(255,255,255,0.45)", letterSpacing: "0.06em", marginTop: "4px", fontWeight: 600 }}>{l}</div>
+                <div style={{ fontSize: l === "DAYS" ? "24px" : "22px", fontWeight: 900, color: "#FFFFFF", lineHeight: 1, letterSpacing: "-0.03em", textShadow: "0 2px 10px rgba(168,85,247,0.5)" }}>{String(v).padStart(l==="DAYS"?3:2,"0")}</div>
+                <div style={{ fontSize: "9px", color: "rgba(255,255,255,0.4)", letterSpacing: "0.06em", marginTop: "5px", fontWeight: 600 }}>{l}</div>
               </div>
             ))}
           </div>
@@ -174,23 +189,23 @@ function GTA6Banner({ collapsed, onToggle, coverImage }: { collapsed: boolean; o
       )}
       {/* Toggle tab */}
       <button type="button" onClick={onToggle} style={{
-        background: collapsed ? "linear-gradient(160deg, #130702, #271003)" : "rgba(4,2,1,0.65)",
-        border: "1px solid rgba(255,120,50,0.4)",
+        background: collapsed ? "linear-gradient(160deg, #0d0618, #1a0d2e)" : "rgba(6,2,14,0.7)",
+        border: "1px solid rgba(168,85,247,0.45)",
         borderRight: "none",
-        borderRadius: collapsed ? "8px 0 0 8px" : "0 0 0 8px",
+        borderRadius: collapsed ? "10px 0 0 10px" : "0 0 0 10px",
         cursor: "pointer",
-        padding: collapsed ? "12px 7px" : "6px 7px",
+        padding: collapsed ? "14px 9px" : "7px 9px",
         writingMode: collapsed ? "vertical-rl" : undefined,
         textOrientation: collapsed ? "mixed" : undefined,
-        fontSize: "8px",
+        fontSize: "9px",
         fontWeight: 800,
-        color: "#FF8040",
+        color: "#C084FC",
         letterSpacing: "0.12em",
         textTransform: "uppercase",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        boxShadow: collapsed ? "-4px 0 20px rgba(0,0,0,0.7)" : "none",
+        boxShadow: collapsed ? "-4px 0 24px rgba(0,0,0,0.8), -1px 0 12px rgba(168,85,247,0.2)" : "none",
         lineHeight: 1.4,
       }}>
         {collapsed ? "GTA VI" : "›"}
@@ -234,11 +249,11 @@ function CalGrid({
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Month nav */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px 10px", flexShrink: 0 }}>
-        <button type="button" onClick={onPrevMonth} style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "20px", lineHeight: 1, padding: "2px 8px" }}>‹</button>
-        <span style={{ fontSize: "15px", fontWeight: 700, color: "#ddd", letterSpacing: "0.03em" }}>
+        <button type="button" onClick={onPrevMonth} style={{ background: "none", border: "none", color: "#bbb", cursor: "pointer", fontSize: "22px", lineHeight: 1, padding: "2px 10px" }}>‹</button>
+        <span style={{ fontSize: "15px", fontWeight: 700, color: "#fff", letterSpacing: "0.03em" }}>
           {MONTH_NAMES[month-1]} {year}
         </span>
-        <button type="button" onClick={onNextMonth} style={{ background: "none", border: "none", color: atEnd ? "#222" : "#555", cursor: atEnd ? "default" : "pointer", fontSize: "20px", lineHeight: 1, padding: "2px 8px" }}>›</button>
+        <button type="button" onClick={onNextMonth} style={{ background: "none", border: "none", color: atEnd ? "#333" : "#bbb", cursor: atEnd ? "default" : "pointer", fontSize: "22px", lineHeight: 1, padding: "2px 10px" }}>›</button>
       </div>
 
       {/* Day-of-week headers */}
@@ -284,12 +299,12 @@ function CalGrid({
               </div>
               {/* Content items */}
               {thisMonth && cellContent.slice(0, 3).map((item, idx) => (
-                <div key={idx} style={{ fontSize: "9px", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: item.color, padding: "0 2px", marginBottom: "1px" }}>
+                <div key={idx} style={{ fontSize: "11px", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: item.color, padding: "0 3px", marginBottom: "1px" }}>
                   {item.label}
                 </div>
               ))}
               {thisMonth && cellContent.length > 3 && (
-                <div style={{ fontSize: "8px", color: "#666", padding: "0 2px" }}>+{cellContent.length - 3} more</div>
+                <div style={{ fontSize: "9px", color: "#666", padding: "0 3px" }}>+{cellContent.length - 3} more</div>
               )}
             </div>
           );
@@ -319,7 +334,7 @@ function ModalBackdrop({ onClose, children }: { onClose: () => void; children: R
 
 // ── Game detail modal ─────────────────────────────────────────────────────────
 
-function GameDetailModal({ game, inWatchlist, onWatchlistToggle, onClose, isFeatured }: { game: GameRelease; inWatchlist: boolean; onWatchlistToggle: (slug: string) => void; onClose: () => void; isFeatured: boolean }) {
+function GameDetailModal({ game, inWatchlist, onWatchlistToggle, onClose, cmsSlug }: { game: GameRelease; inWatchlist: boolean; onWatchlistToggle: (slug: string) => void; onClose: () => void; cmsSlug: string | null }) {
   const platforms = deduplicatePlatforms(game.platforms);
   const calUrl    = googleCalUrl(`${game.name} — Release`, game.released, game.released, `${game.name} releases today.`);
   const [imgFailed, setImgFailed] = useState(false);
@@ -349,9 +364,10 @@ function GameDetailModal({ game, inWatchlist, onWatchlistToggle, onClose, isFeat
         <h2 style={{ fontSize: "21px", fontWeight: 800, lineHeight: 1.15, marginBottom: "3px" }}>{game.name}</h2>
         <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "8px" }}>{formatDateLong(game.released)}</p>
         {game.genres.length > 0 && <p style={{ fontSize: "11px", color: "var(--text-dim)", marginBottom: "10px" }}>{game.genres.slice(0,4).join(" · ")}</p>}
-        {game.description && (
-          <p style={{ fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.65, marginBottom: "14px" }}>{truncate(game.description, 60)}</p>
-        )}
+        {(() => {
+          const desc = cleanDesc(game.description) || gameDescFallback(game);
+          return desc ? <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "14px" }}>{truncate(desc, 60)}</p> : null;
+        })()}
         <button type="button" onClick={() => onWatchlistToggle(game.slug)} style={{ width: "100%", padding: "10px 14px", borderRadius: "9px", fontWeight: 700, fontSize: "13px", cursor: "pointer", border: "1px solid", background: inWatchlist ? "oklch(83% 0.22 158 / 0.15)" : "oklch(83% 0.22 158 / 0.08)", color: "var(--green)", borderColor: inWatchlist ? "oklch(83% 0.22 158 / 0.5)" : "oklch(83% 0.22 158 / 0.3)", marginBottom: "10px", transition: "all 0.15s" }}>
           {inWatchlist ? "✓ In Watchlist" : "+ Add to Watchlist"}
         </button>
@@ -364,8 +380,8 @@ function GameDetailModal({ game, inWatchlist, onWatchlistToggle, onClose, isFeat
             </div>
           </>
         )}
-        {isFeatured && (
-          <a href={gamesGgUrl(game.slug)} target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", background: "var(--green)", color: "#060D17", fontWeight: 700, fontSize: "13px", padding: "10px 14px", borderRadius: "9px", textDecoration: "none", transition: "opacity 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.opacity="0.85")} onMouseLeave={(e) => (e.currentTarget.style.opacity="1")}>View on GAMES.GG</a>
+        {cmsSlug && (
+          <a href={gamesGgUrl(cmsSlug)} target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", background: "var(--green)", color: "#060D17", fontWeight: 700, fontSize: "13px", padding: "10px 14px", borderRadius: "9px", textDecoration: "none", transition: "opacity 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.opacity="0.85")} onMouseLeave={(e) => (e.currentTarget.style.opacity="1")}>View on GAMES.GG</a>
         )}
         <a href={calUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", background: "rgba(255,255,255,0.05)", color: "var(--text-secondary)", border: "1px solid oklch(22% 0.05 240)", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "9px", textDecoration: "none", marginTop: "7px" }}>+ Add to Google Calendar</a>
       </div>
@@ -537,11 +553,16 @@ interface CalendarClientProps {
   releases: GameRelease[];
   initialYear: number;
   initialMonth: number;
-  featuredSlugs: string[];
+  featuredSlugMap: Record<string, string>;
 }
 
-export function CalendarClient({ releases, initialYear, initialMonth, featuredSlugs }: CalendarClientProps) {
-  const featuredSet = new Set(featuredSlugs);
+export function CalendarClient({ releases, initialYear, initialMonth, featuredSlugMap }: CalendarClientProps) {
+  // Returns the canonical CMS slug if this game is featured, or null if not
+  function getCmsSlug(game: GameRelease): string | null {
+    return featuredSlugMap[game.slug]
+      ?? featuredSlugMap[game.name.toLowerCase().replace(/[^a-z0-9]/g, "")]
+      ?? null;
+  }
   const today    = new Date();
   const todayStr = toDateStr(today.getFullYear(), today.getMonth() + 1, today.getDate());
   const isMobile = useIsMobile();
@@ -630,26 +651,18 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
-      {/* ── Top bar ── */}
+      {/* ── Top bar — filters + watchlist on one line ── */}
       <div style={{ flexShrink: 0, borderBottom: "1px solid oklch(17% 0.04 240)", background: "oklch(10% 0.025 240)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 20px 0" }}>
-          {/* Month nav — desktop only (mobile nav is in the left panel) */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 20px", overflowX: "auto", scrollbarWidth: "none" }}>
+          {/* Mobile: month nav */}
           {isMobile && (
             <>
-              <button type="button" onClick={prevMonth} style={{ background: "none", border: "none", color: "#555", cursor: "pointer", fontSize: "22px", padding: "2px 8px", lineHeight: 1 }}>‹</button>
-              <span style={{ fontSize: "17px", fontWeight: 700, flex: 1, textAlign: "center" }}>{MONTH_NAMES[month-1]} <span style={{ fontWeight: 300, color: "#555" }}>{year}</span></span>
-              <button type="button" onClick={nextMonth} style={{ background: "none", border: "none", color: atMonthEnd ? "#222" : "#555", cursor: atMonthEnd ? "default" : "pointer", fontSize: "22px", padding: "2px 8px", lineHeight: 1 }}>›</button>
+              <button type="button" onClick={prevMonth} style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", fontSize: "22px", padding: "2px 8px", lineHeight: 1 }}>‹</button>
+              <span style={{ fontSize: "17px", fontWeight: 700, color: "#fff" }}>{MONTH_NAMES[month-1]} <span style={{ fontWeight: 300, color: "#666" }}>{year}</span></span>
+              <button type="button" onClick={nextMonth} style={{ background: "none", border: "none", color: atMonthEnd ? "#333" : "#aaa", cursor: atMonthEnd ? "default" : "pointer", fontSize: "22px", padding: "2px 8px", lineHeight: 1 }}>›</button>
             </>
           )}
-          {!isMobile && <div style={{ flex: 1 }} />}
-
-          <button type="button" onClick={() => setWatchlistOpen(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "7px 14px", borderRadius: "8px", background: watchlistSlugs.length > 0 ? "oklch(83% 0.22 158 / 0.1)" : "oklch(13% 0.03 240)", border: `1px solid ${watchlistSlugs.length > 0 ? "oklch(83% 0.22 158 / 0.3)" : "oklch(20% 0.04 240)"}`, color: watchlistSlugs.length > 0 ? "var(--green)" : "#888", cursor: "pointer", fontSize: "13px", fontWeight: 600, flexShrink: 0 }}>
-            Watchlist{watchlistSlugs.length > 0 && <span style={{ fontSize: "11px", fontWeight: 700, background: "oklch(83% 0.22 158 / 0.2)", borderRadius: "10px", padding: "1px 7px" }}>{watchlistSlugs.length}</span>}
-          </button>
-        </div>
-
-        {/* Filter pills */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 20px 10px", overflowX: "auto", scrollbarWidth: "none" }}>
+          {/* Filter pills */}
           {FILTERS.map((f) => {
             const on = activeFilters.has(f.key);
             return (
@@ -659,6 +672,11 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
               </button>
             );
           })}
+          <div style={{ flex: 1, minWidth: "8px" }} />
+          {/* Watchlist */}
+          <button type="button" onClick={() => setWatchlistOpen(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "7px 14px", borderRadius: "8px", background: watchlistSlugs.length > 0 ? "oklch(83% 0.22 158 / 0.1)" : "oklch(13% 0.03 240)", border: `1px solid ${watchlistSlugs.length > 0 ? "oklch(83% 0.22 158 / 0.3)" : "oklch(20% 0.04 240)"}`, color: watchlistSlugs.length > 0 ? "var(--green)" : "#888", cursor: "pointer", fontSize: "13px", fontWeight: 600, flexShrink: 0 }}>
+            Watchlist{watchlistSlugs.length > 0 && <span style={{ fontSize: "11px", fontWeight: 700, background: "oklch(83% 0.22 158 / 0.2)", borderRadius: "10px", padding: "1px 7px" }}>{watchlistSlugs.length}</span>}
+          </button>
         </div>
       </div>
 
@@ -695,10 +713,10 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
             return (
               <div key={dateStr} ref={(el) => { dayRefs.current[dateStr] = el; }} style={{ marginBottom: "48px" }}>
                 {/* Day header */}
-                <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "16px", paddingBottom: "12px", borderBottom: `1px solid ${isSelected ? "oklch(83% 0.22 158 / 0.2)" : "oklch(17% 0.04 240)"}` }}>
-                  <span style={{ fontSize: "52px", fontWeight: 900, lineHeight: 1, color: isSelected ? "oklch(83% 0.22 158)" : isToday ? "oklch(83% 0.22 158)" : "#999" }}>{day}</span>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                    <span style={{ fontSize: "16px", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: isToday || isSelected ? "oklch(83% 0.22 158)" : "#bbb" }}>{weekday}</span>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "14px", marginBottom: "16px", paddingBottom: "12px", borderBottom: `1px solid ${isSelected ? "oklch(83% 0.22 158 / 0.2)" : "oklch(17% 0.04 240)"}` }}>
+                  <span style={{ fontSize: "54px", fontWeight: 900, lineHeight: 1, color: isSelected ? "oklch(83% 0.22 158)" : isToday ? "oklch(83% 0.22 158)" : "#fff" }}>{day}</span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "3px", paddingTop: "4px" }}>
+                    <span style={{ fontSize: "16px", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: isToday || isSelected ? "oklch(83% 0.22 158)" : "#fff" }}>{weekday}</span>
                     <span style={{ fontSize: "12px", color: "#666" }}>{MONTH_NAMES[month-1]} {year}</span>
                   </div>
                   {isToday && <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--green)", background: "oklch(83% 0.22 158 / 0.1)", padding: "3px 10px", borderRadius: "4px", border: "1px solid oklch(83% 0.22 158 / 0.2)" }}>TODAY</span>}
@@ -745,11 +763,7 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
           inWatchlist={watchlistHas(selectedItem.data.slug)}
           onWatchlistToggle={watchlistToggle}
           onClose={() => setSelectedItem(null)}
-          isFeatured={
-            featuredSlugs.length === 0 ||
-            featuredSet.has(selectedItem.data.slug) ||
-            featuredSet.has(selectedItem.data.name.toLowerCase().replace(/[^a-z0-9]/g, ""))
-          }
+          cmsSlug={getCmsSlug(selectedItem.data)}
         />
       )}
       {selectedItem?.kind === "event" && (

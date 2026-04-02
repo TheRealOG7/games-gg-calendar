@@ -19,39 +19,42 @@ function cmNorm(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-async function fetchCmsPage(page: number): Promise<{ tokens: string[]; pageCount: number }> {
+async function fetchCmsPage(page: number): Promise<{ entries: { slug: string; name: string }[]; pageCount: number }> {
   try {
     const res = await fetch(
       `${GAMES_GG_CMS}/api/games?fields[0]=slug&fields[1]=name&pagination[pageSize]=${CMS_PAGE_SIZE}&pagination[page]=${page}`,
       { next: { revalidate: 3600 }, signal: AbortSignal.timeout(8000) }
     );
-    if (!res.ok) return { tokens: [], pageCount: 1 };
+    if (!res.ok) return { entries: [], pageCount: 1 };
     const data = await res.json();
-    const items = (data.data ?? []) as Array<{ slug?: string; name?: string }>;
-    // Return both the exact slug AND a normalized name token — catches slug mismatches across sources
-    const tokens: string[] = [];
-    for (const i of items) {
-      if (i.slug) tokens.push(i.slug);
-      if (i.name) tokens.push(cmNorm(i.name));
-    }
+    const entries = ((data.data ?? []) as Array<{ slug?: string; name?: string }>)
+      .filter((i) => i.slug)
+      .map((i) => ({ slug: i.slug!, name: i.name ?? "" }));
     const pageCount = (data.meta?.pagination?.pageCount as number) ?? 1;
-    return { tokens, pageCount };
+    return { entries, pageCount };
   } catch {
-    return { tokens: [], pageCount: 1 };
+    return { entries: [], pageCount: 1 };
   }
 }
 
-async function fetchFeaturedSlugs(): Promise<string[]> {
+// Returns a lookup map: token (exact cms slug or normalised name) → canonical CMS slug
+// This lets us both detect featured games AND generate the correct games.gg URL
+async function fetchFeaturedSlugMap(): Promise<Record<string, string>> {
   const first = await fetchCmsPage(1);
-  if (first.tokens.length === 0) return [];
-  const all = [...first.tokens];
+  if (first.entries.length === 0) return {};
+  const all = [...first.entries];
   if (first.pageCount > 1) {
     const rest = await Promise.all(
       Array.from({ length: first.pageCount - 1 }, (_, i) => fetchCmsPage(i + 2))
     );
-    for (const page of rest) all.push(...page.tokens);
+    for (const page of rest) all.push(...page.entries);
   }
-  return all;
+  const map: Record<string, string> = {};
+  for (const e of all) {
+    map[e.slug] = e.slug;                  // exact slug → cms slug
+    if (e.name) map[cmNorm(e.name)] = e.slug; // normalised name → cms slug
+  }
+  return map;
 }
 
 export default async function CalendarPage() {
@@ -68,11 +71,11 @@ export default async function CalendarPage() {
   const endStr = fmt(windowEnd);
 
   // Fetch all sources in parallel
-  const [rawgAndHardcoded, dashboardReleases, igdbReleases, featuredSlugs] = await Promise.all([
+  const [rawgAndHardcoded, dashboardReleases, igdbReleases, featuredSlugMap] = await Promise.all([
     fetchAllReleases(startStr, endStr, RAWG_API_KEY),
     fetchDashboardReleases(DASHBOARD_URL),
     fetchIgdbReleases(TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET),
-    fetchFeaturedSlugs(),
+    fetchFeaturedSlugMap(),
   ]);
 
   // Merge priority: RAWG (has images + metacritic) → IGDB direct → dashboard cache
@@ -206,7 +209,7 @@ export default async function CalendarPage() {
         releases={releases}
         initialYear={year}
         initialMonth={month}
-        featuredSlugs={featuredSlugs}
+        featuredSlugMap={featuredSlugMap}
       />
     </main>
   );
