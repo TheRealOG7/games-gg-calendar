@@ -139,28 +139,61 @@ function useCountdown(target: Date) {
   };
 }
 
-function GTA6Banner({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+function GTA6Banner({ collapsed, onToggle, coverImage }: { collapsed: boolean; onToggle: () => void; coverImage?: string | null }) {
   const { days, hours, minutes, seconds, released } = useCountdown(GTA6_RELEASE);
   if (released) return null;
   return (
-    <div style={{ background: "oklch(11% 0.025 240)", borderBottom: "1px solid oklch(18% 0.04 240)", flexShrink: 0 }}>
+    <div style={{ position: "fixed", right: 0, top: "50%", transform: "translateY(-50%)", zIndex: 200, display: "flex", alignItems: "stretch" }}>
+      {/* Expanded card */}
       {!collapsed && (
-        <div style={{ display: "flex", alignItems: "center", gap: "16px", padding: "7px 20px", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "10px", fontWeight: 800, color: "#555", letterSpacing: "0.1em", textTransform: "uppercase" }}>GTA VI</span>
-          <span style={{ fontSize: "9px", color: "#3a3a3a" }}>Nov 19, 2026</span>
-          <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+        <div style={{
+          width: "186px",
+          backgroundImage: coverImage
+            ? `linear-gradient(to right, rgba(4,2,1,0.72) 0%, rgba(4,2,1,0.93) 100%), url(${coverImage})`
+            : "linear-gradient(160deg, #130702, #271003)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          borderRadius: "10px 0 0 10px",
+          padding: "16px 14px",
+          borderTop: "1px solid rgba(255,120,50,0.35)",
+          borderLeft: "1px solid rgba(255,120,50,0.35)",
+          borderBottom: "1px solid rgba(255,120,50,0.2)",
+          boxShadow: "-8px 0 40px rgba(0,0,0,0.8), -2px 0 16px rgba(255,100,30,0.12)",
+        }}>
+          <div style={{ fontSize: "11px", fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", color: "#FF8040", marginBottom: "3px" }}>GTA VI</div>
+          <div style={{ fontSize: "9px", color: "rgba(255,255,255,0.38)", marginBottom: "12px" }}>Nov 19, 2026</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "4px" }}>
             {([[ days,"DAYS"],[hours,"HRS"],[minutes,"MIN"],[seconds,"SEC"]] as [number,string][]).map(([v,l]) => (
-              <div key={l} style={{ display: "flex", alignItems: "baseline", gap: "3px" }}>
-                <span style={{ fontSize: "14px", fontWeight: 800, color: "#999" }}>{String(v).padStart(l==="DAYS"?3:2,"0")}</span>
-                <span style={{ fontSize: "8px", color: "#3a3a3a", letterSpacing: "0.06em" }}>{l}</span>
+              <div key={l} style={{ textAlign: "center" }}>
+                <div style={{ fontSize: l === "DAYS" ? "18px" : "16px", fontWeight: 900, color: "#FFFFFF", lineHeight: 1, letterSpacing: "-0.02em" }}>{String(v).padStart(l==="DAYS"?3:2,"0")}</div>
+                <div style={{ fontSize: "6px", color: "rgba(255,255,255,0.3)", letterSpacing: "0.05em", marginTop: "3px" }}>{l}</div>
               </div>
             ))}
           </div>
-          <span style={{ marginLeft: "auto", fontSize: "9px", color: "#2a2a2a", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>Rockstar Games</span>
         </div>
       )}
-      <button type="button" onClick={onToggle} style={{ display: "block", width: "100%", background: "none", border: "none", cursor: "pointer", padding: "2px 0", fontSize: "8px", color: "#2e2e2e", letterSpacing: "0.06em", textAlign: "center" }}>
-        {collapsed ? "▸ GTA VI countdown" : "▴ hide"}
+      {/* Toggle tab */}
+      <button type="button" onClick={onToggle} style={{
+        background: collapsed ? "linear-gradient(160deg, #130702, #271003)" : "rgba(4,2,1,0.65)",
+        border: "1px solid rgba(255,120,50,0.4)",
+        borderRight: "none",
+        borderRadius: collapsed ? "8px 0 0 8px" : "0 0 0 8px",
+        cursor: "pointer",
+        padding: collapsed ? "12px 7px" : "6px 7px",
+        writingMode: collapsed ? "vertical-rl" : undefined,
+        textOrientation: collapsed ? "mixed" : undefined,
+        fontSize: "8px",
+        fontWeight: 800,
+        color: "#FF8040",
+        letterSpacing: "0.12em",
+        textTransform: "uppercase",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: collapsed ? "-4px 0 20px rgba(0,0,0,0.7)" : "none",
+        lineHeight: 1.4,
+      }}>
+        {collapsed ? "GTA VI" : "›"}
       </button>
     </div>
   );
@@ -178,16 +211,21 @@ function CalGrid({
 }) {
   const cells = getMonthDays(year, month);
 
-  // Build content map for dot indicators
+  // Build per-day content map for cell display
   const daysInMonth = new Date(year, month, 0).getDate();
-  const relDates = new Set<string>();
-  const evtDates = new Set<string>();
-  if (activeFilters.has("release")) {
-    for (const r of releases) relDates.add(r.released);
-  }
+  type CellItem = { label: string; color: string };
+  const contentByDate = new Map<string, CellItem[]>();
   for (let d = 1; d <= daysInMonth; d++) {
     const ds = toDateStr(year, month, d);
-    if (getEventsForDate(ds).some((e) => eventMatchesFilter(e, activeFilters))) evtDates.add(ds);
+    const items: CellItem[] = [];
+    const dayEvents = getEventsForDate(ds).filter((e) => eventMatchesFilter(e, activeFilters));
+    for (const e of dayEvents) items.push({ label: e.name, color: e.color });
+    if (activeFilters.has("release")) {
+      for (const r of releases) {
+        if (r.released === ds) items.push({ label: r.name, color: "#52d68a" });
+      }
+    }
+    if (items.length > 0) contentByDate.set(ds, items);
   }
 
   const atEnd = year === 2026 && month === 12;
@@ -211,41 +249,47 @@ function CalGrid({
       </div>
 
       {/* Grid */}
-      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(7,1fr)", gridAutoRows: "minmax(0, 1fr)", padding: "0 10px 12px", gap: "2px" }}>
+      <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(7,1fr)", gridAutoRows: "minmax(62px, 1fr)", padding: "0 6px 10px", gap: "1px" }}>
         {cells.map(({ dateStr, day, thisMonth }) => {
-          const isSelected = dateStr === selectedDate;
-          const isToday    = dateStr === todayStr;
-          const hasRel     = thisMonth && relDates.has(dateStr);
-          const hasEvt     = thisMonth && evtDates.has(dateStr);
-          const hasContent = hasRel || hasEvt;
+          const isSelected  = dateStr === selectedDate;
+          const isToday     = dateStr === todayStr;
+          const cellContent = thisMonth ? (contentByDate.get(dateStr) ?? []) : [];
+          const hasContent  = cellContent.length > 0;
 
           return (
             <div
               key={dateStr}
               onClick={() => thisMonth && onSelectDate(dateStr)}
               style={{
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                borderRadius: "6px", cursor: thisMonth ? "pointer" : "default",
-                opacity: thisMonth ? 1 : 0.12,
-                background: isSelected ? "oklch(83% 0.22 158 / 0.12)" : "transparent",
+                display: "flex", flexDirection: "column", alignItems: "stretch",
+                borderRadius: "5px", cursor: thisMonth ? "pointer" : "default",
+                opacity: thisMonth ? 1 : 0.1,
+                background: isSelected ? "oklch(83% 0.22 158 / 0.1)" : "transparent",
                 transition: "background 0.12s",
-                padding: "3px 0",
+                padding: "4px 3px 3px",
+                overflow: "hidden",
               }}
               onMouseEnter={(e) => { if (thisMonth && !isSelected) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = isSelected ? "oklch(83% 0.22 158 / 0.12)" : "transparent"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = isSelected ? "oklch(83% 0.22 158 / 0.1)" : "transparent"; }}
             >
-              <div style={{
-                width: "26px", height: "26px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "12px", fontWeight: isToday ? 800 : hasContent ? 600 : 400,
-                background: isToday ? "var(--green)" : "transparent",
-                color: isToday ? "#060D17" : isSelected ? "oklch(83% 0.22 158)" : hasContent ? "#ddd" : "#3a3a3a",
-              }}>{day}</div>
-              {/* Dots */}
-              {thisMonth && (hasRel || hasEvt) && !isToday && (
-                <div style={{ display: "flex", gap: "2px", marginTop: "2px", height: "4px" }}>
-                  {hasRel && <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: isSelected ? "oklch(83% 0.22 158)" : "#52d68a66" }} />}
-                  {hasEvt && <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#4f9cf966" }} />}
+              {/* Day number */}
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: "3px" }}>
+                <div style={{
+                  width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "11px", fontWeight: isToday ? 800 : hasContent ? 600 : 400,
+                  background: isToday ? "var(--green)" : "transparent",
+                  color: isToday ? "#060D17" : isSelected ? "oklch(83% 0.22 158)" : hasContent ? "#ddd" : "#333",
+                  flexShrink: 0,
+                }}>{day}</div>
+              </div>
+              {/* Content items */}
+              {thisMonth && cellContent.slice(0, 3).map((item, idx) => (
+                <div key={idx} style={{ fontSize: "7px", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: item.color, opacity: 0.9, padding: "0 2px", marginBottom: "1px" }}>
+                  {item.label}
                 </div>
+              ))}
+              {thisMonth && cellContent.length > 3 && (
+                <div style={{ fontSize: "7px", color: "#555", padding: "0 2px" }}>+{cellContent.length - 3} more</div>
               )}
             </div>
           );
@@ -275,7 +319,7 @@ function ModalBackdrop({ onClose, children }: { onClose: () => void; children: R
 
 // ── Game detail modal ─────────────────────────────────────────────────────────
 
-function GameDetailModal({ game, inWatchlist, onWatchlistToggle, onClose }: { game: GameRelease; inWatchlist: boolean; onWatchlistToggle: (slug: string) => void; onClose: () => void }) {
+function GameDetailModal({ game, inWatchlist, onWatchlistToggle, onClose, isFeatured }: { game: GameRelease; inWatchlist: boolean; onWatchlistToggle: (slug: string) => void; onClose: () => void; isFeatured: boolean }) {
   const platforms = deduplicatePlatforms(game.platforms);
   const calUrl    = googleCalUrl(`${game.name} — Release`, game.released, game.released, `${game.name} releases today.`);
   const [imgFailed, setImgFailed] = useState(false);
@@ -320,7 +364,9 @@ function GameDetailModal({ game, inWatchlist, onWatchlistToggle, onClose }: { ga
             </div>
           </>
         )}
-        <a href={gamesGgUrl(game.slug)} target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", background: "var(--green)", color: "#060D17", fontWeight: 700, fontSize: "13px", padding: "10px 14px", borderRadius: "9px", textDecoration: "none", transition: "opacity 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.opacity="0.85")} onMouseLeave={(e) => (e.currentTarget.style.opacity="1")}>View on GAMES.GG</a>
+        {isFeatured && (
+          <a href={gamesGgUrl(game.slug)} target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", background: "var(--green)", color: "#060D17", fontWeight: 700, fontSize: "13px", padding: "10px 14px", borderRadius: "9px", textDecoration: "none", transition: "opacity 0.15s" }} onMouseEnter={(e) => (e.currentTarget.style.opacity="0.85")} onMouseLeave={(e) => (e.currentTarget.style.opacity="1")}>View on GAMES.GG</a>
+        )}
         <a href={calUrl} target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", background: "rgba(255,255,255,0.05)", color: "var(--text-secondary)", border: "1px solid oklch(22% 0.05 240)", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "9px", textDecoration: "none", marginTop: "7px" }}>+ Add to Google Calendar</a>
       </div>
     </ModalBackdrop>
@@ -491,9 +537,11 @@ interface CalendarClientProps {
   releases: GameRelease[];
   initialYear: number;
   initialMonth: number;
+  featuredSlugs: string[];
 }
 
-export function CalendarClient({ releases, initialYear, initialMonth }: CalendarClientProps) {
+export function CalendarClient({ releases, initialYear, initialMonth, featuredSlugs }: CalendarClientProps) {
+  const featuredSet = new Set(featuredSlugs);
   const today    = new Date();
   const todayStr = toDateStr(today.getFullYear(), today.getMonth() + 1, today.getDate());
   const isMobile = useIsMobile();
@@ -512,6 +560,11 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
   const [activeFilters, setActiveFilters] = useState<Set<FilterKey>>(() => new Set(ALL_FILTER_KEYS));
 
   const { slugs: watchlistSlugs, toggle: watchlistToggle, has: watchlistHas, remove: watchlistRemove } = useWishlist();
+
+  // Find GTA VI cover for the countdown widget
+  const gta6Cover = releases.find(
+    (r) => r.slug === "grand-theft-auto-vi" || r.name.toLowerCase().replace(/\s/g,"").includes("grandtheftautovi")
+  )?.background_image;
 
   const feedRef  = useRef<HTMLDivElement>(null);
   const dayRefs  = useRef<Record<string, HTMLDivElement | null>>({});
@@ -609,15 +662,15 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
         </div>
       </div>
 
-      {/* ── GTA VI countdown ── */}
-      <GTA6Banner collapsed={countdownHidden} onToggle={() => setCountdownHidden((v) => !v)} />
+      {/* ── GTA VI countdown (fixed right-side widget) ── */}
+      <GTA6Banner collapsed={countdownHidden} onToggle={() => setCountdownHidden((v) => !v)} coverImage={gta6Cover} />
 
       {/* ── Main content: calendar grid + feed ── */}
       <div style={{ flex: 1, minHeight: 0, display: "flex", overflow: "hidden" }}>
 
-        {/* Left: calendar grid (desktop only) */}
+        {/* Left: calendar grid (desktop only, 50% width) */}
         {!isMobile && (
-          <div style={{ width: "280px", flexShrink: 0, borderRight: "1px solid oklch(17% 0.04 240)", background: "oklch(10% 0.025 240)", overflow: "hidden" }}>
+          <div style={{ width: "50%", flexShrink: 0, borderRight: "1px solid oklch(17% 0.04 240)", background: "oklch(10% 0.025 240)", overflow: "hidden" }}>
             <CalGrid
               year={year} month={month} todayStr={todayStr} selectedDate={selectedDate}
               releases={releases} activeFilters={activeFilters}
@@ -687,7 +740,7 @@ export function CalendarClient({ releases, initialYear, initialMonth }: Calendar
 
       {/* ── Modals ── */}
       {selectedItem?.kind === "game" && (
-        <GameDetailModal game={selectedItem.data} inWatchlist={watchlistHas(selectedItem.data.slug)} onWatchlistToggle={watchlistToggle} onClose={() => setSelectedItem(null)} />
+        <GameDetailModal game={selectedItem.data} inWatchlist={watchlistHas(selectedItem.data.slug)} onWatchlistToggle={watchlistToggle} onClose={() => setSelectedItem(null)} isFeatured={featuredSlugs.length === 0 || featuredSet.has(selectedItem.data.slug)} />
       )}
       {selectedItem?.kind === "event" && (
         <EventDetailModal event={selectedItem.data} onClose={() => setSelectedItem(null)} />

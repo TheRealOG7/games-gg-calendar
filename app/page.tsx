@@ -10,6 +10,29 @@ const RAWG_API_KEY = process.env.RAWG_API_KEY ?? "";
 const DASHBOARD_URL = process.env.DASHBOARD_URL ?? "";
 const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID ?? "";
 const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET ?? "";
+// Set GAMES_GG_API_URL to the endpoint that returns featured game slugs,
+// e.g. https://games.gg/api/games — expects JSON array of slugs or objects with a .slug field
+const GAMES_GG_API_URL = process.env.GAMES_GG_API_URL ?? "";
+
+async function fetchFeaturedSlugs(apiUrl: string): Promise<string[]> {
+  if (!apiUrl) return [];
+  try {
+    const res = await fetch(apiUrl, {
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const items: unknown[] = Array.isArray(data)
+      ? data
+      : (data.data ?? data.results ?? data.games ?? []);
+    return items
+      .map((i) => (typeof i === "string" ? i : (i as Record<string, string>).slug ?? ""))
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
 
 export default async function CalendarPage() {
   const today = new Date();
@@ -25,10 +48,11 @@ export default async function CalendarPage() {
   const endStr = fmt(windowEnd);
 
   // Fetch all sources in parallel
-  const [rawgAndHardcoded, dashboardReleases, igdbReleases] = await Promise.all([
+  const [rawgAndHardcoded, dashboardReleases, igdbReleases, featuredSlugs] = await Promise.all([
     fetchAllReleases(startStr, endStr, RAWG_API_KEY),
     fetchDashboardReleases(DASHBOARD_URL),
     fetchIgdbReleases(TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET),
+    fetchFeaturedSlugs(GAMES_GG_API_URL),
   ]);
 
   // Merge priority: RAWG (has images + metacritic) → IGDB direct → dashboard cache
@@ -138,6 +162,7 @@ export default async function CalendarPage() {
         releases={releases}
         initialYear={year}
         initialMonth={month}
+        featuredSlugs={featuredSlugs}
       />
     </main>
   );

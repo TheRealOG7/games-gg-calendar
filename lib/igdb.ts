@@ -154,6 +154,31 @@ export async function fetchIgdbReleases(
     if (gid && imageId) coverMap.set(gid, imageId);
   }
 
+  // Fetch screenshots as fallback for games without cover art
+  const gamesWithoutCoverIds = allIds.filter((id) => !coverMap.has(id));
+  const screenshotMap = new Map<number, string>();
+  if (gamesWithoutCoverIds.length > 0) {
+    const ssBatches: number[][] = [];
+    for (let i = 0; i < gamesWithoutCoverIds.length; i += 500) {
+      ssBatches.push(gamesWithoutCoverIds.slice(i, i + 500));
+    }
+    const ssResults = await Promise.all(
+      ssBatches.map((batch) =>
+        igdbPost(
+          "screenshots",
+          `fields game,image_id; where game = (${batch.join(",")}); sort id asc; limit 500;`,
+          clientId,
+          token
+        )
+      )
+    ).then((pages) => pages.flat());
+    for (const s of ssResults) {
+      const gid = s.game as number;
+      const imgId = s.image_id as string;
+      if (gid && imgId && !screenshotMap.has(gid)) screenshotMap.set(gid, imgId);
+    }
+  }
+
   // Build final GameRelease list
   const results: GameRelease[] = [];
   let idCounter = 700000;
@@ -170,6 +195,7 @@ export async function fetchIgdbReleases(
     seenSlugs.add(slug);
 
     const imageId = coverMap.get(gid);
+    const ssImageId = !imageId ? screenshotMap.get(gid) : undefined;
     const platforms = (game.platforms as Array<{ name: string }> | null) ?? [];
 
     results.push({
@@ -179,6 +205,8 @@ export async function fetchIgdbReleases(
       released: rd.dateStr,
       background_image: imageId
         ? `https://images.igdb.com/igdb/image/upload/t_cover_big_2x/${imageId}.jpg`
+        : ssImageId
+        ? `https://images.igdb.com/igdb/image/upload/t_screenshot_big/${ssImageId}.jpg`
         : null,
       platforms: [...new Set(platforms.map((p) => normalizePlatform(p.name)))],
       genres: [],
