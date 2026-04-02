@@ -318,14 +318,15 @@ function CalGrid({
               style={{
                 display: "flex", flexDirection: "column", alignItems: "stretch",
                 borderRadius: "5px", cursor: thisMonth ? "pointer" : "default",
-                opacity: thisMonth ? 1 : 0.1,
+                opacity: thisMonth ? 1 : 0.25,
                 background: isSelected ? "oklch(83% 0.22 158 / 0.1)" : "transparent",
-                transition: "background 0.12s",
+                border: isSelected ? "1px solid oklch(83% 0.22 158 / 0.35)" : "1px solid rgba(255,255,255,0.07)",
+                transition: "background 0.12s, border-color 0.12s",
                 padding: "4px 3px 3px",
                 overflow: "hidden",
               }}
-              onMouseEnter={(e) => { if (thisMonth && !isSelected) (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = isSelected ? "oklch(83% 0.22 158 / 0.1)" : "transparent"; }}
+              onMouseEnter={(e) => { if (thisMonth && !isSelected) { (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(255,255,255,0.14)"; } }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = isSelected ? "oklch(83% 0.22 158 / 0.1)" : "transparent"; (e.currentTarget as HTMLDivElement).style.borderColor = isSelected ? "oklch(83% 0.22 158 / 0.35)" : "rgba(255,255,255,0.07)"; }}
             >
               {/* Day number */}
               <div style={{ display: "flex", justifyContent: "center", marginBottom: "3px" }}>
@@ -637,7 +638,7 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
   const [countdownHidden, setCountdownHidden] = useState(false);
   const [filtersOpen,     setFiltersOpen]     = useState(false);
   const [miniCalOpen,     setMiniCalOpen]     = useState(true);
-  const [activeFilters, setActiveFilters] = useState<Set<FilterKey>>(() => new Set(ALL_FILTER_KEYS));
+  const [activeFilters, setActiveFilters] = useState<Set<FilterKey>>(() => new Set<FilterKey>(["release", "convention"]));
 
   const { slugs: watchlistSlugs, toggle: watchlistToggle, has: watchlistHas, remove: watchlistRemove } = useWishlist();
 
