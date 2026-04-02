@@ -112,11 +112,12 @@ export async function fetchRawgDescriptions(
           if (!res.ok) return null;
           const data = await res.json();
           const raw: string = (data.description_raw ?? "").replace(/\r?\n+/g, " ").trim();
-          if (!raw) return null;
+          // Skip auto-generated short descriptions (< 80 chars) — RAWG generates these when no real data exists
+          if (!raw || raw.length < 80) return null;
           const sentences = raw.split(/\. /).filter((s: string) => s.trim());
           let desc = sentences.slice(0, 3).join(". ").trim();
           if (desc && !/[.!?]$/.test(desc)) desc += ".";
-          return desc ? { slug, desc } : null;
+          return desc.length >= 80 ? { slug, desc } : null;
         } catch {
           return null;
         }

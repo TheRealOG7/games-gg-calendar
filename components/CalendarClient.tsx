@@ -405,7 +405,7 @@ function GameDetailModal({ game, inWatchlist, onWatchlistToggle, onClose, cmsSlu
         <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "8px" }}>{formatDateLong(game.released)}</p>
         {game.genres.length > 0 && <p style={{ fontSize: "11px", color: "var(--text-dim)", marginBottom: "10px" }}>{game.genres.slice(0,4).join(" · ")}</p>}
         {(() => {
-          const desc = cleanDesc(game.description) || gameDescFallback(game);
+          const desc = cleanDesc(game.description);
           return desc ? <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: "14px" }}>{truncate(desc, 60)}</p> : null;
         })()}
         <button type="button" onClick={() => onWatchlistToggle(game.slug)} style={{ width: "100%", padding: "10px 14px", borderRadius: "9px", fontWeight: 700, fontSize: "13px", cursor: "pointer", border: "1px solid", background: inWatchlist ? "oklch(83% 0.22 158 / 0.15)" : "oklch(83% 0.22 158 / 0.08)", color: "var(--green)", borderColor: inWatchlist ? "oklch(83% 0.22 158 / 0.5)" : "oklch(83% 0.22 158 / 0.3)", marginBottom: "10px", transition: "all 0.15s" }}>
