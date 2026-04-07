@@ -111,14 +111,15 @@ export default async function CalendarPage() {
     }
   }
 
-  // Games to exclude entirely (no image + not worth showing)
-  const BLACKLISTED_SLUGS = new Set(["all-will-fall"]);
+  // Games to exclude entirely (no image + not worth showing, or Cyrillic-homoglyph RAWG spam entries)
+  const BLACKLISTED_SLUGS = new Set(["all-will-fall", "mouse-3"]);
 
   // Known slug aliases: maps a variant slug → canonical slug so dedup can merge them
   // e.g. RAWG calls it "mouse-pi-for-hire", IGDB calls it "mouse"
   const SLUG_ALIASES: Record<string, string> = {
     "mouse-pi-for-hire": "mouse",
     "mouse-p-i-for-hire": "mouse",
+    "mouse-pi-for-hire--1": "mouse",   // IGDB variant
     "mouse-pi-for-hire-2025": "mouse",
     "mouse-pi-for-hire-2026": "mouse",
     "mouse-p-i": "mouse",
@@ -141,6 +142,8 @@ export default async function CalendarPage() {
   // e.g. IGDB "mixtape", RAWG "mixtape--1", RAWG "mixtape-2025" → keep best entry
   function normalizeName(name: string): string {
     return name
+      .normalize("NFKC")               // normalize Unicode (e.g. Cyrillic homoglyphs → Latin equivalents where possible)
+      .replace(/[^\x00-\x7F]/g, "")   // strip remaining non-ASCII (homoglyph fallback)
       .replace(/:\s+.+$/, "")          // strip subtitle after ": " e.g. "Mouse: Pi for Hire" → "Mouse"
       .replace(/\s+-\s+.+$/, "")       // strip subtitle after " - " e.g. "Game - Subtitle" → "Game"
       .toLowerCase()
