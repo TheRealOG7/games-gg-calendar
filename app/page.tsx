@@ -119,6 +119,10 @@ export default async function CalendarPage() {
   const SLUG_ALIASES: Record<string, string> = {
     "mouse-pi-for-hire": "mouse",
     "mouse-p-i-for-hire": "mouse",
+    "mouse-pi-for-hire-2025": "mouse",
+    "mouse-pi-for-hire-2026": "mouse",
+    "mouse-p-i": "mouse",
+    "mouse-pi": "mouse",
   };
   for (const [variant, canon] of Object.entries(SLUG_ALIASES)) {
     const variantEntry = bySlug.get(variant);
@@ -138,6 +142,7 @@ export default async function CalendarPage() {
   function normalizeName(name: string): string {
     return name
       .replace(/:\s+.+$/, "")          // strip subtitle after ": " e.g. "Mouse: Pi for Hire" → "Mouse"
+      .replace(/\s+-\s+.+$/, "")       // strip subtitle after " - " e.g. "Game - Subtitle" → "Game"
       .toLowerCase()
       .replace(/\bzero\b/g, "0").replace(/\bone\b/g, "1").replace(/\btwo\b/g, "2")
       .replace(/\bthree\b/g, "3").replace(/\bfour\b/g, "4").replace(/\bfive\b/g, "5")

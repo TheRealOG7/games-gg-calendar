@@ -645,11 +645,11 @@ export function CalendarClient({ releases, initialYear, initialMonth, featuredSl
 
   useEffect(() => { setIsInIframe(window.self !== window.top); }, []);
 
-  // Report height to parent page for iframe sizing
+  // Report height to parent page for iframe sizing (uses document.body per games.gg team spec)
   useEffect(() => {
-    const sendHeight = () => window.parent.postMessage({ type: "IFRAME_HEIGHT", height: document.documentElement.scrollHeight }, "*");
+    const sendHeight = () => window.parent.postMessage({ type: "IFRAME_HEIGHT", height: document.body.scrollHeight }, "*");
     const ro = new ResizeObserver(sendHeight);
-    ro.observe(document.documentElement);
+    ro.observe(document.body);
     sendHeight();
     return () => ro.disconnect();
   }, []);
