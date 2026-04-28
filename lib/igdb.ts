@@ -75,13 +75,14 @@ export async function fetchIgdbReleases(
     return [];
   }
 
-  const nowSec = Math.floor(Date.now() / 1000);
+  const pastSec = Math.floor((Date.now() - 120 * 24 * 3600 * 1000) / 1000);
   const futureSec = Math.floor((Date.now() + 270 * 24 * 3600 * 1000) / 1000);
 
   // Fetch two pages of games in parallel (up to 1000 games)
+  // Include 120 days back so past months still show releases
   const gameQuery = (offset: number) =>
     `fields name,url,hypes,follows,first_release_date,platforms.name,summary,storyline;` +
-    ` where first_release_date >= ${nowSec} & first_release_date <= ${futureSec} & hypes >= 10;` +
+    ` where first_release_date >= ${pastSec} & first_release_date <= ${futureSec} & hypes >= 10;` +
     ` sort first_release_date asc; limit 500; offset ${offset};`;
 
   const [gamesPage1, gamesPage2] = await Promise.all([
